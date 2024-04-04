@@ -1,16 +1,15 @@
-<!--<?php
+<?php
 session_start();
-include_once("../includes/connection.php");
+/*include_once("../includes/connection.php");
 if(isset($_SESSION['login_error'])){
     echo '<div class="alert alert-danger">' . $_SESSION['login_error'] . '</div>';
     unset($_SESSION['login_error']);
-}
+}*/
 ?>
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Log In Operatore</title>
+    <title>Log In Chirurgo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -26,6 +25,7 @@ if(isset($_SESSION['login_error'])){
     </div>
     <div class="main-content">
         <form action="../api/login_logics.php" method="post" class="row">
+        <input type="hidden" name="type" value=<?php echo($_POST["type"])?>>
             <div class="col-sm-12">
                 <div class="input-group">
                     <span class="input-group-addon"><em class="glyphicon glyphicon-pencil"></em></span>
@@ -37,10 +37,10 @@ if(isset($_SESSION['login_error'])){
                     <label for="password"></label>
                     <input type="password" id="password" class="form-control" placeholder="Password" name="password" required>
                 </div>
-                <p id="back_to_index"><a href="index.php">Non sei un operatore?</a></p>
+                <p id="back_to_index"><a href="index.php">Indietro</a></p>
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn-info w-50" name="login_to_signup" id="login">Log In</button>
+                <button type="submit" class="btn btn-info w-50" name="login" id="login">Log In</button>
             </div>
         </form>
     </div>
