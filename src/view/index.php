@@ -19,19 +19,19 @@ session_start();
           height="200" id="logo">
           <form method="post" action="login.php">
           <input type="hidden" name="type" value="0">
-              <button id="login_button_chirurgo" class="btn btn-info btn-lg" name="login_button_chirurgo" onclick='$_SESSION["type"]=0'> Log in Chirurgo</button>
+              <button id="login_button_medico" class="btn btn-info btn-lg" name="login_button_medico"> Log in Medico</button>
           </form>
           <form method="post" action="login.php">
           <input type="hidden" name="type" value="1">
-              <button id="login_button_operatore" class="btn btn-info btn-lg" name="login_button_operatore" onclick='$_SESSION["type"]=1'> Log in Operatore</button>
+              <button id="login_button_operatore" class="btn btn-info btn-lg" name="login_button_operatore"> Log in Operatore</button>
           </form>
           <form method="post" action="login.php">
           <input type="hidden" name="type" value="2">
-              <button id="login_button_reception" class="btn btn-info btn-lg" name="login_button_reception" onclick='$_SESSION["type"]=2'> Log in Reception</button>
+              <button id="login_button_reception" class="btn btn-info btn-lg" name="login_button_reception"> Log in Reception</button>
           </form>
           <form method="post" action="login.php">
           <input type="hidden" name="type" value="3">
-              <button id="login_button_amministratore" class="btn btn-info btn-lg" name="login_button_chirurgo" onclick='$_SESSION["type"]=3'> Log in Amministratore</button>
+              <button id="login_button_amministratore" class="btn btn-info btn-lg" name="login_button_amministratore"> Log in Amministratore</button>
           </form>
       </div> 
     </div>
