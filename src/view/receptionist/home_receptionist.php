@@ -50,7 +50,7 @@
                         <div class="card-body">
                             <h2 class="card-title" id="gestione_pazienti">Gestione Pazienti</h2>
                             <p class="card-text">Gestisci i dati dei pazienti.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="gestione_clienti.php" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
