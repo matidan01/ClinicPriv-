@@ -32,7 +32,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </head>
-
+<style>
+    /* Stile per evidenziare la riga cliccata */
+    .clickable-row:hover {
+            cursor: pointer;
+            background-color: #f0f0f0; /* Cambia il colore al passaggio del mouse */
+        }
+</style>
 <body>
     <div class="container">
         <!-- Titolo della pagina -->
@@ -64,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
                 <!-- Qui vengono inseriti dinamicamente i dati dei clienti -->
                 <?php
                 foreach ($clienti as $cliente) {
-                    echo "<tr>";
+                    echo "<tr class='clickable-row' data-href='profilo_paziente.php?idPaziente=" . urlencode($cliente['idPaziente']) . "'>";
                     echo "<td>{$cliente['idPaziente']}</td>";
                     echo "<td>{$cliente['nome']}</td>";
                     echo "<td>{$cliente['cognome']}</td>";
@@ -119,6 +125,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
                             <label for="note" class="form-label">Note:</label>
                             <textarea class="form-control" id="note" name="note" rows="3"></textarea>
                         </div>
+                        <p>Indirizzo:</p>
+                        <div class="mb-3">
+                            <label for="via" class="form-label">Via:</label>
+                            <input type="text" class="form-control" id="via" name="via" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numeroCivico" class="form-label">Numero Civico:</label>
+                            <input type="number" class="form-control" id="numeroCivico" name="numeroCivico" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="citta" class="form-label">Città:</label>
+                            <input type="text" class="form-control" id="citta" name="citta" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cap" class="form-label">CAP:</label>
+                            <input type="number" class="form-control" id="cap" name="cap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="provincia" class="form-label">Provincia:</label>
+                            <input type="text" class="form-control" id="provincia" name="provincia" maxlength="2" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nazione" class="form-label">Nazione:</label>
+                            <input type="text" class="form-control" id="nazione" name="nazione" required>
+                        </div>
                         <button type="submit" class="btn btn-primary">Aggiungi Cliente</button>
                     </form>
             </div>
@@ -126,5 +157,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     </div>
 
 </body>
+<script>
+    // Aggiungi un gestore di eventi per il clic sulle righe della tabella
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".clickable-row"); // Seleziona tutte le righe cliccabili
+        rows.forEach(row => {
+            row.addEventListener("click", function() {
+                const url = row.getAttribute("data-href"); // Ottieni l'URL dalla riga
+                if (url) {
+                    window.location.href = url; // Reindirizza l'utente all'URL specificato
+                }
+            });
+        });
+    });
+</script>
 
 </html>
