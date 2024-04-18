@@ -1,5 +1,7 @@
 <?php
 include_once ("connection.php");
+include_once("database.php");
+include_once("connection.php");
 
 function check_login($badgeNumber, $password, $type, $mysqli){
     $colonna = "nBadge";
@@ -22,7 +24,7 @@ function check_login($badgeNumber, $password, $type, $mysqli){
     }
     $stmt = $mysqli->prepare("SELECT password FROM $table WHERE $colonna=?");
     print("$table");
-    $stmt->bind_param("i", $badgeNumber);
+    $stmt->bind_param("s", $badgeNumber);
     $stmt->execute();
     $row = $stmt->get_result()->fetch_assoc();
     /*if(password_verify($password, $row['password']) == true){*/
@@ -51,4 +53,26 @@ function go_to_home(){
         default:
             print("Problemi di autenticazione rilevati");
     }
+}
+
+function create_badge($ruolo, $mysqli){
+    $num = get_max_badge_number($ruolo, $mysqli);
+    switch($ruolo){
+        case "medico": 
+            $badge = "M"."$num";
+            break;
+        case "operatore":
+            $badge = "O"."$num";
+            break;
+        case "receptionist":
+            $badge = "R"."$num";
+            break;
+        default:
+            print("Errore nella creazione del badge.");
+    }
+    return $badge;
+}
+
+function stampa_tabella_dati_personale($con){
+    $personale = tutto_personale($con);
 }

@@ -16,6 +16,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $_SESSION['login_error'] = 'Numbero badge, password e/o tipo di login selezionato errato/i';
         header("Location: ../view/login.php");
-        close_connection($con);
     }
 }

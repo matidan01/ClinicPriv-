@@ -48,7 +48,7 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Assunzione personale</h2>
                         <p class='card-text'>Gestisci l'assunzione del personale.</p>
-                        <a href='home_amministratore/visualizzazione_dati_personale.php' class='btn btn-primary'>Vai alla gestione</a>
+                        <a href='assunzione_personale.php' class='btn btn-primary'>Vai alla gestione</a>
                     </div>
                 </div>
             </div>
@@ -57,7 +57,7 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Termine contratto con personale</h2>
                         <p class='card-text'>Gestisci il termine di un contratto col personale.</p>
-                        <a href='home_amministratore/termina_contratto.php' class='btn btn-primary'>Vai alla gestione</a>
+                        <a href='termina_contratto.php' class='btn btn-primary'>Vai alla gestione</a>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione dati fatturato</h2>
                         <p class='card-text'>Visualizza i dati di fatturato.</p>
-                        <a href='home_amministratore/visualizzazione_fatturato.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                        <a href='visualizzazione_fatturato.php' class='btn btn-primary'>Vai alla visualizzazione</a>
                     </div>
                 </div>
             </div>
@@ -77,7 +77,7 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione dati interventi</h2>
                         <p class='card-text'>Visualizza i dati degli interventi</p>
-                        <a href='home_amministratore/visualizza_interventi.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                        <a href='visualizza_interventi.php' class='btn btn-primary'>Vai alla visualizzazione</a>
                     </div>
                 </div>
             </div>
@@ -97,12 +97,12 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione dati personale</h2>
                         <p class='card-text'>Visualizza i dati del personale.</p>
-                        <a href='home_amministratore/visualizzazione_dati_personale.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                        <a href='visualizzazione_dati_personale.php' class='btn btn-primary'>Vai alla visualizzazione</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-  </body>
+</body>
 </html>
