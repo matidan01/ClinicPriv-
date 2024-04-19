@@ -5,7 +5,7 @@
         if(isset($_POST['data'])) {
             $data = $_POST['data'];
         
-            $query = "SELECT appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
+            $query = "SELECT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
                         paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
                         GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti,
                         GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
@@ -62,8 +62,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Appuntamenti</title>
-    <!-- Bootstrap CSS -->
+    <!-- Link per Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link per Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </head>
 <style>
     .clickable-row:hover {
@@ -107,7 +110,11 @@
             <tbody>
                 <?php
                 foreach ($appuntamenti as $appuntamento) {
-                    echo "<tr class='clickable-row' data-href=''>";
+                    echo "<tr class='clickable-row' data-href='profilo_appuntamento.php?";
+                    if (isset($appuntamento['idPrestazione'])) {
+                        echo "idPrestazione=" . urlencode($appuntamento['idPrestazione']);
+                    }
+                    echo "'>";
                     echo "<td>{$appuntamento['dataInizio']}</td>";
                     echo "<td>{$appuntamento['dataFine']}</td>";
                     echo "<td>{$appuntamento['ora']}</td>";
@@ -124,7 +131,19 @@
         </table>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<script>
+    // Aggiungi un gestore di eventi per il clic sulle righe della tabella
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".clickable-row"); // Seleziona tutte le righe cliccabili
+        rows.forEach(row => {
+            row.addEventListener("click", function() {
+                const url = row.getAttribute("data-href"); // Ottieni l'URL dalla riga
+                if (url) {
+                    window.location.href = url; // Reindirizza l'utente all'URL specificato
+                }
+            });
+        });
+    });
+</script>
 </html>
