@@ -32,10 +32,6 @@ $nazione = $row_indirizzo_paziente['nazione'];
 $provincia = $row_indirizzo_paziente['provincia'];
 $cap = $row_indirizzo_paziente['CAP'];
 
-$get_appuntamenti = "select * from appuntamento where idPaziente ='$id'";
-$run_appuntamenti = mysqli_query($con,$get_paziente);
-$appuntamenti = mysqli_fetch_array($run_appuntamenti);
-
 $get_id_terapia = "select * from terapia where idPaziente ='$id'";
 $run_id_terapia = mysqli_query($con,$get_id_terapia);
 if (mysqli_num_rows($run_id_terapia) > 0) {
