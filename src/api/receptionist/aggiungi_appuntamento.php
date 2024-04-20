@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idPaziente = intval($paziente[0]);
 
     $dataInizio = $_POST['dataInizio'];
-    $dataFine = $_POST['dataFine'] == '00-00-0000' ? null : $_POST['dataFine'];
+    $dataFine = empty($_POST['dataFine']) ? null : $_POST['dataFine'];
     $ora = $_POST['ora'];
 
     $idPrestazione = get_last_id_appuntamento($con) + 1;
@@ -42,22 +42,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $operatori[] = $operatore[0];
     }
 
-    $insert_responsabile_query = "INSERT INTO `responsabile`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
-    $insert_responsabile_stmt = mysqli_prepare($con, $insert_responsabile_query);
-    mysqli_stmt_bind_param($insert_responsabile_stmt, 'is', $idPrestazione, $nBadge);
-    mysqli_stmt_execute($insert_responsabile_stmt);
+    inserisci_responsabili($con, $idPrestazione, $medici);
+    inserisci_assistenti($con, $idPrestazione, $operatori);
 
-    foreach($medici as $nBadge) {
-        mysqli_stmt_execute($insert_responsabile_stmt);
-    }
-
-    $insert_assistente_query = "INSERT INTO `assistente`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
-    $insert_assistente_stmt = mysqli_prepare($con, $insert_assistente_query);
-    mysqli_stmt_bind_param($insert_assistente_stmt, 'is', $idPrestazione, $nBadge);
-    mysqli_stmt_execute($insert_assistente_stmt);
-
-    foreach($operatori as $nBadge) {
-        mysqli_stmt_execute($insert_assistente_stmt);
-    }
+    header("Location: ../../view/receptionist/profilo_appuntamento.php?idPrestazione=" . urlencode($idPrestazione));
 
 }

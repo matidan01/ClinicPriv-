@@ -1,74 +1,13 @@
 <?php
     include_once("../../includes/connection.php");
+    include_once("../../includes/database.php");
+
     $appuntamenti = [];
-    $pazienti = [];
-    $medici = [];
-    $operatori = [];
-    $prestazioni = [];
-    $sale = [];
-
-    $query = "SELECT idPaziente, nome, cognome, CF
-            FROM paziente
-                ";  
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $pazienti[] = $row;
-        }
-    } 
-
-    $query = "SELECT codicePrestazione, nome
-            FROM listino
-                ";  
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $prestazioni[] = $row;
-        }
-    } 
-
-
-    $query = "SELECT nBadge, nome, cognome
-            FROM medico
-                ";  
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $medici[] = $row;
-        }
-    } 
-
-
-    $query = "SELECT nBadge, nome, cognome, CF
-            FROM operatore
-            "; 
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $operatori[] = $row;
-        }
-    } 
-
-    $query = "SELECT numero, tipo
-            FROM sala
-            "; 
-    $stmt = mysqli_prepare($con, $query);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while($row = mysqli_fetch_assoc($result)) {
-            $sale[] = $row;
-        }
-    } 
-
+    $pazienti = get_pazienti($con);
+    $medici = get_medici($con);
+    $operatori = get_operatori($con);
+    $prestazioni = get_nomi_prestazioni($con);
+    $sale = get_sale($con);
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if(isset($_POST['data'])) {
@@ -279,12 +218,12 @@
                                 ?>
                             </datalist>
                         </div>
-                        <div id="mediciContainer">
+                        <div id="mediciContainer" class="mb-3">
                             <label for="medici" class="form-label">Medici responsabili:</label>
                             <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
                         </div>
                         
-                        <div id="operatoriContainer">
+                        <div id="operatoriContainer" class="mb-3">
                              <label for="operatori" class="form-label">Operatori assistenti:</label>
                              <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
                         </div>
