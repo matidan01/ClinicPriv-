@@ -46,6 +46,8 @@ $result = mysqli_stmt_get_result($stmt);
     <!-- Link per Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <!-- Link per Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
@@ -157,9 +159,11 @@ $result = mysqli_stmt_get_result($stmt);
         
 
         <div class="alert alert-danger mt-3" role="alert" id="deleteAlert" style="display: none;">
-            Sei sicuro di voler eliminare questo appuntamento?
-            <button type="button" class="btn btn-danger" onclick="deleteAppointment()">Elimina</button>
-            <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Annulla</button>
+            <form action='' method='POST'>
+                Sei sicuro di voler eliminare questo appuntamento?
+                <button type="button" class="btn btn-danger" onclick="deleteAppointment()">Elimina</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Annulla</button>
+            </form>
         </div>
 
         <?php
@@ -180,8 +184,18 @@ $result = mysqli_stmt_get_result($stmt);
     }
 
     function deleteAppointment() {
-        // richiesta axios per eliminare
+        let data = new FormData();
+        data.append('id', document.getElementById('id').value);
+        axios.post('../../api/receptionist/elimina_appuntamento.php', data)
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
         alert('Appuntamento eliminato!');
+        window.location.href = "gestione_appuntamenti.php";
+
     }
 
     document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
@@ -201,6 +215,7 @@ $result = mysqli_stmt_get_result($stmt);
         `;
         container.appendChild(row);
     });
+
     document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
         var container = document.getElementById('operatoriContainer');
         var row = document.createElement('div');
