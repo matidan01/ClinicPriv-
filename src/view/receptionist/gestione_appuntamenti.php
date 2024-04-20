@@ -1,43 +1,131 @@
 <?php
     include_once("../../includes/connection.php");
     $appuntamenti = [];
+    $pazienti = [];
+    $medici = [];
+    $operatori = [];
+    $prestazioni = [];
+    $sale = [];
+
+    $query = "SELECT idPaziente, nome, cognome, CF
+            FROM paziente
+                ";  
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $pazienti[] = $row;
+        }
+    } 
+
+    $query = "SELECT codicePrestazione, nome
+            FROM listino
+                ";  
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $prestazioni[] = $row;
+        }
+    } 
+
+
+    $query = "SELECT nBadge, nome, cognome
+            FROM medico
+                ";  
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $medici[] = $row;
+        }
+    } 
+
+
+    $query = "SELECT nBadge, nome, cognome, CF
+            FROM operatore
+            "; 
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $operatori[] = $row;
+        }
+    } 
+
+    $query = "SELECT numero, tipo
+            FROM sala
+            "; 
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $sale[] = $row;
+        }
+    } 
+
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if(isset($_POST['data'])) {
             $data = $_POST['data'];
         
-            $query = "SELECT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
-                        paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
-                        GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti,
-                        GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
+            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
                     FROM appuntamento
                     INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
                     LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
                     LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
                     LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN medico ON responsabile.nBadge = medico.nBadge
-                    LEFT JOIN operatore ON assistente.nBadge = operatore.nBadge
-                    WHERE DATE(appuntamento.dataInizio) = ?
-                    ORDER BY appuntamento.ora ASC;
+                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                    LEFT JOIN 
+                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
+                        FROM medico
+                        INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
+                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                    LEFT JOIN 
+                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+                        FROM operatore
+                        INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
+                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                    WHERE 
+                        DATE(appuntamento.dataInizio) = ?
+                    ORDER BY 
+                        appuntamento.ora ASC;
                 ";
         
             $stmt = mysqli_prepare($con, $query);
             mysqli_stmt_bind_param($stmt, "s", $data);
         } else {
-            $query = "SELECT appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
-                        paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
-                        GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti,
-                        GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
+            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
                     FROM appuntamento
                     INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
                     LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
                     LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
                     LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN medico ON responsabile.nBadge = medico.nBadge
-                    LEFT JOIN operatore ON assistente.nBadge = operatore.nBadge
-                    WHERE DATE(appuntamento.dataInizio) >= CURDATE()
-                    ORDER BY appuntamento.ora ASC;
-                ";
-       
+                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                    LEFT JOIN 
+                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
+                        FROM medico
+                        INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
+                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                    LEFT JOIN 
+                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+                        FROM operatore
+                        INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
+                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                    WHERE 
+                        DATE(appuntamento.dataInizio) >= CURDATE()
+                    ORDER BY 
+                        appuntamento.ora ASC;
+        ";
             $stmt = mysqli_prepare($con, $query);
         } 
 
@@ -48,9 +136,7 @@
             while($row = mysqli_fetch_assoc($result)) {
                 $appuntamenti[] = $row;
             }
-        } else {
-            echo "No results found";
-        }
+        } 
 
     } 
 
@@ -93,6 +179,7 @@
         <form action="" method="post" class="mb-3">
             <button type="submit" class="btn btn-secondary">Mostra Tutti gli Appuntamenti</button>
         </form>
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiModal">Aggiungi Appuntamento</button>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -105,6 +192,7 @@
                     <th scope="col">Nome prestazione</th>
                     <th scope="col">Medici</th>
                     <th scope="col">Operatori</th>
+                    <th scope="col">Sala</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,6 +212,7 @@
                     echo "<td>{$appuntamento['nome']}</td>";
                     echo "<td>{$appuntamento['medici_coinvolti']}</td>";
                     echo "<td>{$appuntamento['operatori_coinvolti']}</td>";
+                    echo "<td>{$appuntamento['numeroSala']}</td>";
                     echo "</tr>";
                 }
                 ?>
@@ -131,19 +220,129 @@
         </table>
     </div>
 
+    <!-- Modal Aggiungi Appuntamento -->
+    <div class="modal fade" id="aggiungiModal" tabindex="-1" aria-labelledby="aggiungiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aggiungiModalLabel">Aggiungi Appuntamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form per aggiungere un nuovo appuntamento -->
+                    <form action="../../api/receptionist/aggiungi_appuntamento.php" method="POST">
+                        <div class="mb-3">
+                            <label for="pazienti" class="form-label">Cliente:</label>
+                            <input list="pazienti" name="pazienti" required>
+                            <datalist id="pazienti">
+                                <?php
+                                    foreach($pazienti as $paziente) {
+                                        $str = $paziente['idPaziente'] . ' ' . $paziente['nome'] . ' ' . $paziente['cognome'] . ' ' . $paziente['CF'];
+                                        echo '<option value="' . $str . '">';
+                                    };
+                                ?>
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataInizio" class="form-label">Data Inizio</label>
+                            <input type="date" class="form-control" id="dataInizio" name="dataInizio" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataFine" class="form-label">Data Fine</label>
+                            <input type="date" class="form-control" id="dataFine" name="dataFine">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ora" class="form-label">Ora</label>
+                            <input type="time" class="form-control" id="ora" name="ora" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sala" class="form-label">Sala:</label>
+                            <input list="sala" name="sala" required>
+                            <datalist id="sala">
+                                <?php
+                                    foreach($sale as $sala) {
+                                        $str = $sala['numero'] . ' ' . $sala['tipo'];
+                                        echo '<option value="' . $str . '">';
+                                    };
+                                ?>
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo" class="form-label">Tipo prestazione:</label>
+                            <input list="tipo" name="tipo" required>
+                            <datalist id="tipo">
+                                <?php
+                                    foreach($prestazioni as $prestazione) {
+                                        $str = $prestazione['codicePrestazione'] . ' ' . $prestazione['nome'];
+                                        echo '<option value="' . $str . '">';
+                                    };
+                                ?>
+                            </datalist>
+                        </div>
+                        <div id="mediciContainer">
+                            <label for="medici" class="form-label">Medici responsabili:</label>
+                            <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
+                        </div>
+                        
+                        <div id="operatoriContainer">
+                             <label for="operatori" class="form-label">Operatori assistenti:</label>
+                             <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Salva</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 <script>
-    // Aggiungi un gestore di eventi per il clic sulle righe della tabella
     document.addEventListener("DOMContentLoaded", function() {
-        const rows = document.querySelectorAll(".clickable-row"); // Seleziona tutte le righe cliccabili
+        const rows = document.querySelectorAll(".clickable-row"); 
         rows.forEach(row => {
             row.addEventListener("click", function() {
-                const url = row.getAttribute("data-href"); // Ottieni l'URL dalla riga
+                const url = row.getAttribute("data-href"); 
                 if (url) {
-                    window.location.href = url; // Reindirizza l'utente all'URL specificato
+                    window.location.href = url; 
                 }
             });
         });
+    });
+
+    document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
+        var container = document.getElementById('mediciContainer');
+        var row = document.createElement('div');
+        row.className = 'mb-3';
+        row.innerHTML = `
+                <input list="medici" name="medici[]">
+                <datalist id="medici">
+                    <?php
+                        foreach($medici as $medico) {
+                            $str = $medico['nBadge'] . ' ' . $medico['nome'] . ' ' . $medico['cognome'];
+                            echo '<option value="' . $str . '">';
+                        };
+                    ?>
+                </datalist>
+        `;
+        container.appendChild(row);
+    });
+    document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
+        var container = document.getElementById('operatoriContainer');
+        var row = document.createElement('div');
+        row.className = 'mb-3';
+        row.innerHTML = `
+                <input list="operatori" name="operatori[]">
+                <datalist id="operatori">
+                    <?php
+                        foreach($operatori as $operatore) {
+                            $str = $operatore['nBadge'] . ' ' . $operatore['nome'] . ' ' . $operatore['cognome'];
+                            echo '<option value="' . $str . '">';
+                        };
+                    ?>
+                </datalist>
+        `;
+        container.appendChild(row);
     });
 </script>
 </html>
