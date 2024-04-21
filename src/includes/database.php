@@ -19,6 +19,12 @@ function get_last_id_appuntamento($mysqli) {
     return $stmt->get_result()->fetch_assoc()["max(idPrestazione)"];
 }
 
+function get_last_numero_fattura($mysqli) {
+    $stmt = $mysqli->prepare("SELECT max(numeroFattura) FROM fattura");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()["max(numeroFattura)"];
+}
+
 function get_sale($mysqli) {
     $sale = [];
     $query = "SELECT numero, tipo
@@ -171,5 +177,19 @@ function inserisci_responsabili($con, $idPrestazione, $medici) {
     foreach($medici as $nBadge) {
         mysqli_stmt_execute($insert_responsabile_stmt);
     }
+}
+
+function get_costo($mysqli, $idPrestazione) {
+    $query = "SELECT appuntamento.idPrestazione, appuntamento.codicePrestazione, listino.costo
+                FROM appuntamento 
+                LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
+                WHERE appuntamento.idPrestazione = ?;
+            ";  
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, "i", $idPrestazione);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    return $row['costo']; 
 }
 

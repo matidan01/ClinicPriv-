@@ -79,6 +79,8 @@ $result = mysqli_stmt_get_result($stmt);
 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaMediciOperatoriModal">Modifica responsabili e assistenti</button>
 
+        <button type="button" class="btn btn-primary" onclick="pagaPrestazione()">Paga prestazione</button>
+
         <button type="button" class="btn btn-danger" onclick="confirmDelete()">Elimina</button>
 
         <div class="modal fade" id="modificaDataModal" tabindex="-1" aria-labelledby="modificaDataModalLabel" aria-hidden="true">
@@ -133,31 +135,29 @@ $result = mysqli_stmt_get_result($stmt);
                         <h5 class="modal-title" id="modificaMediciOperatoriModalLabel">Modifica Appuntamento</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                        <form action="../../api/receptionist/modifica_appuntamento.php" method="POST">
-                            <div class="modal-body">
-                                <input type="text" class="form-control" id="id" name="id" value= <?php echo $id?> hidden>
-                                <div id="mediciContainer" class="mb-3">
-                                    <label for="medici" class="form-label">Medici responsabili:</label>
-                                    <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
-                                </div>
-                                
-                                <div id="operatoriContainer" class="mb-3">
-                                    <label for="operatori" class="form-label">Operatori assistenti:</label>
-                                    <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
-                                </div>
+                    <form action="../../api/receptionist/modifica_appuntamento.php" method="POST">
+                        <div class="modal-body">
+                            <input type="text" class="form-control" id="id" name="id" value= <?php echo $id?> hidden>
+                            <div id="mediciContainer" class="mb-3">
+                                <label for="medici" class="form-label">Medici responsabili:</label>
+                                <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                                <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                            
+                            <div id="operatoriContainer" class="mb-3">
+                                <label for="operatori" class="form-label">Operatori assistenti:</label>
+                                <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                            <button type="submit" class="btn btn-primary">Salva Modifiche</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
         
-
         <div class="alert alert-danger mt-3" role="alert" id="deleteAlert" style="display: none;">
             <form action='' method='POST'>
                 Sei sicuro di voler eliminare questo appuntamento?
@@ -183,18 +183,40 @@ $result = mysqli_stmt_get_result($stmt);
         document.getElementById('deleteAlert').style.display = 'none';
     }
 
+    function pagaPrestazione() {
+        window.confirm('Conferma il pagamento?');
+        let data = new FormData();
+        data.append('id', document.getElementById('id').value);
+        axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
+        .then(function (response) {
+            if(response.data == 'OK') {
+                alert('Pagamento effettuato!');
+            } else {
+                alert('Mi dispiace, qualcosa è andato storto!');
+            }
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+       
+    }
+
     function deleteAppointment() {
         let data = new FormData();
         data.append('id', document.getElementById('id').value);
         axios.post('../../api/receptionist/elimina_appuntamento.php', data)
         .then(function (response) {
-            console.log(response);
+            if(response.data == 'OK') {
+                alert('Cancellazione effettuata!');
+                window.location.href = "gestione_appuntamenti.php";
+            } else {
+                alert('Appuntamento già pagato non si può cancellare');
+            }
         })
         .catch(function (error) {
             console.error(error);
         });
-        alert('Appuntamento eliminato!');
-        window.location.href = "gestione_appuntamenti.php";
+        
 
     }
 
