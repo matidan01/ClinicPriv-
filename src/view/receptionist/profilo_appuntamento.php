@@ -79,7 +79,7 @@ $result = mysqli_stmt_get_result($stmt);
 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaMediciOperatoriModal">Modifica responsabili e assistenti</button>
 
-        <button type="button" class="btn btn-primary" onclick="pagaPrestazione()">Paga prestazione</button>
+        <button type="button" class="btn btn-primary" onclick="riceviCosto()">Paga prestazione</button>
 
         <button type="button" class="btn btn-danger" onclick="confirmDelete()">Elimina</button>
 
@@ -183,10 +183,26 @@ $result = mysqli_stmt_get_result($stmt);
         document.getElementById('deleteAlert').style.display = 'none';
     }
 
-    function pagaPrestazione() {
+    function riceviCosto() {
+        let data = new FormData();
+        data.append("risorsa","appuntamento");
+        data.append('id', document.getElementById('id').value);
+        axios.post('../../api/receptionist/ricevi_costo.php', data)
+        .then(function (response) {
+            confirm("Il costo totale della prestazione è: " + response.data);
+            pagaPrestazione(response.data);
+        })
+        .catch(function (error) {
+            console.error(error);
+        });
+    }
+
+    function pagaPrestazione(costo) {
         window.confirm('Conferma il pagamento?');
         let data = new FormData();
+        data.append("risorsa","appuntamento");
         data.append('id', document.getElementById('id').value);
+        data.append('costo', costo);
         axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
         .then(function (response) {
             if(response.data == 'OK') {

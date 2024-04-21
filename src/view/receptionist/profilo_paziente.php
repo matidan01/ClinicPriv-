@@ -49,6 +49,9 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Link per Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <title><?php echo "$nome $cognome"; ?></title>
 </head>
 <body>
@@ -104,9 +107,6 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
                                             <strong>Descrizione:</strong> <?php echo $f['descrizione'] ?></p>
                                         <?php endforeach ?>
                                     <?php endif ?>
-                                    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#ModificaDataTerapiaModal">
-                                        Modifica Data Terapia
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -117,6 +117,8 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
             </div>
         </div>
     </div>
+
+    <button type="button" class="btn btn-primary" onclick="riceviCosto()">Paga prestazione</button>
 
     <!-- Modale per Aggiungere Terapia -->
     <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
@@ -162,7 +164,7 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
                 </div>
                 <div class="modal-body">
                     <form method="POST" action="../../api/receptionist/aggiungi_cliente.php">
-                        <input type="hidden" name="modifica" value="<?php echo $id; ?>">
+                        <input type="hidden" id="modifica" name="modifica" value="<?php echo $id; ?>">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome:</label>
                             <input type="text" class="form-control" id="nome" name="nome" maxlength="20" value="<?php echo $nome?>" required>
@@ -228,6 +230,41 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
 
 </body>
 <script>
+
+function riceviCosto() {
+    let data = new FormData();
+    data.append("risorsa","profilo");
+    data.append('id', document.getElementById('modifica').value);
+    axios.post('../../api/receptionist/ricevi_costo.php', data)
+    .then(function (response) {
+        confirm("Il costo totale della prestazione è: " + response.data);
+        pagaPrestazione();
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+ function pagaPrestazione() {
+    window.confirm('Conferma il pagamento?');
+    let data = new FormData();
+    data.append("risorsa","profilo");
+    data.append('id', document.getElementById('modifica').value);
+    axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
+    .then(function (response) {
+        if(response.data == 'OK') {
+            alert('Pagamento effettuato!');
+        } else {
+            alert('Mi dispiace, qualcosa è andato storto!');
+        }
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+    
+}
+
+
 document.getElementById('aggiungiRighe').addEventListener('click', function() {
     var container = document.getElementById('farmaciContainer');
     var row = document.createElement('div');

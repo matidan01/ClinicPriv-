@@ -157,6 +157,13 @@ function get_assistenti_intervento($mysqli, $idPrestazione) {
     return $operatori; 
 }
 
+function inserisci_fattura($mysqli, $idPrestazione, $numeroFattura, $costo) {
+    $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `data`, `ora`) VALUES (?, ?, ?, CURDATE(), CURTIME())";
+    $insert_fattura_stmt = mysqli_prepare($mysqli, $insert_fattura_query);
+    mysqli_stmt_bind_param($insert_fattura_stmt, 'iis', $idPrestazione, $numeroFattura, $costo);
+    return mysqli_stmt_execute($insert_fattura_stmt);
+}
+
 function inserisci_assistenti($con, $idPrestazione, $operatori) {
     $insert_assistente_query = "INSERT INTO `assistente`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
     $insert_assistente_stmt = mysqli_prepare($con, $insert_assistente_query);
