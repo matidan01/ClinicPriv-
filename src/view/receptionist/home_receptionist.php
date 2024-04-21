@@ -41,7 +41,7 @@
                         <div class="card-body">
                             <h2 class="card-title" id="gestione_appuntamenti">Gestione Appuntamenti</h2>
                             <p class="card-text">Gestisci gli appuntamenti dei pazienti.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="gestione_appuntamenti.php" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
