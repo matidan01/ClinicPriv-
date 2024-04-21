@@ -70,10 +70,11 @@ function get_max_badge_number($tableName, $mysqli){
     return $maxVal+1;
 }
 
-/*function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
+function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
     $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
     `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES ('?', 
     '?', '?', '?', '?', '?', '?', '?', '?', '?', '', NULL)");
     $nBadge = create_badge($ruolo, $mysqli);
-    $stmt->prepare("ssssssssiss",);
-}*/
+    $stmt->prepare("ssssssssiss", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
+    $stmt->execute();
+}
