@@ -202,14 +202,12 @@ function get_costo($mysqli, $idPrestazione) {
 }
 
 function tutto_personale($mysqli){
-    $stmt = $mysqli->prepare("
-    SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, 'Receptionist' as tipologia 
-    FROM receptionist 
-    UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, tipologia 
-    FROM medico 
-    UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, tipologia 
-    FROM operatore
-");
+    $stmt = $mysqli->prepare("SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, 'Receptionist' as tipologia 
+                            FROM receptionist 
+                            UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, tipologia 
+                            FROM medico 
+                            UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, tipologia 
+                            FROM operatore");
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
@@ -252,11 +250,80 @@ function get_max_badge_number($tableName, $mysqli){
 }
 
 function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
-    $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
-    `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES ('?', 
-    '?', '?', '?', '?', '?', '?', '?', '?', '?', '', NULL)");
-    $nBadge = create_badge($ruolo, $mysqli);
-    $stmt->prepare("ssssssssiss", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
+    if($ruolo != "receptionist"){
+        $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
+        `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES (?, 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)");
+        $nBadge = create_badge($ruolo, $mysqli);
+        $stmt->bind_param("ssssssssiss", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
+        $stmt->execute();
+    }else{
+        $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `nome`, `cognome`, `CF`, `emailAziendale`, 
+        `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES (?, 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)");
+        $nBadge = create_badge($ruolo, $mysqli);
+        $stmt->bind_param("sssssssiss", $nBadge, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
+        $stmt->execute();
+    }
+}
+
+function calcola_fatturato_tra_date($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT SUM(totale) as s
+                      FROM fattura
+                      WHERE dataPagamento >= ?
+                      AND dataPagamento <= ?");
+    $stmt->bind_param("ss", $dataInizio, $dataFine);
     $stmt->execute();
+    $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    return $res[0]["s"];
+}
+
+function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, SUM(f.totale)
+                            FROM fattura AS f 
+                            JOIN appuntamento AS a ON f.idPrestazione= a.codicePrestazione
+                            JOIN responsabile AS r on a.idPrestazione = r.idPrestazione
+                            RIGHT OUTER JOIN medico AS m ON m.nBadge = r.nBadge
+                            AND f.dataPagamento >= ?
+                            AND f.dataPagamento <= ?
+                            GROUP BY m.nBadge");
+    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT SUM(l.costo) AS totale, l.nome, MONTH(f.dataPagamento) AS month
+                            FROM fattura AS f
+                            JOIN appuntamento AS a ON f.idPrestazione = a.idPrestazione
+                            JOIN listino AS l ON a.codicePrestazione = l.codicePrestazione
+                            AND f.dataPagamento >= ?
+                            AND f.dataPagamento <= ?
+                            GROUP BY l.nome, MONTH(f.dataPagamento)
+                            ORDER BY MONTH(f.dataPagamento)");
+    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function medici_receptionist_operatori_in_impiego($mysqli){
+    $medici_operatori_receptionist = [0,0,0];
+    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as medici
+                            FROM medico
+                            WHERE fineRapporto IS NULL");
+    $stmt->execute();
+    $medici_operatori_receptionist[0]= $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['medici'];
+    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as operatori
+                            FROM operatore
+                            WHERE fineRapporto IS NULL");
+    $stmt->execute();
+    $medici_operatori_receptionist[1]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['operatori'];
+    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as receptionist
+                            FROM receptionist
+                            WHERE fineRapporto IS NULL");
+    $stmt->execute();
+    $medici_operatori_receptionist[2]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['receptionist'];
+    return $medici_operatori_receptionist;
+    
 }
 
