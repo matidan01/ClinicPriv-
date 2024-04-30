@@ -226,7 +226,7 @@ function termina_contratto($mysqli, $nBadge){
     if(strpos($nBadge, "O") !== false){
         $table = "operatore";
     }else if(strpos($nBadge, "M") !== false){
-       $table = "medico";
+        $table = "medico";
     }else if(strpos($nBadge, "R") !== false){
         $table = "receptionist";
     }else{
@@ -253,10 +253,29 @@ function get_max_badge_number($tableName, $mysqli){
 
 function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
     $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
-    `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES ('?', 
-    '?', '?', '?', '?', '?', '?', '?', '?', '?', '', NULL)");
+    `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, `finerapporto`) VALUES ('?', 
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', NULL)");
     $nBadge = create_badge($ruolo, $mysqli);
-    $stmt->prepare("ssssssssiss", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
+    $stmt->bind_param("ssssssisisi", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
     $stmt->execute();
 }
+
+function isPrimario($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE badgeNumber = '?'
+        AND tipologia = 'primario'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if(empty($result)){
+
+    }
+}
+
+
 
