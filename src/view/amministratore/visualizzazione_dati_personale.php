@@ -6,17 +6,18 @@ include_once("../../includes/functions.php");
 include_once("../../includes/database.php");
 
 $personale = tutto_personale($con);
+$numeri_personale = medici_receptionist_operatori_in_impiego($con);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPersonale'])) {
     $search_term = mysqli_real_escape_string($con, $_POST['ricercaPersonale']);
     
-    $stmt = $con->prepare("SELECT * FROM operatore WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
-    CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') UNION SELECT * FROM medico WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
-    CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') UNION SELECT * FROM receptionist  WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
+    $stmt = $con->prepare("SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM operatore WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
+    CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM medico WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
+    CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM receptionist  WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
     CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%')");
     $stmt->execute();
     $personale = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
+    
 }
 ?>
 <html lang="en">
@@ -25,15 +26,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPersonale'])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!--<link rel="stylesheet" type="text/css" href="../css/index.css">-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </head>
   <body>
     <div class="container">
         <h1 class="my-4">Visualizzazione dati personale</h1>
+        <h4>Attualmente sono in impiego:</h4>
+
+        <div class="quantita_personale">
+            <div class="medici_qt">
+                <p>Medici: <?php echo $numeri_personale[0]?></p>
+            </div>
+            <div class="receptionist_qt">
+                <p>Receptionist: <?php echo $numeri_personale[1]?></p>
+            </div>
+            <div class="operatori_qt">
+                <p>Operatori: <?php echo $numeri_personale[2]?></p>
+            </div>
+        </div>
 
         <form method="POST">
-            <input type="text" id="ricercaCliente" name="ricercaPersonale" class="form-control mb-4" placeholder="Cerca nel personale...">
+            <input type="text" id="ricercaPersonale" name="ricercaPersonale" class="form-control mb-4" placeholder="Cerca nel personale...">
             <button type="submit" class="btn btn-primary" id="ric_pers" name="ric_pers">Search</button>
         </form>
 
@@ -54,10 +67,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPersonale'])) {
                 </tr>
             </thead>
             <tbody>
-                <!-- Qui vengono inseriti dinamicamente i dati dei clienti -->
                 <?php
                 foreach ($personale as $p) {
-                    /*echo "<tr class='clickable-row' data-href='profilo_personale.php?idPersonale=" . urlencode($cliente['idPaziente']) . "'>";*/
                     echo "<td>{$p['nBadge']}</td>";
                     echo "<td>{$p['tipologia']}</td>";
                     echo "<td>{$p['nome']}</td>";
