@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
 
         echo get_costo($con, $id);
 
-    } else if($_POST['risorsa'] == 'profilo') {
+    } else if($_POST['risorsa'] == 'profilo') { //DA MODIFICARE
 
         $query = "SELECT SUM(listino.costo) AS totale_prestazioni
                     FROM appuntamento

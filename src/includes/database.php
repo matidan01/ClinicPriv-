@@ -200,3 +200,25 @@ function get_costo($mysqli, $idPrestazione) {
     return $row['costo']; 
 }
 
+function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
+    $prestazioni = [];
+    $query = "SELECT appuntamento.idPrestazione, appuntamento.dataInizio, listino.costo as costo, listino.nome as nome
+                    FROM appuntamento
+                    INNER JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
+                    LEFT JOIN fattura ON appuntamento.idPrestazione = fattura.idPrestazione
+                    WHERE appuntamento.idPaziente = ?
+                    AND fattura.idPrestazione IS NULL
+                ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $idPaziente);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $prestazioni[] = $row;
+        }
+    } 
+
+    return $prestazioni;
+}
+

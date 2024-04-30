@@ -1,5 +1,6 @@
 <?php
 include_once("../../includes/connection.php");
+include_once("../../includes/database.php");
 
 /*if (!isset($_SESSION['Username'])) {
     header("Location: login.php");
@@ -39,6 +40,8 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
         $terapia[] = $row;
     }
 } 
+
+$prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
 ?>
 <!DOCTYPE html>
@@ -118,40 +121,55 @@ if (mysqli_num_rows($run_id_terapia) > 0) {
         </div>
     </div>
 
-    <button type="button" class="btn btn-primary" onclick="riceviCosto()">Paga prestazione</button>
+    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
 
-    <!-- Modale per Aggiungere Terapia -->
-    <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- Modale per pagare prestazioni -->
+    <div class="modal fade" id="pagamentoModal" tabindex="-1" aria-labelledby="pagamentoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
+                    <h5 class="modal-title" id="pagamentoModalLabel">Pagamento delle Prestazioni</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="formTerapia" method="POST" action="../../api/receptionist/aggiungi_terapia.php">
-                        <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
-                        <div class="row mb-3">
-                            <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
-                            <div class="col">
-                                <label for="dataScadenza" class="form-label">Data Scadenza:</label>
-                                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
-                            </div>
-                            <div class="col">
-                                <label for="idMedico" class="form-label">Numero Badge Medico:</label>
-                                <input type="text" class="form-control" id="idMedico" name="idMedico">
-                            </div>
+                <form id="formPagamento" method="POST" action="">
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nome Prestazione</th>
+                                        <th scope="col">Data Esecuzione</th>
+                                        <th scope="col">Costo</th>
+                                        <th scope="col">Pagamento</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--FARE LA PARTE DI BACKEND-->
+                                    <?php foreach($prestazioni_da_pagare as $index => $p): ?>
+                                        <tr>
+                                            <td><?php echo $index + 1; ?></td>
+                                            <td><?php echo $p['nome']; ?></td>
+                                            <td><?php echo $p['dataInizio']; ?></td>
+                                            <td>$<?php echo $p['costo']; ?></td>
+                                            <td>
+                                                <input type="checkbox" id="<?php echo 'prestazione_' . $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['idPrestazione']; ?>">
+                                                <label for="<?php echo 'prestazione_' . $p['idPrestazione']; ?>"></label>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
                         </div>
-                        <p>Farmaci:</p>
-                        <div id="farmaciContainer"></div>
-
-                    </form>
-                    <!-- Bottone "+" per aggiungere righe -->
-                    <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Esegui pagamento</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
 
 
     <!-- Modale per Aggiungere Cliente -->
