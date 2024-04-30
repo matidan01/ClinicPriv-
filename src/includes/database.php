@@ -271,35 +271,6 @@ function get_max_badge_number($tableName, $mysqli){
 }
 
 function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
-<<<<<<< HEAD
-    $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
-    `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, `finerapporto`) VALUES ('?', 
-    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', NULL)");
-    $nBadge = create_badge($ruolo, $mysqli);
-    $stmt->bind_param("ssssssisisi", $nBadge, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto);
-    $stmt->execute();
-}
-
-function isPrimario($badgeNum, $mysqli){
-    $query = "
-        SELECT *
-        FROM medico
-        WHERE badgeNumber = '?'
-        AND tipologia = 'primario'
-        ";
-
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('s', $badgeNum);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if(empty($result)){
-
-    }
-}
-
-
-
-=======
     if($ruolo != "receptionist"){
         $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
         `dataNascita`, `luogoNascita`, `recapitoTelefonico`, `password`, `inizioRapporto`, finerapporto) VALUES (?, 
@@ -376,4 +347,20 @@ function medici_receptionist_operatori_in_impiego($mysqli) {
     return $medici_operatori_receptionist;
     
 }
->>>>>>> 20cd2fa46c60bac4674deeaa9b8c4bf00a2c7e14
+
+function isPrimario($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE badgeNumber = '?'
+        AND tipologia = 'primario'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if(empty($result)){
+
+    }
+}
