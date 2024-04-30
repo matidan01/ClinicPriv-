@@ -221,6 +221,7 @@ function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
     } 
 
     return $prestazioni;
+}
 function tutto_personale($mysqli){
     $stmt = $mysqli->prepare("SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto, 'Receptionist' as tipologia 
                             FROM receptionist 
@@ -326,7 +327,7 @@ function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mys
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
 
-function medici_receptionist_operatori_in_impiego($mysqli){
+function medici_receptionist_operatori_in_impiego($mysqli) {
     $medici_operatori_receptionist = [0,0,0];
     $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as medici
                             FROM medico
@@ -346,4 +347,3 @@ function medici_receptionist_operatori_in_impiego($mysqli){
     return $medici_operatori_receptionist;
     
 }
-
