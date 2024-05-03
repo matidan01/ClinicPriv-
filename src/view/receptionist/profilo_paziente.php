@@ -153,7 +153,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                                             <td><?php echo $p['dataInizio']; ?></td>
                                             <td>$<?php echo $p['costo']; ?></td>
                                             <td>
-                                                <input type="checkbox" id="<?php echo 'prestazione_' . $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['idPrestazione']; ?>">
+                                                <input type="checkbox" id="<?php echo 'prestazione_' . $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['costo']; ?>" onchange="aggiornaTotale()">
                                                 <label for="<?php echo 'prestazione_' . $p['idPrestazione']; ?>"></label>
                                             </td>
                                         </tr>
@@ -163,6 +163,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <p>Totale: <span id="totale">$0.00</span></p>
                         <button type="submit" class="btn btn-primary">Esegui pagamento</button>
                     </div>
                 </form>
@@ -281,7 +282,35 @@ function riceviCosto() {
     });
     
 }
+function inviaPrestazioniSelezionate() {
+    const checkboxList = document.querySelectorAll('input[type="checkbox"]');
+    const prestazioniSelezionate = [];
 
+    checkboxList.forEach(function (checkbox) {
+        if (checkbox.checked) {
+            prestazioniSelezionate.push(checkbox.value);
+        }
+    });
+
+    axios.post('url_del_tuo_php.php', {
+        prestazioni: prestazioniSelezionate
+    })
+    .then(function (response) {
+        console.log(response.data);
+    })
+    .catch(function (error) {
+        console.error(error);
+    });
+}
+
+function aggiornaTotale() {
+    let totale = 0;
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    checkboxes.forEach(function(checkbox) {
+        totale += parseFloat(checkbox.value); 
+    });
+    document.getElementById('totale').innerText = '$' + totale.toFixed(2);
+}
 
 document.getElementById('aggiungiRighe').addEventListener('click', function() {
     var container = document.getElementById('farmaciContainer');
@@ -297,5 +326,7 @@ document.getElementById('aggiungiRighe').addEventListener('click', function() {
     `;
     container.appendChild(row);
 });
+
+
 </script>
 </html>

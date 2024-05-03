@@ -13,10 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
         } else {
             echo json_encode('PROBLEM');
         }
-    } else if ($_POST['risorsa'] == 'profilo') {  
-        //DA MODIFICARE, DEVE PRENDERE GLI ELEMENTI SELEZIONATI DAL CHECKBOX E AGGIUNGERE LA FATTURA
-
-        inserisci_fattura($mysqli, $row['idPrestazione'], $numeroFattura, $row['costo']);
+    } else if (isset($_POST['prestazioni']) && is_array($_POST['prestazioni'])) {  
+        foreach ($_POST['prestazioni'] as $id_prestazione) {
+            inserisci_fattura($mysqli, $id_prestazione, $numeroFattura, $row['costo']);
+        }
 
         echo json_encode('OK');
     }
