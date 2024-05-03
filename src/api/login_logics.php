@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     print($type);
 
     if (check_login($badgeNumber, $password, $type, $con) == true) {
-        go_to_home();
+        go_to_home($badgeNumber);
     } else {
         $_SESSION['login_error'] = 'Numbero badge, password e/o tipo di login selezionato errato/i';
         header("Location: ../view/login.php");

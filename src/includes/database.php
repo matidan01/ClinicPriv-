@@ -245,7 +245,7 @@ function termina_contratto($mysqli, $nBadge){
     if(strpos($nBadge, "O") !== false){
         $table = "operatore";
     }else if(strpos($nBadge, "M") !== false){
-       $table = "medico";
+        $table = "medico";
     }else if(strpos($nBadge, "R") !== false){
         $table = "receptionist";
     }else{
@@ -346,4 +346,21 @@ function medici_receptionist_operatori_in_impiego($mysqli) {
     $medici_operatori_receptionist[2]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['receptionist'];
     return $medici_operatori_receptionist;
     
+}
+
+function isPrimario($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE badgeNumber = '?'
+        AND tipologia = 'primario'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if(empty($result)){
+
+    }
 }
