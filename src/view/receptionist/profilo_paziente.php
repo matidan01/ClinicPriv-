@@ -131,7 +131,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                     <h5 class="modal-title" id="pagamentoModalLabel">Pagamento delle Prestazioni</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formPagamento" method="POST" action="">
+                <form id="formPagamento" method="POST">
                     <div class="modal-body">
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -153,7 +153,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                                             <td><?php echo $p['dataInizio']; ?></td>
                                             <td>$<?php echo $p['costo']; ?></td>
                                             <td>
-                                                <input type="checkbox" id="<?php echo 'prestazione_' . $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['costo']; ?>" onchange="aggiornaTotale()">
+                                                <input type="checkbox" id="<?php echo $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['costo']; ?>" onchange="aggiornaTotale()">
                                                 <label for="<?php echo 'prestazione_' . $p['idPrestazione']; ?>"></label>
                                             </td>
                                         </tr>
@@ -164,7 +164,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                     </div>
                     <div class="modal-footer">
                         <p>Totale: <span id="totale">$0.00</span></p>
-                        <button type="submit" class="btn btn-primary">Esegui pagamento</button>
+                        <button type="button" class="btn btn-primary" onclick="inviaPrestazioniSelezionate()">Esegui pagamento</button>
                     </div>
                 </form>
             </div>
@@ -264,39 +264,28 @@ function riceviCosto() {
     });
 }
 
- function pagaPrestazione() {
-    window.confirm('Conferma il pagamento?');
+
+function inviaPrestazioniSelezionate() {
+    const checkboxList = document.querySelectorAll('input[type="checkbox"]:checked');
     let data = new FormData();
-    data.append("risorsa","profilo");
-    data.append('id', document.getElementById('modifica').value);
+    data.append('numero', checkboxList.length);
+    i = 1;
+    checkboxList.forEach(function(checkbox) {
+        data.append(i, checkbox.id);
+        i++;
+        data.append(i, checkbox.value);
+        i++; 
+    });
+
     axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
     .then(function (response) {
         if(response.data == 'OK') {
             alert('Pagamento effettuato!');
+            location.reload();
         } else {
-            alert('Mi dispiace, qualcosa è andato storto!');
-        }
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-    
-}
-function inviaPrestazioniSelezionate() {
-    const checkboxList = document.querySelectorAll('input[type="checkbox"]');
-    const prestazioniSelezionate = [];
+            alert('Mi dispiace, qualcosa è andato storto');
 
-    checkboxList.forEach(function (checkbox) {
-        if (checkbox.checked) {
-            prestazioniSelezionate.push(checkbox.value);
         }
-    });
-
-    axios.post('url_del_tuo_php.php', {
-        prestazioni: prestazioniSelezionate
-    })
-    .then(function (response) {
-        console.log(response.data);
     })
     .catch(function (error) {
         console.error(error);

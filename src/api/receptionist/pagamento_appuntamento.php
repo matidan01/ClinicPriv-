@@ -2,25 +2,24 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
-    $id = intval($_POST['id']);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $numeroFattura = get_last_numero_fattura($con) + 1;
 
-    if ($_POST['risorsa'] == 'appuntamento') {    
+    if (isset($_POST['risorsa'])) {   
+        $id = intval($_POST['id']); 
         $costo = $_POST['costo'];    
         if(inserisci_fattura($con, $id, $numeroFattura, $costo)) {
             echo json_encode('OK');
         } else {
             echo json_encode('PROBLEM');
         }
-    } else if (isset($_POST['prestazioni']) && is_array($_POST['prestazioni'])) {  
-        foreach ($_POST['prestazioni'] as $id_prestazione) {
-            inserisci_fattura($mysqli, $id_prestazione, $numeroFattura, $row['costo']);
+    } else if (isset($_POST['numero'])) { 
+        $numero = $_POST['numero'];
+        for ($i = 1; $i <= $numero*2; $i = $i+2) {
+            inserisci_fattura($con, $_POST[$i], $numeroFattura, $_POST[$i+1]);
         }
 
         echo json_encode('OK');
     }
 
-    
-    
 }
