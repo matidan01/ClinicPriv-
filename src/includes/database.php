@@ -74,6 +74,38 @@ function get_medici($mysqli) {
     return $medici;
 }
 
+function get_fornitori($mysqli) {
+    $fornitori = [];
+    $query = "SELECT idFornitore, nome
+            FROM fornitore
+                ";  
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $fornitori[] = $row;
+        }
+    } 
+    return $fornitori;
+}
+
+function get_materiali($mysqli) {
+    $materiali = [];
+    $query = "SELECT idMateriale, nome, quantita
+            FROM materiale
+                ";  
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $materiali[] = $row;
+        }
+    } 
+    return $materiali;
+}
+
 function get_operatori($mysqli) {
     $operatori = [];
     $query = "SELECT nBadge, nome, cognome, CF
