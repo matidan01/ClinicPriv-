@@ -39,10 +39,10 @@ function check_login($badgeNumber, $password, $type, $mysqli){
 function go_to_home($badgeNumber){
     switch($_SESSION["type"]){
         case 0:
-            header("Location: ../view/medico/home_medico?badgeN=$badgeNumber");
+            header("Location: ../view/medico/home_medico.php?badgeN=$badgeNumber");
             break;
         case 1:
-            header("Location: #");
+            header("Location: ../view/operatore/home_operatore.php?badgeN=$badgeNumber");
             break;
         case 2:
             header("Location: ../view/receptionist/home_receptionist.php");
