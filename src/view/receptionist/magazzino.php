@@ -1,10 +1,22 @@
 <?php
 include_once("../../includes/connection.php");
 $materiali = [];
-$query = "SELECT materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo, COUNT(ordine.idMateriale) AS numero_ordini
-            FROM materiale
-            LEFT JOIN ordine ON materiale.idMateriale = ordine.idMateriale AND ordine.dataConsegna IS NULL
-            GROUP BY materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo;
+$query = "SELECT materiale.idMateriale,
+            materiale.nome,
+            materiale.quantita,
+            materiale.prezzo,
+            COUNT(materialeordinato.idMateriale) AS numero_ordini
+            FROM 
+            materiale
+            LEFT JOIN 
+            materialeordinato ON materiale.idMateriale = materialeordinato.idMateriale
+            LEFT JOIN 
+            ordine ON materialeordinato.idOrdine = ordine.idOrdine
+            WHERE 
+            ordine.dataConsegna IS NULL
+            GROUP BY 
+            materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo;
+
         ";
 $result = mysqli_query($con, $query);
 
