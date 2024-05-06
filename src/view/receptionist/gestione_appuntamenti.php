@@ -237,6 +237,7 @@
 
 </body>
 <script>
+    
     document.addEventListener("DOMContentLoaded", function() {
         const rows = document.querySelectorAll(".clickable-row"); 
         rows.forEach(row => {
@@ -266,6 +267,7 @@
         `;
         container.appendChild(row);
     });
+
     document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
         var container = document.getElementById('operatoriContainer');
         var row = document.createElement('div');
@@ -283,5 +285,6 @@
         `;
         container.appendChild(row);
     });
+
 </script>
 </html>
