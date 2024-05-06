@@ -81,7 +81,7 @@
                         <div class="card-body">
                             <h2 class="card-title" id="gestione_magazzino">Gestione magazzino</h2>
                             <p class="card-text">Aggiorna i dati del magazzino</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="magazzino.php" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
