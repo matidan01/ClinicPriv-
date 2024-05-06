@@ -361,7 +361,7 @@ function isPrimario($badgeNum, $mysqli){
     $query = "
         SELECT *
         FROM medico
-        WHERE badgeNumber = '?'
+        WHERE nBadge = ?
         AND tipologia = 'primario'
         ";
 
@@ -370,6 +370,28 @@ function isPrimario($badgeNum, $mysqli){
     $stmt->execute();
     $result = $stmt->get_result();
     if(empty($result)){
-
+        return false;
+    }else{
+        return true;
     }
 }
+
+function isCaposala($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE nBadge = ?
+        AND tipologia = 'caposala'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if(empty($result)){
+        return false;
+    }else{
+        return true;
+    }
+}
+

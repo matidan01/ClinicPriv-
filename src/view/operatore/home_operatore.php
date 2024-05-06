@@ -48,7 +48,7 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizzazione-appuntamenti">Visualizzazione Appuntamenti</h2>
                             <p class="card-text">Visualizza gli appuntamenti dei pazienti..</p>
-                            <a href="visualizzazione-appuntamenti.php?<?php print_r("badgeN=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
@@ -83,14 +83,15 @@ $badgeN = $_GET['badgeN']
                 </div>
             </div>
                 <?php
-                if(isPrimario($badgeN, $con)){
+                
+                if(isCaposala($badgeN, $con)){
                 ?>
             <div class="row mt-4">
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title">Gestione Turni</h2>
-                            <p class="card-text">Gestisci i turni dei medici.</p>
+                            <p class="card-text">Gestisci i turni degli operatori.</p>
                             <a href="#" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
