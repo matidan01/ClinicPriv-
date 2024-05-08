@@ -1,83 +1,90 @@
 <?php
-    include_once("../../includes/connection.php");
-    include_once("../../includes/database.php");
+include_once("../../includes/connection.php");
+include_once("../../includes/database.php");
 
-    $appuntamenti = [];
-    $pazienti = get_pazienti($con);
-    $medici = get_medici($con);
-    $operatori = get_operatori($con);
-    $prestazioni = get_nomi_prestazioni($con);
-    $sale = get_sale($con);
+$appuntamenti = [];
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if(isset($_POST['data'])) {
-            $data = $_POST['data'];
+// Prende i valori da poter mostrare nel datalist come suggerimento di input
+$pazienti = get_pazienti($con);
+$medici = get_medici($con);
+$operatori = get_operatori($con);
+$prestazioni = get_nomi_prestazioni($con);
+$sale = get_sale($con);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    if(isset($_POST['data'])) {
         
-            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
-            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
-                    FROM appuntamento
-                    INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
-                    LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
-                    LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
-                    LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
-                    LEFT JOIN 
-                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
-                        FROM medico
-                        INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
-                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
-                    LEFT JOIN 
-                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
-                        FROM operatore
-                        INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
-                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
-                    WHERE 
-                        DATE(appuntamento.dataInizio) = ?
-                    ORDER BY 
-                        appuntamento.ora ASC;
-                ";
-        
-            $stmt = mysqli_prepare($con, $query);
-            mysqli_stmt_bind_param($stmt, "s", $data);
-        } else {
-            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
-            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
-                    FROM appuntamento
-                    INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
-                    LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
-                    LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
-                    LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
-                    LEFT JOIN 
-                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
-                        FROM medico
-                        INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
-                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
-                    LEFT JOIN 
-                        (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
-                        FROM operatore
-                        INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
-                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
-                    WHERE 
-                        DATE(appuntamento.dataInizio) >= CURDATE()
-                    ORDER BY 
-                        appuntamento.ora ASC;
-        ";
-            $stmt = mysqli_prepare($con, $query);
-        } 
-
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        // Ricerca selezionando una data, verranno visualizzati tutti gli appuntamenti del giorno scelto
+        $data = $_POST['data'];
+        $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
+        appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+        paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
+                FROM appuntamento
+                INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
+                LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
+                LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
+                LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
+                LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                LEFT JOIN 
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
+                    FROM medico
+                    INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
+                    GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                LEFT JOIN 
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+                    FROM operatore
+                    INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
+                    GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                WHERE 
+                    DATE(appuntamento.dataInizio) = ?
+                ORDER BY 
+                    appuntamento.ora ASC;
+            ";
     
-        if (mysqli_num_rows($result) > 0) {
-            while($row = mysqli_fetch_assoc($result)) {
-                $appuntamenti[] = $row;
-            }
-        } 
+        $stmt = mysqli_prepare($con, $query);
+        mysqli_stmt_bind_param($stmt, "s", $data);
 
+    } else {
+
+        // Se non viene selezionata una data visualizza tutti gli appuntamenti dal giorno corrente
+        $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
+        appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+        paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
+                FROM appuntamento
+                INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
+                LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
+                LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
+                LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
+                LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                LEFT JOIN 
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
+                    FROM medico
+                    INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
+                    GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                LEFT JOIN 
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
+                    FROM operatore
+                    INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
+                    GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                WHERE 
+                    DATE(appuntamento.dataInizio) >= CURDATE()
+                ORDER BY 
+                    appuntamento.ora ASC;
+    ";
+        $stmt = mysqli_prepare($con, $query);
     } 
+
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $appuntamenti[] = $row;
+        }
+    } 
+
+} 
 
 ?>
 
@@ -101,6 +108,8 @@
 <body>
     <div class="container py-5">
         <h1 class="mb-5">Gestione Appuntamenti</h1>
+
+        <!-- Form per visualizzare appuntamenti di un determinato giorno -->
         <form action="" method="post" class="mb-3">
             <div class="row g-3">
                 <div class="col-auto">
@@ -114,10 +123,16 @@
                 </div>
             </div>
         </form>
+
+        <!-- Form per visualizzare appuntamenti dal giorno corrente in poi -->
         <form action="" method="post" class="mb-3">
             <button type="submit" class="btn btn-secondary">Mostra Tutti gli Appuntamenti</button>
         </form>
+
+        <!-- Bottone per aggiungere un nuovo appuntamento -->
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiModal">Aggiungi Appuntamento</button>
+        
+        <!-- Tabella degli appuntamenti -->
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -219,11 +234,15 @@
                         </div>
                         <div id="mediciContainer" class="mb-3">
                             <label for="medici" class="form-label">Medici responsabili:</label>
+
+                            <!-- Bottone per aggiungere medici coinvolti nella prestazione -->
                             <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
                         </div>
                         
                         <div id="operatoriContainer" class="mb-3">
                              <label for="operatori" class="form-label">Operatori assistenti:</label>
+
+                             <!-- Bottone per aggiungere operatori sanitari coinvolti nella prestazione -->
                              <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
                         </div>
                         

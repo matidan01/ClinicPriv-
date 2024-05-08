@@ -2,11 +2,15 @@
     include_once("../../includes/connection.php");
     include_once("../../includes/database.php");
 
+    // Prende i valori da poter mostrare nel datalist come suggerimento di input
     $fornitori = get_fornitori($con);
     $materiali = get_materiali($con);
+
+    // Memorizza i dati dei rifornimenti
     $rifornimenti = [];
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Memorizza i dati riguardanti gli ordini da ricevere dal più recente
         if(isset($_POST['ricercaDaRicevere'])) {
             $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna,
                             fornitore.nome AS nome_fornitore,
@@ -25,7 +29,7 @@
         
             $stmt = mysqli_prepare($con, $query);
         } else {
-
+            // Memorizza i dati riguardanti tutti gli ordini da più recente 
             $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna,
                         fornitore.nome AS nome_fornitore, 
                         COUNT(materialeordinato.idMateriale) AS num_materiali_ordinati,
@@ -76,15 +80,19 @@
 <body>
     <div class="container py-5">
         <h1 class="mb-5">Gestione Rifornimenti</h1>
+
+        <!-- Bottone per visualizzare ordini da ricevere -->
         <form method="POST" >
             <input type="text" id="ricercaDaRicevere" name="ricercaDaRicevere" class="form-control mb-4" hidden>
             <button type="submit" class="btn btn-primary mb-3">Mostra Ordini da Ricevere</button>
         </form>
 
+        <!-- Bottone per visualizzare tutti ordini  -->
         <form method="POST" >
             <button type="submit" class="btn btn-primary mb-3">Mostra Ordini</button>
         </form>
         
+        <!-- Bottone per aggiungere un ordine -->
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiOrdineModal">Aggiungi Ordine</button>
         <table class="table table-bordered">
             <thead>

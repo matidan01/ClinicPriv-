@@ -6,11 +6,15 @@ include_once("../../includes/database.php");
     exit();
 }*/
 
+// Ottiene l'id dell'appuntamento da visualizzare attraverso metodo get
 $id = isset($_GET['idPrestazione']) ? mysqli_real_escape_string($con, $_GET['idPrestazione']) : '';
+
+// Prende i valori da poter mostrare nel datalist come suggerimento di input
 $sale = get_sale($con);
 $medici = get_medici($con);
 $operatori = get_operatori($con);
 
+// Memorizza tutte le informazioni relative all'appuntamento
 $get_appuntamento = "SELECT appuntamento.idPrestazione, appuntamento.codicePrestazione, 
                 appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
                 paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
@@ -34,7 +38,6 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,15 +55,13 @@ $result = mysqli_stmt_get_result($stmt);
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-
 <div class="container py-5">
     <h1 class="mb-5">Dettagli Appuntamento</h1>
-
     <?php
     if ($result && mysqli_num_rows($result) > 0) {
         $appuntamento = mysqli_fetch_assoc($result);
         ?>
-
+        <!-- Visualizzazione dettaglio appuntamento -->
         <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">Informazioni Appuntamento</h5>
@@ -77,14 +78,19 @@ $result = mysqli_stmt_get_result($stmt);
             </div>
         </div>
 
+        <!-- Bottone per modificare i dati dell'appuntamento riguardanti la sala, data e ora--> 
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaDataModal">Modifica data o sala</button>
 
+        <!-- Bottone per modificare i dati dell'appuntamento riguardanti i medici e gli operatori coinvolti -->
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaMediciOperatoriModal">Modifica responsabili e assistenti</button>
 
+        <!-- Bottone per pagare l'appuntamento' -->
         <button type="button" class="btn btn-primary" onclick="riceviCosto()">Paga prestazione</button>
+        
+        <!-- Bottone per eliminare l'appuntamento (possibile solo se non è stato pagato) -->
+        <button type="button" class="btn btn-danger" onclick="deleteAppointment()">Elimina</button>
 
-        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Elimina</button>
-
+        <!-- Modal per modificare data, ora e sala -->
         <div class="modal fade" id="modificaDataModal" tabindex="-1" aria-labelledby="modificaDataModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -130,6 +136,7 @@ $result = mysqli_stmt_get_result($stmt);
             </div>
         </div>
 
+        <!-- Modal per modificare medici e operatori coinvolti nella prestazione -->
         <div class="modal fade" id="modificaMediciOperatoriModal" tabindex="-1" aria-labelledby="modificaMediciOperatoriModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -157,15 +164,6 @@ $result = mysqli_stmt_get_result($stmt);
                     </form>
                 </div>
             </div>
-        </div>
-
-        
-        <div class="alert alert-danger mt-3" role="alert" id="deleteAlert" style="display: none;">
-            <form action='' method='POST'>
-                Sei sicuro di voler eliminare questo appuntamento?
-                <button type="button" class="btn btn-danger" onclick="deleteAppointment()">Elimina</button>
-                <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Annulla</button>
-            </form>
         </div>
 
         <?php

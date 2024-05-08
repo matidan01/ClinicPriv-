@@ -1,5 +1,8 @@
 <?php
 include_once("../../includes/connection.php");
+
+// Memorizza nel vettore fornitori tutti i fornitori presenti nel database
+//DOMANDA: COME MAI IL FORNITORE HA UN VARCHAR COME ID? LO FACCIAMO INCREMENTALE?
 $fornitori = [];
 $query = "SELECT *
             FROM fornitore
@@ -31,7 +34,10 @@ if (mysqli_num_rows($result) > 0) {
 <body>
 <div class="container">
     <h1>Fornitori</h1>
+    <!-- Bottone per aggiungere nuovo fornitore -->
     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiFornitoreModal">Aggiungi Fornitore</button>
+    
+    <!-- Tabella di tutti i fornitori nel database con dati memorizzati -->
     <table class="table">
         <thead>
             <tr>
@@ -56,7 +62,7 @@ if (mysqli_num_rows($result) > 0) {
     </table>
 </div>
 
-<!-- Modal Aggiungi Appuntamento -->
+<!-- Modal Aggiungi Fornitore -->
 <div class="modal fade" id="aggiungiFornitoreModal" tabindex="-1" aria-labelledby="aggiungiFornitoreModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -65,11 +71,11 @@ if (mysqli_num_rows($result) > 0) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Form per aggiungere un nuovo appuntamento -->
+                <!-- Form per aggiungere un nuovo fornitore -->
                 <form action="../../api/receptionist/aggiungi_fornitore.php" method="POST">
                     <div class="mb-3">
                         <label for="nome" class="form-label">Nome Fornitore:</label>
-                        <input type="text" class="form-control" id="nome" name="nome">
+                        <input type="text" class="form-control" id="nome" name="nome" required>
                     </div>
                     <div class="mb-3">
                         <label for="tel" class="form-label">Recapito Telefonico</label>

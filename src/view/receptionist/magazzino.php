@@ -2,13 +2,14 @@
 include_once("../../includes/connection.php");
 
 $materiali = [];
+
+// Vengono visualizzati tutti i materiali presenti in magazzino e le informazioni relative 
+// Specifica anche se il materiale è stato inserito in ordini che non sono ancora stati consegnati
 $query = "SELECT materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo, COUNT(materialeordinato.idMateriale) AS numero_ordini
             FROM materiale
             LEFT JOIN materialeordinato ON materiale.idMateriale = materialeordinato.idMateriale
             LEFT JOIN ordine ON materialeordinato.idOrdine = ordine.idOrdine
-            WHERE ordine.dataConsegna IS NULL
             GROUP BY materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo;
-
         ";
 $result = mysqli_query($con, $query);
 
@@ -37,12 +38,18 @@ if (mysqli_num_rows($result) > 0) {
 
 <div class="container">
     <h1>Magazzino Clinica</h1>
+
+    <!-- Bottone per aggiungere un nuovo materiale -->
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#nuovoMaterialeModal">
         Nuovo Materiale
     </button>
+
+    <!-- Bottone per aggiornare quanità di un materiale in magazzino -->
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#aggiornaMaterialeModal">
         Aggiorna quantità Materiale
     </button>
+
+    <!-- Tabella del magazzino -->
     <table class="table">
         <thead>
             <tr>
@@ -54,7 +61,6 @@ if (mysqli_num_rows($result) > 0) {
             </tr>
         </thead>
         <tbody>
-            <!-- Qui vengono inseriti dinamicamente i dati dei clienti -->
             <?php
                 foreach ($materiali as $materiale) {
                     echo "<tr class='clickable-row' data-bs-toggle='modal' data-bs-target='#dettaglioModal'>";
@@ -92,6 +98,7 @@ if (mysqli_num_rows($result) > 0) {
                         <label for="prezzoMateriale" class="form-label">Prezzo Materiale</label>
                         <input type="number" class="form-control" name="prezzoMateriale" id="prezzoMateriale" required>
                     </div>
+
                     <button type="submit" class="btn btn-primary">Aggiungi Materiale</button>
                 </form>
             </div>
@@ -99,7 +106,7 @@ if (mysqli_num_rows($result) > 0) {
     </div>
 </div>
 
-<!-- Modal aggiornare la quantità di un materiale -->
+<!-- Modal aggiornare la quantità di un materiale in magazzino -->
 <div class="modal fade" id="aggiornaMaterialeModal" tabindex="-1" aria-labelledby="aggiornaMaterialeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -125,6 +132,7 @@ if (mysqli_num_rows($result) > 0) {
                         <label for="quantitaMateriale" class="form-label">Quantità Materiale</label>
                         <input type="number" class="form-control" name="quantitaMateriale" id="quantitaMateriale" required>
                     </div>
+
                     <button type="submit" class="btn btn-primary">Aggiorna Materiale</button>
                 </form>
             </div>

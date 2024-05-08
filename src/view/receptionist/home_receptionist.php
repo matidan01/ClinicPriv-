@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <!-- NAV -->
+    <!-- NAV DA RIVEDERE SI VUOLE TENERE?? -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -88,5 +88,6 @@
             </div>
         </div>
     </section>
+
 </body>
 </html>

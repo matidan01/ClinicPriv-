@@ -3,6 +3,7 @@ include_once("../../includes/connection.php");
 
 $clienti = [];
 
+//Memorizza i clienti che rispettano i criteri di ricerca
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     $search_term = "%" . $_POST['ricercaCliente'] . "%";
 
@@ -26,7 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,24 +41,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </head>
-
 <body>
     <div class="container">
-        <!-- Titolo della pagina -->
         <h1 class="my-4">Gestione Clienti</h1>
 
-        <!-- Bottone "Aggiungi Cliente" -->
+        <!-- Bottone per aggiungere i clienti -->
         <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiClienteModal">
             Aggiungi Cliente
         </button>
 
-        <!-- Barra di Ricerca -->
+        <!-- Barra di ricerca -->
         <form method="POST">
             <input type="text" id="ricercaCliente" name="ricercaCliente" class="form-control mb-4" placeholder="Cerca cliente...">
             <button type="submit" class="btn btn-primary" id="s_button" name="s_button">Cerca</button>
         </form>
 
-        <!-- Tabella dei Clienti -->
+        <!-- Tabella dei clienti -->
         <table class="table">
             <thead>
                 <tr>
@@ -70,7 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
                 </tr>
             </thead>
             <tbody>
-                <!-- Qui vengono inseriti dinamicamente i dati dei clienti -->
                 <?php
                 foreach ($clienti as $cliente) {
                     echo "<tr class='clickable-row' data-href='profilo_paziente.php?idPaziente=" . urlencode($cliente['idPaziente']) . "'>";
@@ -153,6 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
                             <label for="nazione" class="form-label">Nazione:</label>
                             <input type="text" class="form-control" id="nazione" name="nazione" required>
                         </div>
+
                         <button type="submit" class="btn btn-primary">Aggiungi Cliente</button>
                     </form>
             </div>

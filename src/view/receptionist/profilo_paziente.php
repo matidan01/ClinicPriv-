@@ -2,13 +2,16 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// DA VEDERE PER ACCEDERE SOLO SE HAI LA SESSIONE DA RECEPTIONIST
 /*if (!isset($_SESSION['Username'])) {
     header("Location: login.php");
     exit();
 }*/
 
+// Prende l'idPaziente del cliente da visualizzare attraverso un get
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 
+// Memorizza tutti i dati anagrafici del paziente
 $get_paziente = "select * from paziente where idPaziente = ?";
 $stmt = mysqli_prepare($con, $get_paziente);
 mysqli_stmt_bind_param($stmt, "i", $id);
@@ -25,6 +28,7 @@ $recapitoTelefonico = $row['recapitoTelefonico'];
 $email = $row['email'];
 $note = $row['note'];
 
+// Memorizza tutti i dati relativi l'indirizzo del paziente
 $get_indirizzo_paziente = "select * from indirizzo where id ='$id' and tipo='P'";
 $run_indirizzo_paziente = mysqli_query($con,$get_indirizzo_paziente);
 $row_indirizzo_paziente = mysqli_fetch_array($run_indirizzo_paziente);
@@ -36,8 +40,8 @@ $nazione = $row_indirizzo_paziente['nazione'];
 $provincia = $row_indirizzo_paziente['provincia'];
 $cap = $row_indirizzo_paziente['CAP'];
 
+// Memorizza tutti i dati relativi la terapia del paziente
 $get_id_terapia = "select * from terapia where idPaziente = ?";
-
 $stmt = mysqli_prepare($con, $get_id_terapia);
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
@@ -49,6 +53,7 @@ if (mysqli_num_rows($result) > 0) {
     }
 } 
 
+// Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
 ?>
@@ -76,6 +81,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
+                        <!-- Visualizza tutti i dati del paziente -->
                         <h5 class="card-title">Informazioni Paziente</h5>
                         <p><strong>ID:</strong><?php echo $id ?></p>
                         <p><strong>Nome:</strong> <?php echo $nome ?></p>
@@ -87,6 +93,8 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         <p><strong>Luogo di Nascita:</strong> <?php echo $luogoNascita ?></p>
                         <p><strong>Note:</strong> <?php echo $note ?></p>
                         <p><strong>Indirizzo:</strong> Via <?php echo $via . " " . $numeroCivico . ", " . $citta . " " . $cap . " (" . $provincia . "), " . $nazione ?> </p>
+
+                        <!-- Bottone per modificare i dati del paziente -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaClienteModal">
                             Modifica Dati Anagrafici
                         </button>
@@ -94,9 +102,12 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                 </div>
             </div>
             <div class="col-md-6">
+                <!-- Bottone per aggiungere la terapia al paziente -->
                 <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiTerapiaModal">
                     Aggiungi Terapia
                 </button>
+
+                <!-- Visualizza i dati sulle terapie del paziente--> 
                 <?php if (!empty($terapia)): ?>
                     <?php foreach ($terapia as $t): ?>
                         <?php 
@@ -133,6 +144,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
         </div>
     </div>
 
+    <!-- Bottone per visualizzare gli appuntamenti di pagare -->
     <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
 
     <!-- Modale per pagare prestazioni -->
@@ -157,7 +169,6 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!--FARE LA PARTE DI BACKEND-->
                                     <?php foreach($prestazioni_da_pagare as $index => $p): ?>
                                         <tr>
                                             <td><?php echo $index + 1; ?></td>
@@ -175,7 +186,9 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <!-- Visualizza il totale degli appuntamenti selezionate-->
                         <p>Totale: <span id="totale">$0.00</span></p>
+
                         <button type="button" class="btn btn-primary" onclick="inviaPrestazioniSelezionate()">Esegui pagamento</button>
                     </div>
                 </form>
