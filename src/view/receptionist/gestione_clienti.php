@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
         <!-- Barra di Ricerca -->
         <form method="POST">
             <input type="text" id="ricercaCliente" name="ricercaCliente" class="form-control mb-4" placeholder="Cerca cliente...">
-            <button type="submit" class="btn btn-primary" id="s_button" name="s_button">Search</button>
+            <button type="submit" class="btn btn-primary" id="s_button" name="s_button">Cerca</button>
         </form>
 
         <!-- Tabella dei Clienti -->

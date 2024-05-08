@@ -1,5 +1,6 @@
 <?php
 include_once("../../includes/connection.php");
+
 $materiali = [];
 $query = "SELECT materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo, COUNT(materialeordinato.idMateriale) AS numero_ordini
             FROM materiale
