@@ -26,6 +26,12 @@ function get_last_numero_fattura($mysqli) {
     return $stmt->get_result()->fetch_assoc()["max(numeroFattura)"];
 }
 
+function get_last_id_ordine($mysqli) {
+    $stmt = $mysqli->prepare("SELECT max(idOrdine) FROM ordine");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()["max(idOrdine)"];
+}
+
 function get_sale($mysqli) {
     $sale = [];
     $query = "SELECT numero, tipo

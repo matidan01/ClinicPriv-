@@ -70,7 +70,34 @@
      <!-- Link per Axios -->
      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+<script>
+function aggiungiRighe() {
+    var container = document.getElementById('materialeContainer');
+    var row = document.createElement('div');
+    row.className = 'mb-3';
+    row.innerHTML = `
+            <input list="materiali" class="form-control" name="materiali[]">
+            <datalist id="materiali">
+                <?php
+                    foreach($materiali as $materiale) {
+                        $str = $materiale['idMateriale'] . ' - ' . $materiale['nome'] . ' ' . $materiale['quantita'];
+                        echo '<option value="' . $str . '">';
+                    };
+                ?>
+            </datalist>
+    `;
+    container.appendChild(row);
 
+    var container = document.getElementById('quantitaContainer');
+    var row = document.createElement('div');
+    row.className = 'mb-3';
+    row.innerHTML = `
+        <input type="number" class="form-control" name="quantita[]">
+    `;
+    container.appendChild(row);
+}
+    
+</script>
 <body>
     <div class="container py-5">
         <h1 class="mb-5">Gestione Rifornimenti</h1>
@@ -134,7 +161,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="" method="POST">
+                    <form action="../../api/receptionist/aggiungi_rifornimento.php" method="POST">
                         <div class="mb-3">
                             <label for="fornitore" class="form-label">Fornitore:</label>
                             <input list="fornitori" name="fornitore" required>
@@ -147,7 +174,7 @@
                                 ?>
                             </datalist>
                         </div>
-                        <button type="button" class="btn btn-primary" id="aggiungiRigheMateriali">+</button>
+                        <button type="button" class="btn btn-success" id="aggiungiRigheMateriali" onclick="aggiungiRighe()">+</button>
                         <div class='row'>
                             <div id="materialeContainer" class="col-6">
                                 <label for="materiali" class="form-label">Materiale:</label>
@@ -166,33 +193,5 @@
     </div>
    
 </body>
-<script>
 
-    document.getElementById('aggiungiRigheMateriali').addEventListener('click', function() {
-        var container = document.getElementById('materialeContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="materiali" class="form-control" name="materiali[]">
-                <datalist id="materiali">
-                    <?php
-                        foreach($materiali as $materiale) {
-                            $str = $materiale['idMateriale'] . ' - ' . $materiale['nome'] . ' ' . $materiale['quantita'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-
-        var container = document.getElementById('quantitaContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-            <input type="number" class="form-control" name="quantita[]">
-        `;
-        container.appendChild(row);
-    });
-
-</script>
 </html>
