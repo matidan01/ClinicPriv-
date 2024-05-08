@@ -18,7 +18,7 @@ if (mysqli_num_rows($result) > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magazzino Clinica</title>
+    <title>Dettaglio Fornitori</title>
     <!-- css -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
     <!-- Link per Bootstrap CSS -->
@@ -30,7 +30,8 @@ if (mysqli_num_rows($result) > 0) {
 
 <body>
 <div class="container">
-    <h1>fornitori</h1>
+    <h1>Fornitori</h1>
+    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiFornitoreModal">Aggiungi Fornitore</button>
     <table class="table">
         <thead>
             <tr>
@@ -47,12 +48,43 @@ if (mysqli_num_rows($result) > 0) {
                     echo "<td>{$fornitore['idFornitore']}</td>";
                     echo "<td>{$fornitore['nome']}</td>";
                     echo "<td>{$fornitore['recapitoTelefonico']}</td>";
-                    echo "<td>{$fornitore['email']} $</td>";
+                    echo "<td>{$fornitore['email']}</td>";
                     echo "</tr>";
                 }
                 ?>
         </tbody>
     </table>
+</div>
+
+<!-- Modal Aggiungi Appuntamento -->
+<div class="modal fade" id="aggiungiFornitoreModal" tabindex="-1" aria-labelledby="aggiungiFornitoreModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aggiungiFornitoreModalLabel">Aggiungi Appuntamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form per aggiungere un nuovo appuntamento -->
+                <form action="../../api/receptionist/aggiungi_fornitore.php" method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome Fornitore:</label>
+                        <input type="text" class="form-control" id="nome" name="nome">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tel" class="form-label">Recapito Telefonico</label>
+                        <input type="number" class="form-control" id="tel" name="tel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="text" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Salva</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>
