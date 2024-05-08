@@ -56,27 +56,7 @@
                 </div>
             </div>
             <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title" id="gestione_fatture">Fatturazione</h2>
-                            <p class="card-text">Gestisci la fatturazione delle prestazioni mediche.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title" id="gestione_rifornimenti">Rifornimenti</h2>
-                            <p class="card-text">Effetua nuovi ordini e aggiorna quelli precedenti</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-md-6">
+            <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title" id="gestione_magazzino">Gestione magazzino</h2>
@@ -88,9 +68,20 @@
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title">###</h2>
-                            <p class="card-text">Gestisci i dati dei pazienti.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <h2 class="card-title" id="gestione_rifornimenti">Rifornimenti</h2>
+                            <p class="card-text">Effetua nuovi ordini e aggiorna quelli precedenti</p>
+                            <a href="rifornimenti.php" class="btn btn-primary">Vai alla gestione</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="card-title">Visualizza Fornitori</h2>
+                            <p class="card-text">Visualizza i dati dei fornitori.</p>
+                            <a href="fornitori.php" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
