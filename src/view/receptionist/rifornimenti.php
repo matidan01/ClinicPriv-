@@ -111,9 +111,9 @@ function aggiungiRighe() {
         </form>
         
         <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiOrdineModal">Aggiungi Ordine</button>
-        <table class="table table-striped">
+        <table class="table table-bordered">
             <thead>
-                <tr>
+                <tr class="table-info">
                     <th scope="col">ID ordine</th>
                     <th scope="col">ID Fornitore</th>
                     <th scope="col">Nome Fornitore</th>
@@ -126,22 +126,28 @@ function aggiungiRighe() {
             </thead>
             <tbody>
                 <?php
+                    $class = 'table-light';
                     foreach ($rifornimenti as $rifornimento) {
+                        $class = $class == 'table-light' ? 'table-active' : 'table-light';
                         $n_materiali = $rifornimento['num_materiali_ordinati'];
                         $materiali = explode(", ", $rifornimento['nomi_materiali']);
                         $quantita = explode(", ", $rifornimento['quantita_materiali']);
-                        echo "<tr class='clickable-row'>";
+                        echo "<tr class='clickable-row " . $class . "'>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['idOrdine']}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['idFornitore']}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['nome_fornitore']}</td>";
                         echo "<td>{$materiali[0]}</td>";
                         echo "<td>{$quantita[0]}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['dataOrdine']}</td>";
-                        echo "<td rowspan='{$n_materiali}'>{$rifornimento['dataConsegna']}</td>";
+                        if ($rifornimento['dataConsegna'] == null) {
+                            echo "<td rowspan='{$n_materiali}'><button type='button' class='btn btn-primary aggiungiConsegna' value=" . $rifornimento['idOrdine'] . ">Aggiungi Consegna</button></td>";
+                        } else {
+                            echo "<td rowspan='{$n_materiali}'>{$rifornimento['dataConsegna']}</td>";
+                        }
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['totale_ordine']}</td>";
                         echo "</tr>";
                         for($i = 1; $i < $n_materiali; $i++) {
-                            echo "<tr class='clickable-row'>";
+                            echo "<tr class='clickable-row " . $class . "'>";
                             echo "<td>{$materiali[$i]}</td>";
                             echo "<td>{$quantita[$i]}</td>";
                             echo "</tr>";
@@ -193,5 +199,28 @@ function aggiungiRighe() {
     </div>
    
 </body>
+<script>
 
+let buttons = document.getElementsByClassName('btn btn-primary aggiungiConsegna');
+
+let buttonsArray = Array.from(buttons);
+
+buttonsArray.forEach(e => {
+    e.addEventListener('click', function() {
+        if(confirm("Sicuro di voler aggiungere la consegna?")) {
+            let data = new FormData();
+            data.append('idOrdine', this.value);
+
+            axios.post('../../api/receptionist/aggiungi_consegna_ordine.php', data)
+            .then(function (response) {
+                location.reload();
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+        }
+    });
+});
+
+</script>
 </html>
