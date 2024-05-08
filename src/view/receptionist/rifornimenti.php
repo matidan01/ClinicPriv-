@@ -62,6 +62,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Rifornimenti</title>
+    <!-- js -->
+    <script src="../../js/rifornimenti.js"></script>
     <!-- Link per Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Link per Bootstrap JS -->
@@ -70,34 +72,7 @@
      <!-- Link per Axios -->
      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<script>
-function aggiungiRighe() {
-    var container = document.getElementById('materialeContainer');
-    var row = document.createElement('div');
-    row.className = 'mb-3';
-    row.innerHTML = `
-            <input list="materiali" class="form-control" name="materiali[]">
-            <datalist id="materiali">
-                <?php
-                    foreach($materiali as $materiale) {
-                        $str = $materiale['idMateriale'] . ' - ' . $materiale['nome'] . ' ' . $materiale['quantita'];
-                        echo '<option value="' . $str . '">';
-                    };
-                ?>
-            </datalist>
-    `;
-    container.appendChild(row);
 
-    var container = document.getElementById('quantitaContainer');
-    var row = document.createElement('div');
-    row.className = 'mb-3';
-    row.innerHTML = `
-        <input type="number" class="form-control" name="quantita[]">
-    `;
-    container.appendChild(row);
-}
-    
-</script>
 <body>
     <div class="container py-5">
         <h1 class="mb-5">Gestione Rifornimenti</h1>
@@ -199,28 +174,5 @@ function aggiungiRighe() {
     </div>
    
 </body>
-<script>
 
-let buttons = document.getElementsByClassName('btn btn-primary aggiungiConsegna');
-
-let buttonsArray = Array.from(buttons);
-
-buttonsArray.forEach(e => {
-    e.addEventListener('click', function() {
-        if(confirm("Sicuro di voler aggiungere la consegna?")) {
-            let data = new FormData();
-            data.append('idOrdine', this.value);
-
-            axios.post('../../api/receptionist/aggiungi_consegna_ordine.php', data)
-            .then(function (response) {
-                location.reload();
-            })
-            .catch(function (error) {
-                console.error(error);
-            });
-        }
-    });
-});
-
-</script>
 </html>

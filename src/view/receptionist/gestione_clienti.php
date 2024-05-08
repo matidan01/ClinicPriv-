@@ -28,6 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     <title>Gestione Clienti</title>
     <!-- css -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
+    <!-- js -->
+    <script src="../../js/gestione_clienti.js"></script>
     <!-- Link per Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Link per Bootstrap JS -->
@@ -153,19 +155,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     </div>
 
 </body>
-<script>
-    // Aggiungi un gestore di eventi per il clic sulle righe della tabella
-    document.addEventListener("DOMContentLoaded", function() {
-        const rows = document.querySelectorAll(".clickable-row"); // Seleziona tutte le righe cliccabili
-        rows.forEach(row => {
-            row.addEventListener("click", function() {
-                const url = row.getAttribute("data-href"); // Ottieni l'URL dalla riga
-                if (url) {
-                    window.location.href = url; // Reindirizza l'utente all'URL specificato
-                }
-            });
-        });
-    });
-</script>
 
 </html>

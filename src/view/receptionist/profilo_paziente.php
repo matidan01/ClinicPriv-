@@ -49,9 +49,13 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- js -->
+    <script src="../../js/profilo_paziente.js"></script>
+     <!-- Link per Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link per Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <!-- Link per Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -246,76 +250,39 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
             </div>
         </div>
     </div>
+    </div>
+
+     <!-- Modale per Aggiungere Terapia -->
+     <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formTerapia" method="POST" action="../../api/receptionist/aggiungi_terapia.php">
+                        <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
+                        <div class="row mb-3">
+                            <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
+                            <div class="col">
+                                <label for="dataScadenza" class="form-label">Data Scadenza:</label>
+                                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
+                            </div>
+                            <div class="col">
+                                <label for="idMedico" class="form-label">Numero Badge Medico:</label>
+                                <input type="text" class="form-control" id="idMedico" name="idMedico">
+                            </div>
+                        </div>
+                        <p>Farmaci:</p>
+                        <div id="farmaciContainer"></div>
+
+                    </form>
+                    <!-- Bottone "+" per aggiungere righe -->
+                    <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
+            </div>
+        </div>
+    </div>
 
 </body>
-<script>
-
-function riceviCosto() {
-    let data = new FormData();
-    data.append("risorsa","profilo");
-    data.append('id', document.getElementById('modifica').value);
-    axios.post('../../api/receptionist/ricevi_costo.php', data)
-    .then(function (response) {
-        confirm("Il costo totale della prestazione è: " + response.data);
-        pagaPrestazione();
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-}
-
-
-function inviaPrestazioniSelezionate() {
-    const checkboxList = document.querySelectorAll('input[type="checkbox"]:checked');
-    let data = new FormData();
-    data.append('numero', checkboxList.length);
-    i = 1;
-    checkboxList.forEach(function(checkbox) {
-        data.append(i, checkbox.id);
-        i++;
-        data.append(i, checkbox.value);
-        i++; 
-    });
-
-    axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
-    .then(function (response) {
-        if(response.data == 'OK') {
-            alert('Pagamento effettuato!');
-            location.reload();
-        } else {
-            alert('Mi dispiace, qualcosa è andato storto');
-
-        }
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-}
-
-function aggiornaTotale() {
-    let totale = 0;
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    checkboxes.forEach(function(checkbox) {
-        totale += parseFloat(checkbox.value); 
-    });
-    document.getElementById('totale').innerText = '$' + totale.toFixed(2);
-}
-
-document.getElementById('aggiungiRighe').addEventListener('click', function() {
-    var container = document.getElementById('farmaciContainer');
-    var row = document.createElement('div');
-    row.className = 'row mb-3';
-    row.innerHTML = `
-        <div class="col">
-            <input type="text" class="form-control" name="nomeFarmaco[]" placeholder="Nome Farmaco" required>
-        </div>
-        <div class="col">
-            <input type="text" class="form-control" name="descrizione[]" placeholder="Descrizione">
-        </div>
-    `;
-    container.appendChild(row);
-});
-
-
-</script>
 </html>

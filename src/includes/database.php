@@ -20,6 +20,12 @@ function get_last_id_appuntamento($mysqli) {
     return $stmt->get_result()->fetch_assoc()["max(idPrestazione)"];
 }
 
+function get_last_id_fornitore($mysqli) {
+    $stmt = $mysqli->prepare("SELECT max(idFornitore) FROM fornitore");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()["max(idFornitore)"];
+}
+
 function get_last_numero_fattura($mysqli) {
     $stmt = $mysqli->prepare("SELECT max(numeroFattura) FROM fattura");
     $stmt->execute();

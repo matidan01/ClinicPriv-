@@ -41,6 +41,8 @@ $result = mysqli_stmt_get_result($stmt);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dettagli Appuntamento</title>
+    <!-- js -->
+    <script src="../../js/profilo_appuntamento.js"></script>
     <!-- Link per Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Link per Bootstrap JS -->
@@ -173,105 +175,6 @@ $result = mysqli_stmt_get_result($stmt);
     ?>
 
 </div>
-
-<script>
-    function confirmDelete() {
-        document.getElementById('deleteAlert').style.display = 'block';
-    }
-
-    function cancelDelete() {
-        document.getElementById('deleteAlert').style.display = 'none';
-    }
-
-    function riceviCosto() {
-        let data = new FormData();
-        data.append("risorsa","appuntamento");
-        data.append('id', document.getElementById('id').value);
-        axios.post('../../api/receptionist/ricevi_costo.php', data)
-        .then(function (response) {
-            confirm("Il costo totale della prestazione è: " + response.data);
-            pagaPrestazione(response.data);
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
-    }
-
-    function pagaPrestazione(costo) {
-        window.confirm('Conferma il pagamento?');
-        let data = new FormData();
-        data.append("risorsa","appuntamento");
-        data.append('id', document.getElementById('id').value);
-        data.append('costo', costo);
-        axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
-        .then(function (response) {
-            if(response.data == 'OK') {
-                alert('Pagamento effettuato!');
-            } else {
-                alert('Mi dispiace, qualcosa è andato storto!');
-            }
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
-       
-    }
-
-    function deleteAppointment() {
-        let data = new FormData();
-        data.append('id', document.getElementById('id').value);
-        axios.post('../../api/receptionist/elimina_appuntamento.php', data)
-        .then(function (response) {
-            if(response.data == 'OK') {
-                alert('Cancellazione effettuata!');
-                window.location.href = "gestione_appuntamenti.php";
-            } else {
-                alert('Appuntamento già pagato non si può cancellare');
-            }
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
-        
-
-    }
-
-    document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
-        var container = document.getElementById('mediciContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="medici" name="medici[]">
-                <datalist id="medici">
-                    <?php
-                        foreach($medici as $medico) {
-                            $str = $medico['nBadge'] . ' ' . $medico['nome'] . ' ' . $medico['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-
-    document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
-        var container = document.getElementById('operatoriContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="operatori" name="operatori[]">
-                <datalist id="operatori">
-                    <?php
-                        foreach($operatori as $operatore) {
-                            $str = $operatore['nBadge'] . ' ' . $operatore['nome'] . ' ' . $operatore['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-</script>
 
 </body>
 </html>
