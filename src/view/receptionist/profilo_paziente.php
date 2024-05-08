@@ -9,9 +9,12 @@ include_once("../../includes/database.php");
 
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 
-$get_paziente = "select * from paziente where idPaziente ='$id'";
-$run_paziente = mysqli_query($con,$get_paziente);
-$row = mysqli_fetch_array($run_paziente);
+$get_paziente = "select * from paziente where idPaziente = ?";
+$stmt = mysqli_prepare($con, $get_paziente);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$row = mysqli_fetch_array($result);
 
 $nome = $row['nome'];
 $cognome = $row['cognome'];
@@ -33,10 +36,15 @@ $nazione = $row_indirizzo_paziente['nazione'];
 $provincia = $row_indirizzo_paziente['provincia'];
 $cap = $row_indirizzo_paziente['CAP'];
 
-$get_id_terapia = "select * from terapia where idPaziente ='$id'";
-$run_id_terapia = mysqli_query($con,$get_id_terapia);
-if (mysqli_num_rows($run_id_terapia) > 0) {
-    while($row = mysqli_fetch_assoc($run_id_terapia)) {
+$get_id_terapia = "select * from terapia where idPaziente = ?";
+
+$stmt = mysqli_prepare($con, $get_id_terapia);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
         $terapia[] = $row;
     }
 } 

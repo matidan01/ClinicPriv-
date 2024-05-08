@@ -4,12 +4,16 @@ include_once("../../includes/connection.php");
 $clienti = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
-    $search_term = mysqli_real_escape_string($con, $_POST['ricercaCliente']);
-    
-    $query = "SELECT * FROM paziente WHERE (nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
-        CF LIKE '%$search_term%' OR idPaziente LIKE '%$search_term%')";
-    $result = mysqli_query($con, $query);
+    $search_term = "%" . $_POST['ricercaCliente'] . "%";
 
+    $query = "SELECT * FROM paziente WHERE (nome LIKE ? OR cognome LIKE ? OR 
+            CF LIKE ? OR idPaziente LIKE ?)";
+    
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ssss", $search_term, $search_term, $search_term, $search_term);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     if (mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
             $clienti[] = $row;
@@ -17,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
     } else {
         echo "No results found";
     }
+    
 }
 ?>
 <!DOCTYPE html>
