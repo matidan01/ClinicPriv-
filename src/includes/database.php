@@ -299,6 +299,17 @@ function calcola_fatturato_tra_date($dataInizio, $dataFine, $mysqli){
     return $res[0]["s"];
 }
 
+function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT COUNT(idPrestazione)
+                      FROM appuntamento
+                      WHERE dataInizio >= ?
+                      AND dataFine <= ?");
+    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    return $res;
+}
+
 function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, SUM(f.totale)
                             FROM fattura AS f 
@@ -308,6 +319,20 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
                             AND f.dataPagamento >= ?
                             AND f.dataPagamento <= ?
                             GROUP BY m.nBadge");
+    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
+                              FROM appuntamento AS a
+                              JOIN responsabile AS r ON a.idPrestazione = r.idPrestazione
+                              JOIN medico AS m ON r.nBadge = m.nBadge
+                              WHERE a.dataInizio >= ?
+                              AND a.dataFine <= ?
+                              AND m.tipologia = 'chirurgo'
+                              GROUP BY m.nBadge");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -346,4 +371,26 @@ function medici_receptionist_operatori_in_impiego($mysqli) {
     $medici_operatori_receptionist[2]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['receptionist'];
     return $medici_operatori_receptionist;
     
+}
+
+function fatturato_medio_e_totale_clienti($mysqli){
+    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
+                              FROM paziente AS p 
+                              JOIN appuntamento AS a ON a.idPaziente = p.idPaziente
+                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
+                              AND f.dataPagamento IS NOT NULL
+                              GROUP BY p.idPaziente");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function get_fatturato_mensile($mysqli){
+    $stmt = $mysqli->prepare("SELECT MONTH(dataEmissione) AS mese, SUM(totale) AS totale
+                            FROM fattura
+                            WHERE YEAR(dataEmissione) = ?
+                            GROUP BY MONTH(dataEmissione)");
+    $current_year = date("Y");
+    $stmt->bind_param("s", $current_year);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }

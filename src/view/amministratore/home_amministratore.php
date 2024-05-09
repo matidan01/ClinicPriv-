@@ -88,7 +88,7 @@ include_once("../../includes/functions.php");
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione grafico fatture</h2>
                         <p class='card-text'>Visualizza il grafico delle fatture</p>
-                        <a href='home_amministratore/visualizzazione_grafico_fatture.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                        <a href='visualizzazione_grafico_fatture.php' class='btn btn-primary'>Vai alla visualizzazione</a>
                     </div>
                 </div>
             </div>
@@ -102,6 +102,18 @@ include_once("../../includes/functions.php");
                 </div>
             </div>
         </div>
+        <div class='row mt-4'>
+            <div class='col-md-6'>
+                <div class='card'>
+                    <div class='card-body'>
+                        <h2 class='card-title'>Visualizzazione fatturato paziente</h2>
+                        <p class='card-text'>Visualizza il fatturato medio e totale relativo ad un pazientepaziente</p>
+                        <a href='visualizzazione_fatturato_paziente.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 </body>

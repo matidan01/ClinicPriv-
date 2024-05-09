@@ -40,6 +40,7 @@ include_once("../../includes/functions.php");
     <div class="row mt-3">
         <div class="col">
             <h2>Fatturato:<span id="fatturato"></span></h2>
+            <h2>Fatturato medio giornaliero:<span id="fatturato_medio"></span></h2>
         </div>
     </div>
 
@@ -95,8 +96,9 @@ include_once("../../includes/functions.php");
             xhr.send(formData);
             xhr.addEventListener("load", function() {
                 if (xhr.status === 200) {
-                    const fatturato = xhr.responseText;
-                    document.getElementById("fatturato").textContent = fatturato;
+                    const fatturato = JSON.parse(xhr.responseText);
+                    document.getElementById("fatturato").textContent = fatturato[0] + "$";
+                    document.getElementById("fatturato_medio").textContent = fatturato[1] + "$";
                 } else {
                     console.error("Errore durante la richiesta AJAX:", xhr.status);
                 }
