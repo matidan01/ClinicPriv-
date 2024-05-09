@@ -464,3 +464,24 @@ function isCaposala($badgeNum, $mysqli){
     }
 }
 
+function fatturato_medio_e_totale_clienti($mysqli){
+    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
+                              FROM paziente AS p 
+                              JOIN appuntamento AS a ON a.idPaziente = p.idPaziente
+                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
+                              AND f.dataPagamento IS NOT NULL
+                              GROUP BY p.idPaziente");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function get_fatturato_mensile($mysqli){
+    $stmt = $mysqli->prepare("SELECT MONTH(dataEmissione) AS mese, SUM(totale) AS totale
+                            FROM fattura
+                            WHERE YEAR(dataEmissione) = ?
+                            GROUP BY MONTH(dataEmissione)");
+    $current_year = date("Y");
+    $stmt->bind_param("s", $current_year);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
