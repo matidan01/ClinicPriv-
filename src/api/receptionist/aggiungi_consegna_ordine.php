@@ -11,4 +11,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt_insert_data, "i", $idOrdine);
     $run_data = mysqli_stmt_execute($stmt_insert_data);
 
+    $modify_quantita_query = "UPDATE materiale
+                                JOIN (
+                                    SELECT materialeordinato.idMateriale, materialeordinato.quantita
+                                    FROM materialeordinato
+                                    WHERE materialeordinato.idOrdine = ?
+                                ) AS materiale_ordine ON materiale.idMateriale = materiale_ordine.idMateriale
+                                SET materiale.quantita = materiale.quantita + materiale_ordine.quantita;
+                            ";
+    $stmt_modify_quantita = mysqli_prepare($con, $modify_quantita_query);
+    mysqli_stmt_bind_param($stmt_modify_quantita, "i", $idOrdine);
+    $run_modify_quantita = mysqli_stmt_execute($stmt_modify_quantita);
+
 }

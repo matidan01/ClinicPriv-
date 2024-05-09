@@ -76,7 +76,34 @@
      <!-- Link per Axios -->
      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+<script>
+function aggiungiRighe() {
+    var container = document.getElementById('materialeContainer');
+    var row = document.createElement('div');
+    row.className = 'mb-3';
+    row.innerHTML = `
+        <input list="materialiList" class="form-control" name="materiali[]">
+        <datalist id="materialiList">
+            <?php
+                foreach($materiali as $materiale) {
+                    $str = $materiale['idMateriale'] . ' - ' . $materiale['nome'] . ' ' . $materiale['quantita'];
+                    echo '<option value="' . $str . '">';
+                }
+            ?>
+        </datalist>
+    `;
+    container.appendChild(row);
 
+    var containerModal = document.getElementById('quantitaContainerModal'); // Nuovo ID
+    var rowModal = document.createElement('div');
+    rowModal.className = 'mb-3';
+    rowModal.innerHTML = `
+        <input type="number" class="form-control" name="quantita[]">
+    `;
+    containerModal.appendChild(rowModal);
+}
+
+</script>
 <body>
     <div class="container py-5">
         <h1 class="mb-5">Gestione Rifornimenti</h1>
@@ -169,7 +196,7 @@
                                 <label for="materiali" class="form-label">Materiale:</label>
                             </div>
                             
-                            <div id="quantitaContainer" class="col-6">
+                            <div id="quantitaContainerModal" class="col-6">
                                 <label for="quantita" class="form-label">Quantità:</label>
                             </div>
                         </div>
