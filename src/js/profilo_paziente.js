@@ -1,18 +1,4 @@
-function riceviCosto() {
-    let data = new FormData();
-    data.append("risorsa","profilo");
-    data.append('id', document.getElementById('modifica').value);
-    axios.post('../../api/receptionist/ricevi_costo.php', data)
-    .then(function (response) {
-        confirm("Il costo totale della prestazione è: " + response.data);
-        pagaPrestazione();
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-}
-
-
+// Esegue il pagamento di molteplici appuntamenti selezionati 
 function inviaPrestazioniSelezionate() {
     const checkboxList = document.querySelectorAll('input[type="checkbox"]:checked');
     let data = new FormData();
@@ -40,6 +26,7 @@ function inviaPrestazioniSelezionate() {
     });
 }
 
+// Aggiorna il totale in base agli appuntamenti selezionati
 function aggiornaTotale() {
     let totale = 0;
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -50,6 +37,8 @@ function aggiornaTotale() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Aggiunge righe per l'inserimento di un nuovo farmaco
     document.getElementById('aggiungiRighe').addEventListener('click', function() {
         var container = document.getElementById('farmaciContainer');
         var row = document.createElement('div');

@@ -1,6 +1,6 @@
+// Invia il prezzo di una specifica prestazione
 function riceviCosto() {
     let data = new FormData();
-    data.append("risorsa","appuntamento");
     data.append('id', document.getElementById('id').value);
     axios.post('../../api/receptionist/ricevi_costo.php', data)
     .then(function (response) {
@@ -13,6 +13,7 @@ function riceviCosto() {
     });
 }
 
+// Esegure il pagamento di una prestazione
 function pagaPrestazione(costo) {
     if(window.confirm('Conferma il pagamento?')) {
         let data = new FormData();
@@ -33,6 +34,7 @@ function pagaPrestazione(costo) {
     }
 }
 
+// Esegue la cancellazione di un appuntamento
 function deleteAppointment() {
     if(window.confirm("Sicuro di voler eliminare l'appuntamento?")) {
         let data = new FormData();
@@ -53,6 +55,8 @@ function deleteAppointment() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Aggiunge righe per responsabili nel form di modifica di un nuovo appuntamento
     document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
         var container = document.getElementById('mediciContainer');
         var row = document.createElement('div');
@@ -71,6 +75,7 @@ document.addEventListener("DOMContentLoaded", function() {
         container.appendChild(row);
     });
 
+    // Aggiunge righe per assistenti nel form di modifica di un nuovo appuntamento
     document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
         var container = document.getElementById('operatoriContainer');
         var row = document.createElement('div');

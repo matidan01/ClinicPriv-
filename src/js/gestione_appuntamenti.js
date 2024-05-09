@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+
+    // Permette di accedere al dettaglio appuntamento 
     const rows = document.querySelectorAll(".clickable-row"); 
     rows.forEach(row => {
         row.addEventListener("click", function() {
@@ -9,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    // Aggiunge righe per responsabili nel form di inserimento di un nuovo appuntamento  
     document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
         var container = document.getElementById('mediciContainer');
         var row = document.createElement('div');
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
         container.appendChild(row);
     });
 
+    // Aggiunge righe per assistenti nel form di inserimento di un nuovo appuntamento 
     document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
         var container = document.getElementById('operatoriContainer');
         var row = document.createElement('div');

@@ -3,6 +3,8 @@ include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Memorizza i dati singoli
     $idPaziente = $_POST['id'];
     $dataScadenza = $_POST['dataScadenza'];
     $idMedico = $_POST['idMedico'];
@@ -10,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $idMedico = NULL;
     }
 
+    // Memorizza i dati di farmaci e relative descrizioni in array 
     $farmaci = array();
     $descrizioni = array();
 
@@ -18,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $descrizioni[] = $_POST['descrizione'][$key];
     }
 
+    // Effettua l'inserimento
     if(count($farmaci) > 0) {
         $idTerapia = get_last_id_terapia($con) + 1;
         $insert_terapia_query = "INSERT INTO `terapia`(`idTerapia`,`idPaziente`, `dataScadenza`, `idMedico`) VALUES (?, ?, ?, ?)";
