@@ -2,16 +2,22 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// DA VEDERE PER ACCEDERE SOLO SE HAI LA SESSIONE DA RECEPTIONIST
 /*if (!isset($_SESSION['Username'])) {
     header("Location: login.php");
     exit();
 }*/
 
+// Prende l'idPaziente del cliente da visualizzare attraverso un get
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 
-$get_paziente = "select * from paziente where idPaziente ='$id'";
-$run_paziente = mysqli_query($con,$get_paziente);
-$row = mysqli_fetch_array($run_paziente);
+// Memorizza tutti i dati anagrafici del paziente
+$get_paziente = "select * from paziente where idPaziente = ?";
+$stmt = mysqli_prepare($con, $get_paziente);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$row = mysqli_fetch_array($result);
 
 $nome = $row['nome'];
 $cognome = $row['cognome'];
@@ -22,6 +28,7 @@ $recapitoTelefonico = $row['recapitoTelefonico'];
 $email = $row['email'];
 $note = $row['note'];
 
+// Memorizza tutti i dati relativi l'indirizzo del paziente
 $get_indirizzo_paziente = "select * from indirizzo where id ='$id' and tipo='P'";
 $run_indirizzo_paziente = mysqli_query($con,$get_indirizzo_paziente);
 $row_indirizzo_paziente = mysqli_fetch_array($run_indirizzo_paziente);
@@ -33,14 +40,20 @@ $nazione = $row_indirizzo_paziente['nazione'];
 $provincia = $row_indirizzo_paziente['provincia'];
 $cap = $row_indirizzo_paziente['CAP'];
 
-$get_id_terapia = "select * from terapia where idPaziente ='$id'";
-$run_id_terapia = mysqli_query($con,$get_id_terapia);
-if (mysqli_num_rows($run_id_terapia) > 0) {
-    while($row = mysqli_fetch_assoc($run_id_terapia)) {
+// Memorizza tutti i dati relativi la terapia del paziente
+$get_id_terapia = "select * from terapia where idPaziente = ?";
+$stmt = mysqli_prepare($con, $get_id_terapia);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
+if (mysqli_num_rows($result) > 0) {
+    while($row = mysqli_fetch_assoc($result)) {
         $terapia[] = $row;
     }
 } 
 
+// Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
 ?>
@@ -49,9 +62,13 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- js -->
+    <script src="../../js/profilo_paziente.js"></script>
+     <!-- Link per Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Link per Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <!-- Link per Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
@@ -64,6 +81,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
+                        <!-- Visualizza tutti i dati del paziente -->
                         <h5 class="card-title">Informazioni Paziente</h5>
                         <p><strong>ID:</strong><?php echo $id ?></p>
                         <p><strong>Nome:</strong> <?php echo $nome ?></p>
@@ -75,6 +93,8 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         <p><strong>Luogo di Nascita:</strong> <?php echo $luogoNascita ?></p>
                         <p><strong>Note:</strong> <?php echo $note ?></p>
                         <p><strong>Indirizzo:</strong> Via <?php echo $via . " " . $numeroCivico . ", " . $citta . " " . $cap . " (" . $provincia . "), " . $nazione ?> </p>
+
+                        <!-- Bottone per modificare i dati del paziente -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modificaClienteModal">
                             Modifica Dati Anagrafici
                         </button>
@@ -82,9 +102,12 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                 </div>
             </div>
             <div class="col-md-6">
+                <!-- Bottone per aggiungere la terapia al paziente -->
                 <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiTerapiaModal">
                     Aggiungi Terapia
                 </button>
+
+                <!-- Visualizza i dati sulle terapie del paziente--> 
                 <?php if (!empty($terapia)): ?>
                     <?php foreach ($terapia as $t): ?>
                         <?php 
@@ -121,6 +144,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
         </div>
     </div>
 
+    <!-- Bottone per visualizzare gli appuntamenti di pagare -->
     <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
 
     <!-- Modale per pagare prestazioni -->
@@ -131,7 +155,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                     <h5 class="modal-title" id="pagamentoModalLabel">Pagamento delle Prestazioni</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formPagamento" method="POST" action="">
+                <form id="formPagamento" method="POST">
                     <div class="modal-body">
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -145,7 +169,6 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!--FARE LA PARTE DI BACKEND-->
                                     <?php foreach($prestazioni_da_pagare as $index => $p): ?>
                                         <tr>
                                             <td><?php echo $index + 1; ?></td>
@@ -153,7 +176,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                                             <td><?php echo $p['dataInizio']; ?></td>
                                             <td>$<?php echo $p['costo']; ?></td>
                                             <td>
-                                                <input type="checkbox" id="<?php echo 'prestazione_' . $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['idPrestazione']; ?>">
+                                                <input type="checkbox" id="<?php echo $p['idPrestazione']; ?>" name="prestazioni[]" value="<?php echo $p['costo']; ?>" onchange="aggiornaTotale()">
                                                 <label for="<?php echo 'prestazione_' . $p['idPrestazione']; ?>"></label>
                                             </td>
                                         </tr>
@@ -163,7 +186,10 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Esegui pagamento</button>
+                        <!-- Visualizza il totale degli appuntamenti selezionate-->
+                        <p>Totale: <span id="totale">$0.00</span></p>
+
+                        <button type="button" class="btn btn-primary" onclick="inviaPrestazioniSelezionate()">Esegui pagamento</button>
                     </div>
                 </form>
             </div>
@@ -245,57 +271,39 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
             </div>
         </div>
     </div>
+    </div>
+
+     <!-- Modale per Aggiungere Terapia -->
+     <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formTerapia" method="POST" action="../../api/receptionist/aggiungi_terapia.php">
+                        <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
+                        <div class="row mb-3">
+                            <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
+                            <div class="col">
+                                <label for="dataScadenza" class="form-label">Data Scadenza:</label>
+                                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
+                            </div>
+                            <div class="col">
+                                <label for="idMedico" class="form-label">Numero Badge Medico:</label>
+                                <input type="text" class="form-control" id="idMedico" name="idMedico">
+                            </div>
+                        </div>
+                        <p>Farmaci:</p>
+                        <div id="farmaciContainer"></div>
+
+                    </form>
+                    <!-- Bottone "+" per aggiungere righe -->
+                    <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
+            </div>
+        </div>
+    </div>
 
 </body>
-<script>
-
-function riceviCosto() {
-    let data = new FormData();
-    data.append("risorsa","profilo");
-    data.append('id', document.getElementById('modifica').value);
-    axios.post('../../api/receptionist/ricevi_costo.php', data)
-    .then(function (response) {
-        confirm("Il costo totale della prestazione è: " + response.data);
-        pagaPrestazione();
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-}
-
- function pagaPrestazione() {
-    window.confirm('Conferma il pagamento?');
-    let data = new FormData();
-    data.append("risorsa","profilo");
-    data.append('id', document.getElementById('modifica').value);
-    axios.post('../../api/receptionist/pagamento_appuntamento.php', data)
-    .then(function (response) {
-        if(response.data == 'OK') {
-            alert('Pagamento effettuato!');
-        } else {
-            alert('Mi dispiace, qualcosa è andato storto!');
-        }
-    })
-    .catch(function (error) {
-        console.error(error);
-    });
-    
-}
-
-
-document.getElementById('aggiungiRighe').addEventListener('click', function() {
-    var container = document.getElementById('farmaciContainer');
-    var row = document.createElement('div');
-    row.className = 'row mb-3';
-    row.innerHTML = `
-        <div class="col">
-            <input type="text" class="form-control" name="nomeFarmaco[]" placeholder="Nome Farmaco" required>
-        </div>
-        <div class="col">
-            <input type="text" class="form-control" name="descrizione[]" placeholder="Descrizione">
-        </div>
-    `;
-    container.appendChild(row);
-});
-</script>
 </html>

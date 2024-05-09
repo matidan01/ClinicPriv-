@@ -20,10 +20,22 @@ function get_last_id_appuntamento($mysqli) {
     return $stmt->get_result()->fetch_assoc()["max(idPrestazione)"];
 }
 
+function get_last_id_fornitore($mysqli) {
+    $stmt = $mysqli->prepare("SELECT max(idFornitore) FROM fornitore");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()["max(idFornitore)"];
+}
+
 function get_last_numero_fattura($mysqli) {
     $stmt = $mysqli->prepare("SELECT max(numeroFattura) FROM fattura");
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc()["max(numeroFattura)"];
+}
+
+function get_last_id_ordine($mysqli) {
+    $stmt = $mysqli->prepare("SELECT max(idOrdine) FROM ordine");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()["max(idOrdine)"];
 }
 
 function get_sale($mysqli) {
@@ -72,6 +84,38 @@ function get_medici($mysqli) {
         }
     } 
     return $medici;
+}
+
+function get_fornitori($mysqli) {
+    $fornitori = [];
+    $query = "SELECT idFornitore, nome
+            FROM fornitore
+                ";  
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $fornitori[] = $row;
+        }
+    } 
+    return $fornitori;
+}
+
+function get_materiali($mysqli) {
+    $materiali = [];
+    $query = "SELECT idMateriale, nome, quantita
+            FROM materiale
+                ";  
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $materiali[] = $row;
+        }
+    } 
+    return $materiali;
 }
 
 function get_operatori($mysqli) {
@@ -165,6 +209,15 @@ function inserisci_fattura($mysqli, $idPrestazione, $numeroFattura, $costo) {
     return mysqli_stmt_execute($insert_fattura_stmt);
 }
 
+function inserisci_fatture($mysqli, $idPrestazioni, $numeroFattura, $costo) {
+    $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `data`, `ora`) VALUES (?, ?, ?, CURDATE(), CURTIME())";
+    $insert_fattura_stmt = mysqli_prepare($mysqli, $insert_fattura_query);
+    mysqli_stmt_bind_param($insert_fattura_stmt, 'iis', $idPrestazione, $numeroFattura, $costo);
+    foreach($idPrestazioni as $idPrestazione) {
+        mysqli_stmt_execute($insert_fattura_stmt);
+    }
+}
+
 function inserisci_assistenti($con, $idPrestazione, $operatori) {
     $insert_assistente_query = "INSERT INTO `assistente`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
     $insert_assistente_stmt = mysqli_prepare($con, $insert_assistente_query);
@@ -245,7 +298,7 @@ function termina_contratto($mysqli, $nBadge){
     if(strpos($nBadge, "O") !== false){
         $table = "operatore";
     }else if(strpos($nBadge, "M") !== false){
-       $table = "medico";
+        $table = "medico";
     }else if(strpos($nBadge, "R") !== false){
         $table = "receptionist";
     }else{
@@ -373,24 +426,41 @@ function medici_receptionist_operatori_in_impiego($mysqli) {
     
 }
 
-function fatturato_medio_e_totale_clienti($mysqli){
-    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
-                              FROM paziente AS p 
-                              JOIN appuntamento AS a ON a.idPaziente = p.idPaziente
-                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
-                              AND f.dataPagamento IS NOT NULL
-                              GROUP BY p.idPaziente");
+function isPrimario($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE nBadge = ?
+        AND tipologia = 'primario'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
     $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $result = $stmt->get_result();
+    if(empty($result)){
+        return false;
+    }else{
+        return true;
+    }
 }
 
-function get_fatturato_mensile($mysqli){
-    $stmt = $mysqli->prepare("SELECT MONTH(dataEmissione) AS mese, SUM(totale) AS totale
-                            FROM fattura
-                            WHERE YEAR(dataEmissione) = ?
-                            GROUP BY MONTH(dataEmissione)");
-    $current_year = date("Y");
-    $stmt->bind_param("s", $current_year);
+function isCaposala($badgeNum, $mysqli){
+    $query = "
+        SELECT *
+        FROM medico
+        WHERE nBadge = ?
+        AND tipologia = 'caposala'
+        ";
+
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $badgeNum);
     $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $result = $stmt->get_result();
+    if(empty($result)){
+        return false;
+    }else{
+        return true;
+    }
 }
+
