@@ -1,6 +1,6 @@
+// Invia il prezzo di una specifica prestazione
 function riceviCosto() {
     let data = new FormData();
-    data.append("risorsa","appuntamento");
     data.append('id', document.getElementById('id').value);
     axios.post('../../api/receptionist/ricevi_costo.php', data)
     .then(function (response) {
@@ -13,6 +13,7 @@ function riceviCosto() {
     });
 }
 
+// Esegure il pagamento di una prestazione
 function pagaPrestazione(costo) {
     if(window.confirm('Conferma il pagamento?')) {
         let data = new FormData();
@@ -33,6 +34,7 @@ function pagaPrestazione(costo) {
     }
 }
 
+// Esegue la cancellazione di un appuntamento
 function deleteAppointment() {
     if(window.confirm("Sicuro di voler eliminare l'appuntamento?")) {
         let data = new FormData();
@@ -51,41 +53,3 @@ function deleteAppointment() {
         });
     }
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
-        var container = document.getElementById('mediciContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="medici" name="medici[]">
-                <datalist id="medici">
-                    <?php
-                        foreach($medici as $medico) {
-                            $str = $medico['nBadge'] . ' ' . $medico['nome'] . ' ' . $medico['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-
-    document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
-        var container = document.getElementById('operatoriContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="operatori" name="operatori[]">
-                <datalist id="operatori">
-                    <?php
-                        foreach($operatori as $operatore) {
-                            $str = $operatore['nBadge'] . ' ' . $operatore['nome'] . ' ' . $operatore['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-});

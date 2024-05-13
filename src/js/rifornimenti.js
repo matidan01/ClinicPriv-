@@ -1,6 +1,4 @@
-
-    
-    
+// Aggiunge la data consegna e aggiorna le quantità del materiale in magazzino  
 document.addEventListener("DOMContentLoaded", function() {
     let buttons = document.getElementsByClassName('btn btn-primary aggiungiConsegna');
 

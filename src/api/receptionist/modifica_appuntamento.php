@@ -2,8 +2,12 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// Gestisce la modifica di un appuntamento
+
+// Modifica di data di inizio, data di fine e sala dell'appuntamento
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dataInizio'])) {
 
+    // Memorizza i dati e li modifica
     $id = intval($_POST['id']);
     $dataInizio = $_POST['dataInizio'];
     $dataFine = empty($_POST['dataFine']) ? null : $_POST['dataFine'];
@@ -30,8 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dataInizio'])) {
     mysqli_stmt_bind_param($stmt, "ii", $numeroSala, $id);
     mysqli_stmt_execute($stmt);  
 
+// Modifica dei responsabili e assistenti dell'appuntamento 
 } else if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    // Memorizza i dati e li modifica
     $id = intval($_POST['id']);
     $medici_responsabili = get_responsabili_intervento($con, $id);
     $operatori_assistenti = get_assistenti_intervento($con, $id);

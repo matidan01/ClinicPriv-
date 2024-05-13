@@ -2,8 +2,10 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// Gestisce l'inserimento di un nuovo ordine 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
+    // Memorizza in array i materiali da ordinare e le relative quantità
     $materiali = array();
     $quantita = array();
 
@@ -17,6 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $quantita[] = $q[0];
     }
 
+    // Memorizza le informazioni riguardanti il fornitore e effettua l'inserimento
     if(count($materiali) > 0 && count($materiali) == count($quantita)) {
         
         $fornitore = explode(" ", $_POST['fornitore']);
@@ -39,5 +42,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     header("Location: ../../view/receptionist/rifornimenti.php");
-
 }
