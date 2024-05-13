@@ -113,8 +113,13 @@ include_once("../../includes/functions.php");
                 if (xhrf.readyState === XMLHttpRequest.DONE) {
                     if (xhrf.status === 200) {
                         const graficoData = JSON.parse(xhrf.responseText);
-                        console.log(graficoData);
                         var ctx = document.getElementById('grafico').getContext('2d');
+                        if (ctx) { /*rimuovo eventuale grafico precedentemente caricato*/
+                            const existingChart = Chart.getChart(ctx);
+                            if (existingChart) {
+                                existingChart.destroy();
+                            }
+                        }
                         const mesi = Array.from(new Set(graficoData.map(item => item.month)));
                         const operazioni = Array.from(new Set(graficoData.map(item => item.nome)));
                         const guadagni = [];
@@ -128,12 +133,14 @@ include_once("../../includes/functions.php");
                         });
 
                         const datasets = [];
+                        //const mesiNomi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
                         for (let i = 0; i < operazioni.length; i++) {
+                            borderColor = get_random_border_color();
                             datasets.push({
                                 label: operazioni[i],
                                 data: guadagni.map(row => row[i]),
                                 fill: false,
-                                borderColor: "(100,100,100,0.1)", 
+                                borderColor: borderColor, 
                                 tension: 0.1
                             });
                         }
@@ -162,7 +169,6 @@ include_once("../../includes/functions.php");
                             }
                         };
                         new Chart(ctx, config);
-
                     } else {
                         console.error("Errore durante la richiesta AJAX:", xhr.status);
                     }
@@ -194,6 +200,20 @@ include_once("../../includes/functions.php");
             });
         })
     });
+    colorList = [];
+    function get_random_border_color(){
+        num1 = Math.floor(Math.random() * 255);
+        num2 = Math.floor(Math.random() * 255);
+        num3 = Math.floor(Math.random() * 255);
+        color = `rgba(${num1}, ${num2}, ${num3}, 0.9)`;
+        if (colorList.includes(color)){
+            get_random_border_color()
+        }else{
+            colorList.push(color);
+            return color;
+        }
+    }
+
 </script>
 
 </body>
