@@ -12,8 +12,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
         exit();
     }else{
         $fatturato = calcola_fatturato_tra_date($_POST['dataInizio'], $_POST['dataFine'], $con);
+        $numero_giorni = date_diff(date_create($_POST['dataInizio']), date_create($_POST['dataFine']))->format('%a');
+        $fatturato_giornaliero = round($fatturato / $numero_giorni, 2);
+        $toReturn = [$fatturato, $fatturato_giornaliero];
+        $toReturnJSON = json_encode($toReturn);
         if ($fatturato != NULL){
-            echo " $fatturato" . "€";
+            echo " $toReturnJSON";
         }
         else {
             echo "$fatturato";

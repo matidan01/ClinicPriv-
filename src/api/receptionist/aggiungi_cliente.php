@@ -2,7 +2,10 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// Gestisce l'inserimento o la modifica di un paziente
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    // Memorizza i dati anagrafici del paziente da inserire/modificare
     $nome = $_POST['nome'];
     $cognome = $_POST['cognome'];
     $email = $_POST['email'];
@@ -12,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cf = isset($_POST['cf']) ? $_POST['cf'] : null;
     $note = isset($_POST['note']) ? $_POST['note'] : null;
 
+    // Se viene specifica 'modifica' allora farà un update altrimenti un inserimento
     if(isset($_POST['modifica'])) {
         $idPaziente = $_POST['modifica'];
         $update_paziente_query = "UPDATE paziente SET nome = ?, cognome = ?, CF = ?, email = ?, dataNascita = ?, luogoNascita = ?, recapitoTelefonico = ?, note = ? WHERE idPaziente = ?";
@@ -26,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $run_paziente = mysqli_stmt_execute($stmt_insert_paziente);
     }
 
-    
+    // Se l'inserimento/modifica è andata a buon fine allora memorizza i dati per inserire/modificare indirizzo
     if($run_paziente) {
         $tipo = 'P';
         $citta = $_POST['citta'];
@@ -48,9 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $run_indirizzo = mysqli_stmt_execute($stmt_insert_indirizzo);
         }
 
-        if($run_indirizzo) {
-            header("Location: ../../view/receptionist/profilo_paziente.php?idPaziente=" . urlencode($idPaziente));
-        } else {
-        }
+        header("Location: ../../view/receptionist/profilo_paziente.php?idPaziente=" . urlencode($idPaziente));
     }
 }
