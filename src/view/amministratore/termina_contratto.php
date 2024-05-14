@@ -10,10 +10,10 @@ $personale = tutto_personale_ancora_assunto($con);
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPersonale'])) {
     $search_term = mysqli_real_escape_string($con, $_POST['ricercaPersonale']);
     
-    $stmt = $con->prepare("SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM operatore WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
+    $stmt = $con->prepare("SELECT nBadge, nome, cognome, tipologia, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM operatore WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
     CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') AND fineRapporto IS NULL )
-    UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM medico WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') AND fineRapporto IS NULL ) 
-    UNION SELECT nBadge, nome, cognome, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM receptionist  WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
+    UNION SELECT nBadge, nome, cognome, tipologia, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM medico WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') AND fineRapporto IS NULL ) 
+    UNION SELECT nBadge, nome, cognome, 'X' as tipologia, CF, emailAziendale, dataNascita, luogoNascita, recapitoTelefonico, inizioRapporto, fineRapporto FROM receptionist  WHERE ((nome LIKE '%$search_term%' OR cognome LIKE '%$search_term%' OR 
     CF LIKE '%$search_term%' OR nBadge LIKE '%$search_term%') AND fineRapporto IS NULL )");
     $stmt->execute();
     $personale = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);

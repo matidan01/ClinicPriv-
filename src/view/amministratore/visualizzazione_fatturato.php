@@ -191,7 +191,13 @@ include_once("../../includes/functions.php");
                         const mediciTabella = document.getElementById("medici");
                         mediciTabella.innerHTML=` `; //mi serve per cancellare le eventuali tabelle precedentemente caricate. 
                         mediciArray.forEach(m => {
-                            mediciTabella.innerHTML +=`<td>${m['nome']}</td><td>${m['cognome']}</td><td>${m['nBadge']}</td><td>${m['SUM(f.totale)']}</td>`;
+                            if (m['SUM(f.totale)'] === null){
+                                tot = "0$";
+                            }
+                            else{
+                                tot = m['SUM(f.totale)']+"$";
+                            }
+                            mediciTabella.innerHTML +=`<td>${m['nome']}</td><td>${m['cognome']}</td><td>${m['nBadge']}</td><td>${tot}</td>`;
                         });
                     } else {
                         console.error("Errore durante la richiesta AJAX:", xhr.status);
