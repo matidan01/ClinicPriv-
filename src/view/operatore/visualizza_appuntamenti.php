@@ -34,7 +34,7 @@
                         GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
                     WHERE 
                         DATE(appuntamento.dataInizio) = ?
-                        AND responsabile.nBadge = ?
+                        AND assistente.nBadge = ?
                     ORDER BY 
                         appuntamento.ora ASC;
                 ";
@@ -63,7 +63,7 @@
                         GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
                     WHERE 
                         DATE(appuntamento.dataInizio) >= CURDATE()
-                        AND responsabile.nBadge = ?
+                        AND assistente.nBadge = ?
                     ORDER BY 
                         appuntamento.ora ASC;
         ";

@@ -48,7 +48,7 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizzazione-appuntamenti">Visualizzazione Appuntamenti</h2>
                             <p class="card-text">Visualizza gli appuntamenti dei pazienti..</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="../operatore/visualizza_appuntamenti.php?badgeN=<?php print_r($badgeN)?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
