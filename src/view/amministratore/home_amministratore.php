@@ -36,6 +36,12 @@ include_once("../../includes/functions.php");
                 <li class='nav-item'>
                     <a class='nav-link' href='#visualizzazione-dati-personale'>Visualizzazione dati personale</a>
                 </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='#visualizzazione-fatturato-paziente'>Visualizzazione fatturato paziente</a>
+                </li>
+                <li class='nav-item'>
+                    <a class='nav-link' href='#visualizzazione-listino'>Visualizzazione listino</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -43,7 +49,7 @@ include_once("../../includes/functions.php");
 <section class='py-4'>
     <div class='container'>
         <div class='row'>
-            <div class='col-md-6'>
+            <div id='assunzione-personale' class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
                         <h2 class='card-title'>Assunzione personale</h2>
@@ -52,7 +58,7 @@ include_once("../../includes/functions.php");
                     </div>
                 </div>
             </div>
-            <div class='col-md-6'>
+            <div id='termine-contratto-con-personale' class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
                         <h2 class='card-title'>Termine contratto con personale</h2>
@@ -62,7 +68,7 @@ include_once("../../includes/functions.php");
                 </div>
             </div>
         </div>
-        <div class='row mt-4'>
+        <div id='visualizzazione-dati-fatturato' class='row mt-4'>
             <div class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
@@ -72,7 +78,7 @@ include_once("../../includes/functions.php");
                     </div>
                 </div>
             </div>
-            <div class='col-md-6'>
+            <div id='visualizzazione-dati-interventi' class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione dati interventi</h2>
@@ -82,7 +88,7 @@ include_once("../../includes/functions.php");
                 </div>
             </div>
         </div>
-        <div class='row mt-4'>
+        <div id='visualizzazione-grafico-fatture' class='row mt-4'>
             <div class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
@@ -92,7 +98,7 @@ include_once("../../includes/functions.php");
                     </div>
                 </div>
             </div>
-            <div class='col-md-6'>
+            <div id='visualizzazione-dati-personale' class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione dati personale</h2>
@@ -103,12 +109,21 @@ include_once("../../includes/functions.php");
             </div>
         </div>
         <div class='row mt-4'>
-            <div class='col-md-6'>
+            <div id='visualizzazione-fatturato-paziente' class='col-md-6'>
                 <div class='card'>
                     <div class='card-body'>
                         <h2 class='card-title'>Visualizzazione fatturato paziente</h2>
                         <p class='card-text'>Visualizza il fatturato medio e totale relativo ad un pazientepaziente</p>
                         <a href='visualizzazione_fatturato_paziente.php' class='btn btn-primary'>Vai alla visualizzazione</a>
+                    </div>
+                </div>
+            </div>
+            <div id='visualizzazione-listino' class='col-md-6'>
+                <div class='card'>
+                    <div class='card-body'>
+                        <h2 class='card-title'>Visualizzazione listino</h2>
+                        <p class='card-text'>Visualizza il listino delle operazioni</p>
+                        <a href='visualizzazione_listino.php' class='btn btn-primary'>Vai alla visualizzazione</a>
                     </div>
                 </div>
             </div>
