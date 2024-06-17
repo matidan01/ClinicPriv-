@@ -209,6 +209,27 @@ function inserisci_fattura($mysqli, $idPrestazione, $numeroFattura, $costo) {
     return mysqli_stmt_execute($insert_fattura_stmt);
 }
 
+function inserisci_diagnosi($mysqli, $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione) {
+    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `nBadgeMedico`, `nomePatologia`, `descrizione`) VALUES (?, ?, ?, ?)";
+    $insert_diagnosi_stmt = mysqli_prepare($mysqli, $insert_diagnosi_query);
+    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'isss', $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione);
+    return mysqli_stmt_execute($insert_diagnosi_stmt);
+}
+
+function inserisci_patologie($mysqli, $idPaziente, $nomePatologia){
+    $insert_patologia_query = "INSERT INTO `patologia`(`idPaziente`, `nomePatologia`) VALUES (?, ?)";
+    $insert_patologia_stmt = mysqli_prepare($mysqli, $insert_patologia_query);
+    mysqli_stmt_bind_param($insert_patologia_stmt, 'is', $idPaziente, $nomePatologia);
+    return mysqli_stmt_execute($insert_patologia_stmt);
+}
+
+function inserisci_turno($mysqli, $nBadge, $data, $tipoTurno){
+    $insert_turno_query = "INSERT INTO `patologia`(`nBadge`, `data`, $tipoTurno) VALUES (?, ?, ?)";
+    $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
+    mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
+    return mysqli_stmt_execute($insert_turno_stmt);
+}
+
 function inserisci_fatture($mysqli, $idPrestazioni, $numeroFattura, $costo) {
     $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `data`, `ora`) VALUES (?, ?, ?, CURDATE(), CURTIME())";
     $insert_fattura_stmt = mysqli_prepare($mysqli, $insert_fattura_query);

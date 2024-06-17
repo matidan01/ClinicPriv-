@@ -57,21 +57,12 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizzazione-pazienti">Visualizzazione Pazienti</h2>
                             <p class="card-text">Visualizza i dati dei pazienti.</p>
-                            <a href="Visualizza_clienti.php" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_pazienti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title" id="assegnamento-terapia">Assegnamento Nuova Terapia</h2>
-                            <p class="card-text">Assegna nuova terapia.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
@@ -81,22 +72,20 @@ $badgeN = $_GET['badgeN']
                         </div>
                     </div>
                 </div>
-            </div>
                 <?php
                 if(isPrimario($badgeN, $con)){
                 ?>
-            <div class="row mt-4">
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title">Gestione Turni</h2>
                             <p class="card-text">Gestisci i turni dei medici.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="gestisci_turni.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
+                <?php }?>       
             </div>
-                <?php }?>
         </div>
     </section>
 </body>

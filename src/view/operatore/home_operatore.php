@@ -57,7 +57,7 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizzazione-pazienti">Visualizzazione Pazienti</h2>
                             <p class="card-text">Visualizza i dati dei pazienti.</p>
-                            <a href="Visualizza_clienti.php" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_pazienti.php" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
