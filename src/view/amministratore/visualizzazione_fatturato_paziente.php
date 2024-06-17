@@ -42,8 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPaziente'])) {
                 foreach ($pazienti as $p) {
                     echo "<td>{$p['nome']}</td>";
                     echo "<td>{$p['cognome']}</td>";
-                    echo "<td>{$p['spesaTot']}</td>";
-                    echo "<td>{$p['spesaMedia']}</td>";
+                    echo "<td>{$p['spesaTot']}"."$"."</td>";
+                    echo "<td>{$p['spesaMedia']}"."$"."</td>";
                     echo "</tr>";
                 }
                 ?>

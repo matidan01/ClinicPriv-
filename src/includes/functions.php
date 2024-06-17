@@ -73,6 +73,23 @@ function create_badge($ruolo, $mysqli){
     return $badge;
 }
 
-function stampa_tabella_dati_personale($con){
-    $personale = tutto_personale($con);
+function create_codicePrestazione($tipo, $con){
+    switch($tipo){
+        case "intervento_chirurgico":
+            $num = get_max_codicePrestazione("I", $con);
+            $badge = "I"."$num";
+            break;
+        case "visita":
+            $num = get_max_codicePrestazione("V", $con);
+            $badge = "V"."$num";
+            break;
+        case "esame":
+            $num = get_max_codicePrestazione("E", $con);
+            $badge = "E"."$num";
+            break;
+        default:
+            print("Errore nella creazione del badge.");
+    }
+    return $badge;
 }
+

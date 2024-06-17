@@ -74,7 +74,7 @@ function get_medici($mysqli) {
     $medici = [];
     $query = "SELECT nBadge, nome, cognome
             FROM medico
-                ";  
+            WHERE fineRapporto IS NULL";  
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
@@ -122,6 +122,7 @@ function get_operatori($mysqli) {
     $operatori = [];
     $query = "SELECT nBadge, nome, cognome, CF
             FROM operatore
+            WHERE fineRapporto IS NULL
             "; 
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_execute($stmt);
@@ -344,6 +345,21 @@ function get_max_badge_number($tableName, $mysqli){
     return $maxVal+1;
 }
 
+function get_max_codicePrestazione($c, $mysqli){
+    $stmt = $mysqli->prepare("SELECT codicePrestazione FROM listino
+                            WHERE codicePrestazione LIKE '%$c%'");
+    $stmt->execute();
+    $codici = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $maxCodice = 0;
+    foreach($codici as $c){
+        $num = (integer)substr($c['codicePrestazione'], 1);
+        if($num > $maxCodice){
+            $maxCodice = $num;
+        }
+    }
+    return $maxCodice+1;
+}
+
 function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $email, $dataNascita, $luogoNascita, $telefono, $pw, $inizioRapporto){
     if($ruolo != "receptionist"){
         $stmt = $mysqli->prepare("INSERT INTO $ruolo (`nBadge`, `tipologia`, `nome`, `cognome`, `CF`, `emailAziendale`, 
@@ -505,4 +521,27 @@ function get_fatturato_mensile($mysqli){
     $stmt->bind_param("s", $current_year);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function tutto_listino($mysqli){
+    $stmt = $mysqli->prepare("SELECT * FROM listino");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function contenuto_in_listino($nome, $mysqli){
+    $stmt = $mysqli->prepare("SELECT nome FROM listino
+                            WHERE nome = ?");
+    $stmt->bind_param("s", $nome);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    return count($res) > 0;
+}
+
+function aggiungi_a_listino($nome, $costo, $tipo, $mysqli){
+    $codice = create_codicePrestazione($tipo, $mysqli);
+    $stmt = $mysqli->prepare("INSERT INTO listino (codicePrestazione, nome, costo) 
+                            VALUES (?, ?, ?);");
+    $stmt->bind_param("ssi", $codice, $nome, $costo);
+    $stmt->execute();
 }
