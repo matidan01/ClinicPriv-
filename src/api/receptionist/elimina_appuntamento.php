@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
     $id = $_POST['id'];
 
     // Controllo se l'appuntamento è già stato pagato
-    $query = "SELECT numeroFattura FROM fattura WHERE idPrestazione = ?";
+    $query = "SELECT numeroFattura FROM fattura WHERE idPrestazione = ? AND dataPagamento IS NOT NULL";
     $stmt = mysqli_prepare($con, $query);
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
