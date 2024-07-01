@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Giu 25, 2024 alle 11:00
--- Versione del server: 10.4.28-MariaDB
--- Versione PHP: 8.0.28
+-- Creato il: Lug 01, 2024 alle 13:40
+-- Versione del server: 10.4.32-MariaDB
+-- Versione PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -39,6 +39,8 @@ CREATE TABLE `amministratore` (
   `password` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `appuntamento`
 --
@@ -52,6 +54,8 @@ CREATE TABLE `appuntamento` (
   `ora` time(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `assistente`
 --
@@ -61,16 +65,7 @@ CREATE TABLE `assistente` (
   `nBadge` varchar(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Struttura della tabella `clinica`
---
-
-CREATE TABLE `clinica` (
-  `idClinica` int(6) NOT NULL,
-  `recapitoTelefonico` int(14) NOT NULL,
-  `nome` varchar(20) NOT NULL,
-  `e-mail` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `diagnosi`
@@ -79,17 +74,22 @@ CREATE TABLE `clinica` (
 CREATE TABLE `diagnosi` (
   `idPaziente` int(6) NOT NULL,
   `nBadgeMedico` varchar(6) DEFAULT NULL,
-  `nomePatologia` varchar(255) NOT NULL,
+  `idPatologia` int(6) NOT NULL,
   `descrizione` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `farmaco`
 --
 
 CREATE TABLE `farmaco` (
-  `nome` varchar(255) NOT NULL
+  `nome` varchar(255) NOT NULL,
+  `dose` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `fattura`
@@ -103,6 +103,8 @@ CREATE TABLE `fattura` (
   `dataPagamento` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `fornitore`
 --
@@ -114,13 +116,14 @@ CREATE TABLE `fornitore` (
   `email` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `indirizzo`
 --
 
 CREATE TABLE `indirizzo` (
   `id` int(6) NOT NULL,
-  `tipo` varchar(1) NOT NULL,
   `città` varchar(20) NOT NULL,
   `via` varchar(30) NOT NULL,
   `numeroCivico` int(5) NOT NULL,
@@ -128,6 +131,8 @@ CREATE TABLE `indirizzo` (
   `provincia` varchar(2) NOT NULL,
   `nazione` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `listino`
@@ -139,6 +144,7 @@ CREATE TABLE `listino` (
   `costo` decimal(8,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `materiale`
@@ -151,6 +157,8 @@ CREATE TABLE `materiale` (
   `prezzo` decimal(6,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `materialeordinato`
 --
@@ -160,6 +168,8 @@ CREATE TABLE `materialeordinato` (
   `idMateriale` int(6) NOT NULL,
   `quantita` int(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `medico`
@@ -180,6 +190,8 @@ CREATE TABLE `medico` (
   `fineRapporto` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `operatore`
 --
@@ -199,6 +211,8 @@ CREATE TABLE `operatore` (
   `fineRapporto` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `ordine`
 --
@@ -210,6 +224,8 @@ CREATE TABLE `ordine` (
   `dataConsegna` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `ospita`
 --
@@ -218,6 +234,19 @@ CREATE TABLE `ospita` (
   `numeroSala` int(3) NOT NULL,
   `idPrestazione` int(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `patologia`
+--
+
+CREATE TABLE `patologia` (
+  `idPatologia` int(6) NOT NULL,
+  `nomePatologia` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `paziente`
@@ -235,24 +264,21 @@ CREATE TABLE `paziente` (
   `note` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `prescrizione`
 --
 
 CREATE TABLE `prescrizione` (
-  `idTerpia` int(6) NOT NULL,
+  `idTerapia` int(11) NOT NULL,
   `nomeFarmaco` varchar(255) NOT NULL,
-  `descrizione` varchar(255) NOT NULL
+  `dose` varchar(30) DEFAULT NULL,
+  `idMedico` int(11) DEFAULT NULL,
+  `descrizione` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Struttura della tabella `proprieta`
---
-
-CREATE TABLE `proprieta` (
-  `idClinica` int(6) NOT NULL,
-  `idAmministratore` varchar(6) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `receptionist`
@@ -272,6 +298,8 @@ CREATE TABLE `receptionist` (
   `fineRapporto` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `responsabile`
 --
@@ -280,6 +308,8 @@ CREATE TABLE `responsabile` (
   `idPrestazione` int(6) NOT NULL,
   `nBadge` varchar(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `sala`
@@ -290,6 +320,8 @@ CREATE TABLE `sala` (
   `tipo` varchar(15) NOT NULL,
   `postiLetto` int(2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `terapia`
@@ -302,6 +334,8 @@ CREATE TABLE `terapia` (
   `idMedico` varchar(6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
 -- Struttura della tabella `turnomedico`
 --
@@ -311,6 +345,8 @@ CREATE TABLE `turnomedico` (
   `data` date NOT NULL,
   `tipoTurno` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `turnooperatore`
@@ -348,29 +384,24 @@ ALTER TABLE `assistente`
   ADD KEY `REF_ASS_OPERATORE` (`nBadge`);
 
 --
--- Indici per le tabelle `clinica`
---
-ALTER TABLE `clinica`
-  ADD PRIMARY KEY (`idClinica`);
-
---
 -- Indici per le tabelle `diagnosi`
 --
 ALTER TABLE `diagnosi`
-  ADD PRIMARY KEY (`idPaziente`,`nomePatologia`),
-  ADD KEY `REF_MED_DIAGN` (`nBadgeMedico`);
+  ADD PRIMARY KEY (`idPaziente`,`idPatologia`),
+  ADD KEY `REF_MED_DIAGN` (`nBadgeMedico`),
+  ADD KEY `REF_PATG_DIAGN` (`idPatologia`);
 
 --
 -- Indici per le tabelle `farmaco`
 --
 ALTER TABLE `farmaco`
-  ADD PRIMARY KEY (`nome`) USING BTREE;
+  ADD PRIMARY KEY (`nome`,`dose`);
 
 --
 -- Indici per le tabelle `fattura`
 --
 ALTER TABLE `fattura`
-  ADD PRIMARY KEY (`idPrestazione`,`numeroFattura`),
+  ADD PRIMARY KEY (`numeroFattura`),
   ADD UNIQUE KEY `idPrestazione_unico` (`idPrestazione`);
 
 --
@@ -383,7 +414,7 @@ ALTER TABLE `fornitore`
 -- Indici per le tabelle `indirizzo`
 --
 ALTER TABLE `indirizzo`
-  ADD PRIMARY KEY (`id`,`tipo`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indici per le tabelle `listino`
@@ -431,6 +462,12 @@ ALTER TABLE `ospita`
   ADD KEY `REF_OSP_PREST` (`idPrestazione`);
 
 --
+-- Indici per le tabelle `patologia`
+--
+ALTER TABLE `patologia`
+  ADD PRIMARY KEY (`idPatologia`);
+
+--
 -- Indici per le tabelle `paziente`
 --
 ALTER TABLE `paziente`
@@ -440,15 +477,8 @@ ALTER TABLE `paziente`
 -- Indici per le tabelle `prescrizione`
 --
 ALTER TABLE `prescrizione`
-  ADD PRIMARY KEY (`idTerpia`,`nomeFarmaco`) USING BTREE,
-  ADD KEY `REF_PRESC_FARM_NOM` (`nomeFarmaco`);
-
---
--- Indici per le tabelle `proprieta`
---
-ALTER TABLE `proprieta`
-  ADD PRIMARY KEY (`idClinica`,`idAmministratore`),
-  ADD KEY `REF_AMMINSTRATORE` (`idAmministratore`);
+  ADD PRIMARY KEY (`idTerapia`,`nomeFarmaco`),
+  ADD KEY `REF_PRESC_FARMACO` (`nomeFarmaco`,`dose`);
 
 --
 -- Indici per le tabelle `receptionist`
@@ -497,13 +527,19 @@ ALTER TABLE `turnooperatore`
 -- AUTO_INCREMENT per la tabella `materiale`
 --
 ALTER TABLE `materiale`
-  MODIFY `idMateriale` int(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idMateriale` int(6) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT per la tabella `ordine`
 --
 ALTER TABLE `ordine`
-  MODIFY `idOrdine` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idOrdine` int(5) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT per la tabella `terapia`
+--
+ALTER TABLE `terapia`
+  MODIFY `idTerapia` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Limiti per le tabelle scaricate
@@ -528,6 +564,7 @@ ALTER TABLE `assistente`
 --
 ALTER TABLE `diagnosi`
   ADD CONSTRAINT `REF_MED_DIAGN` FOREIGN KEY (`nBadgeMedico`) REFERENCES `medico` (`nBadge`),
+  ADD CONSTRAINT `REF_PATG_DIAGN` FOREIGN KEY (`idPatologia`) REFERENCES `patologia` (`idPatologia`),
   ADD CONSTRAINT `REF_PAZT_DIAGN` FOREIGN KEY (`idPaziente`) REFERENCES `paziente` (`idPaziente`);
 
 --
@@ -560,15 +597,8 @@ ALTER TABLE `ospita`
 -- Limiti per la tabella `prescrizione`
 --
 ALTER TABLE `prescrizione`
-  ADD CONSTRAINT `REF_PRESC_FARM_NOM` FOREIGN KEY (`nomeFarmaco`) REFERENCES `farmaco` (`nome`),
-  ADD CONSTRAINT `REF_PRESC_TERAPIA` FOREIGN KEY (`idTerpia`) REFERENCES `terapia` (`idTerapia`);
-
---
--- Limiti per la tabella `proprieta`
---
-ALTER TABLE `proprieta`
-  ADD CONSTRAINT `REF_AMMINSTRATORE` FOREIGN KEY (`idAmministratore`) REFERENCES `amministratore` (`idAmministratore`),
-  ADD CONSTRAINT `REF_CLINICA` FOREIGN KEY (`idClinica`) REFERENCES `clinica` (`idClinica`);
+  ADD CONSTRAINT `REF_PRESC_FARMACO` FOREIGN KEY (`nomeFarmaco`,`dose`) REFERENCES `farmaco` (`nome`, `dose`),
+  ADD CONSTRAINT `REF_PRESC_TERAPIA` FOREIGN KEY (`idTerapia`) REFERENCES `terapia` (`idTerapia`);
 
 --
 -- Limiti per la tabella `responsabile`
