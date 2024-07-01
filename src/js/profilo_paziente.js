@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         row.className = 'row mb-3';
         row.innerHTML = `
             <div class="col">
-                <input type="text" class="form-control" name="nomeFarmaco[]" placeholder="Nome Farmaco" required>
+                <input list="farmaci" class="form-control" name="nomeFarmaco[]" placeholder="Farmaco" required>
             </div>
             <div class="col">
                 <input type="text" class="form-control" name="descrizione[]" placeholder="Descrizione">

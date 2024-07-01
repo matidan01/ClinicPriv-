@@ -25,8 +25,11 @@ $email = $row['email'];
 $note = $row['note'];
 
 // Memorizza tutti i dati relativi l'indirizzo del paziente
-$get_indirizzo_paziente = "select * from indirizzo where id ='$id' and tipo='P'";
-$run_indirizzo_paziente = mysqli_query($con,$get_indirizzo_paziente);
+$get_indirizzo_paziente = "select * from indirizzo where id = ?";
+$stmt = mysqli_prepare($con, $get_indirizzo_paziente);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$run_indirizzo_paziente = mysqli_stmt_get_result($stmt);
 $row_indirizzo_paziente = mysqli_fetch_array($run_indirizzo_paziente);
 
 $via = $row_indirizzo_paziente['via'];

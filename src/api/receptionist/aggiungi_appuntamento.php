@@ -48,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     inserisci_responsabili($con, $idPrestazione, $medici);
     inserisci_assistenti($con, $idPrestazione, $operatori);
+    inserisci_fattura($con, $idPrestazione);
 
     // Rimanda al profilo dell'appuntamento
     header("Location: ../../view/receptionist/profilo_appuntamento.php?idPrestazione=" . urlencode($idPrestazione));

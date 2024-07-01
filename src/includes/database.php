@@ -118,6 +118,22 @@ function get_materiali($mysqli) {
     return $materiali;
 }
 
+function get_farmaci($mysqli) {
+    $farmaci = [];
+    $query = "SELECT *
+                FROM farmaco
+            "; 
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $farmaci[] = $row;
+        }
+    } 
+    return $farmaci;
+}
+
 function get_operatori($mysqli) {
     $operatori = [];
     $query = "SELECT nBadge, nome, cognome, CF
@@ -203,11 +219,20 @@ function get_assistenti_intervento($mysqli, $idPrestazione) {
     return $operatori; 
 }
 
-function inserisci_fattura($mysqli, $idPrestazione, $numeroFattura, $costo) {
-    $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `data`, `ora`) VALUES (?, ?, ?, CURDATE(), CURTIME())";
+function inserisci_fattura($mysqli, $idPrestazione) {
+    $numeroFattura = get_last_numero_fattura($mysqli) + 1;
+    $costo = get_costo($mysqli, $idPrestazione);
+    $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `dataEmissione`) VALUES (?, ?, ?, CURDATE())";
     $insert_fattura_stmt = mysqli_prepare($mysqli, $insert_fattura_query);
     mysqli_stmt_bind_param($insert_fattura_stmt, 'iis', $idPrestazione, $numeroFattura, $costo);
     return mysqli_stmt_execute($insert_fattura_stmt);
+}
+
+function paga_fattura($mysqli, $idPrestazione) {
+    $paga_fattura_query = "UPDATE fattura SET dataPagamento = CURDATE() WHERE idPrestazione = ?";
+    $paga_fattura_stmt = mysqli_prepare($mysqli, $paga_fattura_query);
+    mysqli_stmt_bind_param($paga_fattura_stmt, 'i', $idPrestazione);
+    return mysqli_stmt_execute($paga_fattura_stmt);
 }
 
 function inserisci_diagnosi($mysqli, $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione) {
@@ -231,20 +256,10 @@ function inserisci_turno($mysqli, $nBadge, $data, $tipoTurno){
     return mysqli_stmt_execute($insert_turno_stmt);
 }
 
-function inserisci_fatture($mysqli, $idPrestazioni, $numeroFattura, $costo) {
-    $insert_fattura_query = "INSERT INTO `fattura`(`idPrestazione`, `numeroFattura`, `totale`, `data`, `ora`) VALUES (?, ?, ?, CURDATE(), CURTIME())";
-    $insert_fattura_stmt = mysqli_prepare($mysqli, $insert_fattura_query);
-    mysqli_stmt_bind_param($insert_fattura_stmt, 'iis', $idPrestazione, $numeroFattura, $costo);
-    foreach($idPrestazioni as $idPrestazione) {
-        mysqli_stmt_execute($insert_fattura_stmt);
-    }
-}
-
 function inserisci_assistenti($con, $idPrestazione, $operatori) {
     $insert_assistente_query = "INSERT INTO `assistente`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
     $insert_assistente_stmt = mysqli_prepare($con, $insert_assistente_query);
     mysqli_stmt_bind_param($insert_assistente_stmt, 'is', $idPrestazione, $nBadge);
-    mysqli_stmt_execute($insert_assistente_stmt);
 
     foreach($operatori as $nBadge) {
         mysqli_stmt_execute($insert_assistente_stmt);
@@ -255,7 +270,6 @@ function inserisci_responsabili($con, $idPrestazione, $medici) {
     $insert_responsabile_query = "INSERT INTO `responsabile`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
     $insert_responsabile_stmt = mysqli_prepare($con, $insert_responsabile_query);
     mysqli_stmt_bind_param($insert_responsabile_stmt, 'is', $idPrestazione, $nBadge);
-    mysqli_stmt_execute($insert_responsabile_stmt);
 
     foreach($medici as $nBadge) {
         mysqli_stmt_execute($insert_responsabile_stmt);
@@ -283,7 +297,7 @@ function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
                     INNER JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
                     LEFT JOIN fattura ON appuntamento.idPrestazione = fattura.idPrestazione
                     WHERE appuntamento.idPaziente = ?
-                    AND fattura.idPrestazione IS NULL
+                    AND fattura.dataPagamento IS NULL
                 ";
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_bind_param($stmt, 'i', $idPaziente);

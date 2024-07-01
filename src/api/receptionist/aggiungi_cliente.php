@@ -32,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Se l'inserimento/modifica è andata a buon fine allora memorizza i dati per inserire/modificare indirizzo
     if($run_paziente) {
-        $tipo = 'P';
         $citta = $_POST['citta'];
         $via = $_POST['via'];
         $numeroCivico = $_POST['numeroCivico'];
@@ -41,14 +40,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nazione = $_POST['nazione'];
 
         if(isset($_POST['modifica'])) {
-            $update_indirizzo_query = "UPDATE indirizzo SET città = ?, via = ?, numeroCivico = ?, CAP = ?, provincia = ?, nazione = ? WHERE id = ? AND tipo = ?";                
+            $update_indirizzo_query = "UPDATE indirizzo SET città = ?, via = ?, numeroCivico = ?, CAP = ?, provincia = ?, nazione = ? WHERE id = ?";                
             $stmt_update_indirizzo = mysqli_prepare($con, $update_indirizzo_query);
-            mysqli_stmt_bind_param($stmt_update_indirizzo, "ssiissis", $citta, $via, $numeroCivico, $cap, $provincia, $nazione, $idPaziente, $tipo);
+            mysqli_stmt_bind_param($stmt_update_indirizzo, "ssiissi", $citta, $via, $numeroCivico, $cap, $provincia, $nazione, $idPaziente);
             $run_indirizzo = mysqli_stmt_execute($stmt_update_indirizzo);
         } else {
-            $insert_indirizzo_query = "INSERT INTO indirizzo(id, tipo, città, via, numeroCivico, CAP, provincia, nazione) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $insert_indirizzo_query = "INSERT INTO indirizzo(id, città, via, numeroCivico, CAP, provincia, nazione) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt_insert_indirizzo = mysqli_prepare($con, $insert_indirizzo_query);
-            mysqli_stmt_bind_param($stmt_insert_indirizzo, "isssiiss", $idPaziente, $tipo, $citta, $via, $numeroCivico, $cap, $provincia, $nazione);
+            mysqli_stmt_bind_param($stmt_insert_indirizzo, "issiiss", $idPaziente, $citta, $via, $numeroCivico, $cap, $provincia, $nazione);
             $run_indirizzo = mysqli_stmt_execute($stmt_insert_indirizzo);
         }
 
