@@ -29,8 +29,11 @@ $email = $row['email'];
 $note = $row['note'];
 
 // Memorizza tutti i dati relativi l'indirizzo del paziente
-$get_indirizzo_paziente = "select * from indirizzo where id ='$id' and tipo='P'";
-$run_indirizzo_paziente = mysqli_query($con,$get_indirizzo_paziente);
+$get_indirizzo_paziente = "select * from indirizzo where id = ?";
+$stmt = mysqli_prepare($con, $get_indirizzo_paziente);
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$run_indirizzo_paziente = mysqli_stmt_get_result($stmt);
 $row_indirizzo_paziente = mysqli_fetch_array($run_indirizzo_paziente);
 
 $via = $row_indirizzo_paziente['via'];
@@ -56,6 +59,7 @@ if (mysqli_num_rows($result) > 0) {
 // Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
+$farm = get_farmaci($con);
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -198,7 +202,7 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
 
 
-    <!-- Modale per Aggiungere Cliente -->
+    <!-- Modale per Modificare Cliente -->
     <div class="modal fade" id="modificaClienteModal" tabindex="-1" aria-labelledby="modificaClienteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -297,7 +301,14 @@ $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
                         </div>
                         <p>Farmaci:</p>
                         <div id="farmaciContainer"></div>
-
+                        <datalist id="farmaci">
+                            <?php
+                                foreach($farm as $farmaco) {
+                                    $str = $farmaco['nome'] . ' ' . $farmaco['dose'];
+                                    echo '<option value="' . $str . '">';
+                                };
+                            ?>
+                        </datalist>
                     </form>
                     <!-- Bottone "+" per aggiungere righe -->
                     <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
