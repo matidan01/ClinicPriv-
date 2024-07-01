@@ -9,8 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nBadgeMedico = $_POST['nBadge'];
     $descrizione = $_POST['descrizione'];
 
-    inserisci_diagnosi($con, $idPaziente, $nBadgeMedico, $patologia, $descrizione);
-    inserisci_patologie($con, $idPaziente, $patologia);
+    inserisci_diagnosi($con, $idPaziente, $nBadgeMedico, $idPatologia, $descrizione);
 
 
     header("Location: ../../view/receptionist/profilo_paziente.php?nBadge=$nBadge&idPaziente=$idPaziente");
