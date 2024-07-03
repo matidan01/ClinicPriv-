@@ -190,7 +190,8 @@ if (mysqli_num_rows($result) > 0) {
                     <?php foreach ($terapia as $t): ?>
                         <?php 
                             $id_terapia = $t['idTerapia'];
-                            $get_farmaci = "SELECT * FROM prescrizione WHERE idTerapia = '$id_terapia'";
+                            $get_farmaci = "SELECT * FROM prescrizione WHERE idTerapia = '?'";
+                            mysqli_stmt_bind_param($stmt, "i", $id_terapia);
                             $run_farmaci = mysqli_query($con, $get_farmaci);
                             $farmaci = array(); 
                             if (mysqli_num_rows($run_farmaci) > 0) {
