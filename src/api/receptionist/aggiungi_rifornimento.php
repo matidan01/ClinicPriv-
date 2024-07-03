@@ -2,6 +2,7 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+var_dump($_POST);
 // Gestisce l'inserimento di un nuovo ordine 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -25,11 +26,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fornitore = explode(" ", $_POST['fornitore']);
         $idFornitore = intval($fornitore[0]);
 
+        $receptionist = $_POST['receptionist'];
+
         $idOrdine = get_last_id_ordine($con) + 1;
 
-        $insert_rifornimento_query = "INSERT INTO `ordine`(`idOrdine`, `idFornitore`, `dataOrdine`, `dataConsegna`) VALUES (?, ?, CURDATE(), NULL)";
+        $insert_rifornimento_query = "INSERT INTO `ordine`(`idOrdine`, `idFornitore`, `dataOrdine`, `dataConsegna`, `nBadge`) VALUES (?, ?, CURDATE(), NULL, ?)";
         $stmt_insert_rifornimento = mysqli_prepare($con, $insert_rifornimento_query);
-        mysqli_stmt_bind_param($stmt_insert_rifornimento, "is", $idOrdine, $idFornitore);
+        mysqli_stmt_bind_param($stmt_insert_rifornimento, "iss", $idOrdine, $idFornitore, $receptionist);
         $run_rifornimento = mysqli_stmt_execute($stmt_insert_rifornimento);
 
         $insert_materiale_query = "INSERT INTO `materialeordinato`(`idOrdine`, `idMateriale`, `quantita`) VALUES (?, ?, ?)";

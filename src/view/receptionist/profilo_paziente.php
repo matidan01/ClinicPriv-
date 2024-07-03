@@ -294,10 +294,6 @@ $farm = get_farmaci($con);
                                 <label for="dataScadenza" class="form-label">Data Scadenza:</label>
                                 <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
                             </div>
-                            <div class="col">
-                                <label for="idMedico" class="form-label">Numero Badge Medico:</label>
-                                <input type="text" class="form-control" id="idMedico" name="idMedico">
-                            </div>
                         </div>
                         <p>Farmaci:</p>
                         <div id="farmaciContainer"></div>

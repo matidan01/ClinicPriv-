@@ -5,6 +5,7 @@
     // Prende i valori da poter mostrare nel datalist come suggerimento di input
     $fornitori = get_fornitori($con);
     $materiali = get_materiali($con);
+    $receptionist = get_receptionist($con);
 
     // Memorizza i dati dei rifornimenti
     $rifornimenti = [];
@@ -12,7 +13,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Memorizza i dati riguardanti gli ordini da ricevere dal più recente
         if(isset($_POST['ricercaDaRicevere'])) {
-            $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna,
+            $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna, ordine.nBadge,
                             fornitore.nome AS nome_fornitore,
                             COUNT(materialeordinato.idMateriale) AS num_materiali_ordinati,
                             GROUP_CONCAT(materiale.nome SEPARATOR ', ') AS nomi_materiali,
@@ -29,8 +30,8 @@
         
             $stmt = mysqli_prepare($con, $query);
         } else {
-            // Memorizza i dati riguardanti tutti gli ordini da più recente 
-            $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna,
+            // Memorizza i dati riguardanti tutti gli ordini dal più recente 
+            $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna, ordine.nBadge,
                         fornitore.nome AS nome_fornitore, 
                         COUNT(materialeordinato.idMateriale) AS num_materiali_ordinati,
                         GROUP_CONCAT(materiale.nome SEPARATOR ', ') AS nomi_materiali,
@@ -127,6 +128,7 @@ function aggiungiRighe() {
                     <th scope="col">ID ordine</th>
                     <th scope="col">ID Fornitore</th>
                     <th scope="col">Nome Fornitore</th>
+                    <th scope="col">Badge</th>
                     <th scope="col">Materiale</th>
                     <th scope="col">Quantità</th>
                     <th scope="col">Data ordine</th>
@@ -146,6 +148,7 @@ function aggiungiRighe() {
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['idOrdine']}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['idFornitore']}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['nome_fornitore']}</td>";
+                        echo "<td rowspan='{$n_materiali}'>{$rifornimento['nBadge']}</td>";
                         echo "<td>{$materiali[0]}</td>";
                         echo "<td>{$quantita[0]}</td>";
                         echo "<td rowspan='{$n_materiali}'>{$rifornimento['dataOrdine']}</td>";
@@ -185,6 +188,18 @@ function aggiungiRighe() {
                                 <?php
                                     foreach($fornitori as $fornitore) {
                                         $str = $fornitore['idFornitore'] . ' ' . $fornitore['nome'];
+                                        echo '<option value="' . $str . '">';
+                                    };
+                                ?>
+                            </datalist>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receptionist" class="form-label">Receptionist:</label>
+                            <input list="rec" name="receptionist" required>
+                            <datalist id="rec">
+                                <?php
+                                    foreach($receptionist as $r) {
+                                        $str = $r['nBadge'];
                                         echo '<option value="' . $str . '">';
                                     };
                                 ?>

@@ -118,6 +118,22 @@ function get_materiali($mysqli) {
     return $materiali;
 }
 
+function get_receptionist($mysqli) {
+    $receptionist = [];
+    $query = "SELECT nBadge
+                FROM receptionist
+            "; 
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while($row = mysqli_fetch_assoc($result)) {
+            $receptionist[] = $row;
+        }
+    } 
+    return $receptionist;
+}
+
 function get_farmaci($mysqli) {
     $farmaci = [];
     $query = "SELECT *
