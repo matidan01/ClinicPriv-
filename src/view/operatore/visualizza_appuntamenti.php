@@ -15,13 +15,12 @@
         
             $query = "SELECT DISTINCT prestazione.idPrestazione, prestazione.idPaziente, prestazione.dataInizio,
             prestazione.dataFine, prestazione.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
+            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, prestazione.sala AS numeroSala
                     FROM prestazione
                     INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
                     LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
                     LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
                     LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
                         FROM medico
@@ -44,13 +43,12 @@
         } else {
             $query = "SELECT DISTINCT prestazione.idPrestazione, prestazione.idPaziente, prestazione.dataInizio,
             prestazione.dataFine, prestazione.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
+            paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, prestazione.sala AS numeroSala
                     FROM prestazione
                     INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
                     LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
                     LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
                     LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
                         FROM medico

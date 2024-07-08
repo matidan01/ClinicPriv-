@@ -29,13 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
             elimina_assistente($con, $id, $operatore);
         }
 
-        $query = "DELETE FROM ospita
-                WHERE idPrestazione = ?
-                ";  
-        $stmt = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($stmt, "i", $id);
-        mysqli_stmt_execute($stmt);  
-
         $query = "DELETE FROM prestazione
                 WHERE idPrestazione = ?
                 ";  

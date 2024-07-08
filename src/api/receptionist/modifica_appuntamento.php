@@ -18,21 +18,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dataInizio'])) {
     $update_data_ora = "UPDATE prestazione
                         SET dataInizio = ?,
                             dataFine = ?,
-                            ora = ?
+                            ora = ?,
+                            sala = ?
                         WHERE idPrestazione = ?;
                     ";
 
     $stmt = mysqli_prepare($con, $update_data_ora);
-    mysqli_stmt_bind_param($stmt, "sssi", $dataInizio, $dataFine, $ora, $id);
+    mysqli_stmt_bind_param($stmt, "sssii", $dataInizio, $dataFine, $ora, $numeroSala, $id);
     mysqli_stmt_execute($stmt);
-
-    $update_sala = "UPDATE ospita
-                    SET numeroSala = ?
-                    WHERE idPrestazione = ?;
-                ";
-    $stmt = mysqli_prepare($con, $update_sala);
-    mysqli_stmt_bind_param($stmt, "ii", $numeroSala, $id);
-    mysqli_stmt_execute($stmt);  
 
 // Modifica dei responsabili e assistenti dell'appuntamento 
 } else if ($_SERVER["REQUEST_METHOD"] == "POST") {
