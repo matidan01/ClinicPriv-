@@ -13,59 +13,59 @@
         if(isset($_GET['data'])) {
             $data = $_GET['data'];
         
-            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
-            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+            $query = "SELECT DISTINCT prestazione.idPrestazione, prestazione.idPaziente, prestazione.dataInizio,
+            prestazione.dataFine, prestazione.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
             paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
-                    FROM appuntamento
-                    INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
-                    LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
-                    LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
-                    LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                    FROM prestazione
+                    INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
+                    LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
+                    LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
+                    LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
+                    LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
                         FROM medico
                         INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
-                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                        GROUP BY idPrestazione) AS medici ON prestazione.idPrestazione = medici.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
                         FROM operatore
                         INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
-                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                        GROUP BY idPrestazione) AS operatori ON prestazione.idPrestazione = operatori.idPrestazione
                     WHERE 
-                        DATE(appuntamento.dataInizio) = ?
+                        DATE(prestazione.dataInizio) = ?
                         AND assistente.nBadge = ?
                     ORDER BY 
-                        appuntamento.ora ASC;
+                        prestazione.ora ASC;
                 ";
         
             $stmt = mysqli_prepare($con, $query);
             mysqli_stmt_bind_param($stmt, "ss", $data, $nBadge);
         } else {
-            $query = "SELECT DISTINCT appuntamento.idPrestazione, appuntamento.idPaziente, appuntamento.dataInizio,
-            appuntamento.dataFine, appuntamento.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+            $query = "SELECT DISTINCT prestazione.idPrestazione, prestazione.idPaziente, prestazione.dataInizio,
+            prestazione.dataFine, prestazione.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
             paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, ospita.numeroSala
-                    FROM appuntamento
-                    INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
-                    LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
-                    LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
-                    LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
+                    FROM prestazione
+                    INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
+                    LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
+                    LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
+                    LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
+                    LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
                         FROM medico
                         INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
-                        GROUP BY idPrestazione) AS medici ON appuntamento.idPrestazione = medici.idPrestazione
+                        GROUP BY idPrestazione) AS medici ON prestazione.idPrestazione = medici.idPrestazione
                     LEFT JOIN 
                         (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
                         FROM operatore
                         INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
-                        GROUP BY idPrestazione) AS operatori ON appuntamento.idPrestazione = operatori.idPrestazione
+                        GROUP BY idPrestazione) AS operatori ON prestazione.idPrestazione = operatori.idPrestazione
                     WHERE 
-                        DATE(appuntamento.dataInizio) >= CURDATE()
+                        DATE(prestazione.dataInizio) >= CURDATE()
                         AND assistente.nBadge = ?
                     ORDER BY 
-                        appuntamento.ora ASC;
+                        prestazione.ora ASC;
         ";
             $stmt = mysqli_prepare($con, $query);
             mysqli_stmt_bind_param($stmt, "s", $nBadge);

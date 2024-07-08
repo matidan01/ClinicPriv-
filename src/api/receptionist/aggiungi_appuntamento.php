@@ -5,7 +5,7 @@ include_once("../../includes/database.php");
 // Gestisci l'inserimento di un nuovo appuntamento
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // Memorizza i dati da inserire nella tabella 'appuntamento'
+    // Memorizza i dati da inserire nella tabella 'prestazione'
     $paziente = explode(" ", $_POST['pazienti']);
     $idPaziente = intval($paziente[0]);
 
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $prestazione = explode(" ", $_POST['tipo']); 
     $codicePrestazione = $prestazione[0];
 
-    $insert_appuntamento_query = "INSERT INTO `appuntamento`(`idPaziente`, `idPrestazione`, `dataInizio`, `dataFine`, `codicePrestazione`, `ora`) VALUES (?, ?, ?, ?, ?, ?)";
+    $insert_appuntamento_query = "INSERT INTO `prestazione`(`idPaziente`, `idPrestazione`, `dataInizio`, `dataFine`, `codicePrestazione`, `ora`) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt_insert_appuntamento = mysqli_prepare($con, $insert_appuntamento_query);
     mysqli_stmt_bind_param($stmt_insert_appuntamento, "iissss", $idPaziente, $idPrestazione, $dataInizio, $dataFine, $codicePrestazione, $ora);
     $run_appuntamento = mysqli_stmt_execute($stmt_insert_appuntamento);

@@ -18,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $descrizioni = array();
 
     foreach ($_POST['nomeFarmaco'] as $key => $value) {
-         // Memorizza i dati da inserire nella tabella 'appuntamento'
         $str = explode(" ", $value);
         $farmaci[] = $str[0];
         $dose[] = $str[1];

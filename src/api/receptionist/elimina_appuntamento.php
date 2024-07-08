@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id'])) {
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);  
 
-        $query = "DELETE FROM appuntamento
+        $query = "DELETE FROM prestazione
                 WHERE idPrestazione = ?
                 ";  
         $stmt = mysqli_prepare($con, $query);

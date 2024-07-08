@@ -15,7 +15,7 @@ function get_last_id_terapia($mysqli) {
 }
 
 function get_last_id_appuntamento($mysqli) {
-    $stmt = $mysqli->prepare("SELECT max(idPrestazione) FROM appuntamento");
+    $stmt = $mysqli->prepare("SELECT max(idPrestazione) FROM prestazione");
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc()["max(idPrestazione)"];
 }
@@ -293,10 +293,10 @@ function inserisci_responsabili($con, $idPrestazione, $medici) {
 }
 
 function get_costo($mysqli, $idPrestazione) {
-    $query = "SELECT appuntamento.idPrestazione, appuntamento.codicePrestazione, listino.costo
-                FROM appuntamento 
-                LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                WHERE appuntamento.idPrestazione = ?;
+    $query = "SELECT prestazione.idPrestazione, prestazione.codicePrestazione, listino.costo
+                FROM prestazione 
+                LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
+                WHERE prestazione.idPrestazione = ?;
             ";  
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_bind_param($stmt, "i", $idPrestazione);
@@ -308,11 +308,11 @@ function get_costo($mysqli, $idPrestazione) {
 
 function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
     $prestazioni = [];
-    $query = "SELECT appuntamento.idPrestazione, appuntamento.dataInizio, listino.costo as costo, listino.nome as nome
-                    FROM appuntamento
-                    INNER JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
-                    LEFT JOIN fattura ON appuntamento.idPrestazione = fattura.idPrestazione
-                    WHERE appuntamento.idPaziente = ?
+    $query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
+                    FROM prestazione
+                    INNER JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
+                    LEFT JOIN fattura ON prestazione.idPrestazione = fattura.idPrestazione
+                    WHERE prestazione.idPaziente = ?
                     AND fattura.dataPagamento IS NULL
                 ";
     $stmt = mysqli_prepare($mysqli, $query);
@@ -421,7 +421,7 @@ function calcola_fatturato_tra_date($dataInizio, $dataFine, $mysqli){
 
 function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT COUNT(idPrestazione)
-                      FROM appuntamento
+                      FROM prestazione
                       WHERE dataInizio >= ?
                       AND dataFine <= ?");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
@@ -433,7 +433,7 @@ function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysq
 function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, SUM(f.totale)
                             FROM fattura AS f 
-                            JOIN appuntamento AS a ON f.idPrestazione= a.codicePrestazione
+                            JOIN prestazione AS a ON f.idPrestazione= a.codicePrestazione
                             JOIN responsabile AS r on a.idPrestazione = r.idPrestazione
                             RIGHT OUTER JOIN medico AS m ON m.nBadge = r.nBadge
                             AND f.dataPagamento >= ?
@@ -446,7 +446,7 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
 
 function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
-                              FROM appuntamento AS a
+                              FROM prestazione AS a
                               JOIN responsabile AS r ON a.idPrestazione = r.idPrestazione
                               JOIN medico AS m ON r.nBadge = m.nBadge
                               WHERE a.dataInizio >= ?
@@ -461,7 +461,7 @@ function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
 function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT SUM(l.costo) AS totale, l.nome, MONTH(f.dataPagamento) AS month
                             FROM fattura AS f
-                            JOIN appuntamento AS a ON f.idPrestazione = a.idPrestazione
+                            JOIN prestazione AS a ON f.idPrestazione = a.idPrestazione
                             JOIN listino AS l ON a.codicePrestazione = l.codicePrestazione
                             AND f.dataPagamento >= ?
                             AND f.dataPagamento <= ?
@@ -534,7 +534,7 @@ function isCaposala($badgeNum, $mysqli){
 function fatturato_medio_e_totale_clienti($mysqli){
     $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
                               FROM paziente AS p 
-                              JOIN appuntamento AS a ON a.idPaziente = p.idPaziente
+                              JOIN prestazione AS a ON a.idPaziente = p.idPaziente
                               JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
                               AND f.dataPagamento IS NOT NULL
                               GROUP BY p.idPaziente");

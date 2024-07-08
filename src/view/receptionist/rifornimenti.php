@@ -15,13 +15,13 @@
         if(isset($_POST['ricercaDaRicevere'])) {
             $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna, ordine.nBadge,
                             fornitore.nome AS nome_fornitore,
-                            COUNT(materialeordinato.idMateriale) AS num_materiali_ordinati,
+                            COUNT(rifornimento.idMateriale) AS num_materiali_ordinati,
                             GROUP_CONCAT(materiale.nome SEPARATOR ', ') AS nomi_materiali,
-                            GROUP_CONCAT(materialeordinato.quantita SEPARATOR ', ') AS quantita_materiali,
-                            SUM(materiale.prezzo * materialeordinato.quantita) AS totale_ordine
+                            GROUP_CONCAT(rifornimento.quantita SEPARATOR ', ') AS quantita_materiali,
+                            SUM(materiale.prezzo * rifornimento.quantita) AS totale_ordine
                         FROM ordine
-                        LEFT JOIN materialeordinato ON ordine.idOrdine = materialeordinato.idOrdine
-                        LEFT JOIN materiale ON materialeordinato.idMateriale = materiale.idMateriale
+                        LEFT JOIN rifornimento ON ordine.idOrdine = rifornimento.idOrdine
+                        LEFT JOIN materiale ON rifornimento.idMateriale = materiale.idMateriale
                         LEFT JOIN fornitore ON ordine.idFornitore = fornitore.idFornitore
                         WHERE ordine.dataConsegna IS NULL
                         GROUP BY ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna
@@ -33,13 +33,13 @@
             // Memorizza i dati riguardanti tutti gli ordini dal più recente 
             $query = "SELECT ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna, ordine.nBadge,
                         fornitore.nome AS nome_fornitore, 
-                        COUNT(materialeordinato.idMateriale) AS num_materiali_ordinati,
+                        COUNT(rifornimento.idMateriale) AS num_materiali_ordinati,
                         GROUP_CONCAT(materiale.nome SEPARATOR ', ') AS nomi_materiali,
-                        GROUP_CONCAT(materialeordinato.quantita SEPARATOR ', ') AS quantita_materiali,
-                        SUM(materiale.prezzo * materialeordinato.quantita) AS totale_ordine
+                        GROUP_CONCAT(rifornimento.quantita SEPARATOR ', ') AS quantita_materiali,
+                        SUM(materiale.prezzo * rifornimento.quantita) AS totale_ordine
                     FROM ordine
-                    LEFT JOIN materialeordinato ON ordine.idOrdine = materialeordinato.idOrdine
-                    LEFT JOIN materiale ON materialeordinato.idMateriale = materiale.idMateriale
+                    LEFT JOIN rifornimento ON ordine.idOrdine = rifornimento.idOrdine
+                    LEFT JOIN materiale ON rifornimento.idMateriale = materiale.idMateriale
                     LEFT JOIN fornitore ON ordine.idFornitore = fornitore.idFornitore
                     GROUP BY ordine.idOrdine, ordine.idFornitore, ordine.dataOrdine, ordine.dataConsegna
                     ORDER BY ordine.dataOrdine DESC;

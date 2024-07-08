@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_bind_param($stmt_insert_rifornimento, "iss", $idOrdine, $idFornitore, $receptionist);
         $run_rifornimento = mysqli_stmt_execute($stmt_insert_rifornimento);
 
-        $insert_materiale_query = "INSERT INTO `materialeordinato`(`idOrdine`, `idMateriale`, `quantita`) VALUES (?, ?, ?)";
+        $insert_materiale_query = "INSERT INTO `rifornimento`(`idOrdine`, `idMateriale`, `quantita`) VALUES (?, ?, ?)";
         $stmt_insert_materiale = mysqli_prepare($con, $insert_materiale_query);
 
         for($i = 0; $i < count($materiali); $i++) {

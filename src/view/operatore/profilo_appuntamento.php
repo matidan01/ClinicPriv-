@@ -11,21 +11,21 @@ $sale = get_sale($con);
 $medici = get_medici($con);
 $operatori = get_operatori($con);
 
-$get_appuntamento = "SELECT appuntamento.idPrestazione, appuntamento.codicePrestazione, 
-                appuntamento.idPaziente, appuntamento.dataInizio, appuntamento.dataFine, appuntamento.ora, listino.nome,
+$get_appuntamento = "SELECT prestazione.idPrestazione, prestazione.codicePrestazione, 
+                prestazione.idPaziente, prestazione.dataInizio, prestazione.dataFine, prestazione.ora, listino.nome,
                 paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
                 GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti,
                 GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti,
                 ospita.numeroSala
-                FROM appuntamento
-                INNER JOIN paziente ON appuntamento.idPaziente = paziente.idPaziente
-                LEFT JOIN responsabile ON appuntamento.idPrestazione = responsabile.idPrestazione
-                LEFT JOIN assistente ON appuntamento.idPrestazione = assistente.idPrestazione
-                LEFT JOIN listino ON appuntamento.codicePrestazione = listino.codicePrestazione
+                FROM prestazione
+                INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
+                LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
+                LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
+                LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
                 LEFT JOIN medico ON responsabile.nBadge = medico.nBadge
                 LEFT JOIN operatore ON assistente.nBadge = operatore.nBadge
-                LEFT JOIN ospita ON appuntamento.idPrestazione = ospita.idPrestazione
-                WHERE appuntamento.idPrestazione = ?
+                LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
+                WHERE prestazione.idPrestazione = ?
                 ";
 
 $stmt = mysqli_prepare($con, $get_appuntamento);

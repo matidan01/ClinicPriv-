@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['dataInizio'])) {
     $sala = explode(" ", $_POST['sala']);
     $numeroSala = intval($sala[0]);
 
-    $update_data_ora = "UPDATE appuntamento
+    $update_data_ora = "UPDATE prestazione
                         SET dataInizio = ?,
                             dataFine = ?,
                             ora = ?
