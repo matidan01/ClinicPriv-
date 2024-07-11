@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $insert_appuntamento_query = "INSERT INTO `prestazione`(`idPaziente`, `idPrestazione`, `dataInizio`, `dataFine`, `codicePrestazione`, `ora`, `sala`) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt_insert_appuntamento = mysqli_prepare($con, $insert_appuntamento_query);
-    mysqli_stmt_bind_param($stmt_insert_appuntamento, "iissssi", $idPaziente, $idPrestazione, $dataInizio, $dataFine, $codicePrestazione, $ora, $sala);
+    mysqli_stmt_bind_param($stmt_insert_appuntamento, "iissssi", $idPaziente, $idPrestazione, $dataInizio, $dataFine, $codicePrestazione, $ora, $numeroSala);
     $run_appuntamento = mysqli_stmt_execute($stmt_insert_appuntamento);
 
     // Memorizza i dati da inserire nella tabella 'assistente' e 'responsabile' (array di dimensioni variabili) 
