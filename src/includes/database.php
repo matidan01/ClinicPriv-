@@ -245,7 +245,7 @@ function inserisci_fattura($mysqli, $idPrestazione) {
 }
 
 function is_pagato($mysqli, $idPrestazione) {
-    $select_fattura_query = "SELECT * FROM `fattura` WHERE idPrestazione = ? AND dataPagamento = NULL";
+    $select_fattura_query = "SELECT * FROM `fattura` WHERE idPrestazione = ? AND dataPagamento IS NULL";
     $select_fattura_stmt = mysqli_prepare($mysqli, $select_fattura_query);
     mysqli_stmt_bind_param($select_fattura_stmt, 'i', $idPrestazione);
     mysqli_stmt_execute($select_fattura_stmt);
