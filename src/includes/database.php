@@ -308,13 +308,15 @@ function get_costo($mysqli, $idPrestazione) {
 
 function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
     $prestazioni = [];
-    $query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
+    /*$query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
                     FROM prestazione
                     INNER JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
                     LEFT JOIN fattura ON prestazione.idPrestazione = fattura.idPrestazione
                     WHERE prestazione.idPaziente = ?
                     AND fattura.dataPagamento IS NULL
-                ";
+                ";*/
+    $query = "SELECT idPrestazione, dataInizio, costo, nome 
+                FROM prestazioni_non_pagate WHERE idPaziente=?";
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_bind_param($stmt, 'i', $idPaziente);
     mysqli_stmt_execute($stmt);
@@ -411,8 +413,8 @@ function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $em
 function calcola_fatturato_tra_date($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT SUM(totale) as s
                       FROM fattura
-                      WHERE dataPagamento >= ?
-                      AND dataPagamento <= ?");
+                      WHERE dataPagamento BETWEEN ?
+                      AND ?");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -532,11 +534,17 @@ function isCaposala($badgeNum, $mysqli){
 }
 
 function fatturato_medio_e_totale_clienti($mysqli){
-    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
+    /*$stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
                               FROM paziente AS p 
                               JOIN prestazione AS a ON a.idPaziente = p.idPaziente
                               JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
                               AND f.dataPagamento IS NOT NULL
+                              GROUP BY p.idPaziente");*/
+    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
+                              FROM paziente AS p 
+                              JOIN prestazione AS a ON a.idPaziente = p.idPaziente
+                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
+                              AND prestazione IS NOT IN prestazioni_non_pagate
                               GROUP BY p.idPaziente");
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
