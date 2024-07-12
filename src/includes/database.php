@@ -244,6 +244,15 @@ function inserisci_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($insert_fattura_stmt);
 }
 
+function is_pagato($mysqli, $idPrestazione) {
+    $select_fattura_query = "SELECT * FROM `fattura` WHERE idPrestazione = ? AND dataPagamento IS NULL";
+    $select_fattura_stmt = mysqli_prepare($mysqli, $select_fattura_query);
+    mysqli_stmt_bind_param($select_fattura_stmt, 'i', $idPrestazione);
+    mysqli_stmt_execute($select_fattura_stmt);
+    $result = mysqli_stmt_get_result($select_fattura_stmt);
+    return (mysqli_num_rows($result) == 1);
+}
+
 function paga_fattura($mysqli, $idPrestazione) {
     $paga_fattura_query = "UPDATE fattura SET dataPagamento = CURDATE() WHERE idPrestazione = ?";
     $paga_fattura_stmt = mysqli_prepare($mysqli, $paga_fattura_query);

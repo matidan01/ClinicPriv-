@@ -6,10 +6,10 @@ $materiali = [];
 // Vengono visualizzati tutti i materiali presenti in magazzino e le informazioni relative 
 // Specifica anche se il materiale è stato inserito in ordini che non sono ancora stati consegnati
 $query = "SELECT materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo, 
-            COUNT(CASE WHEN ordine.dataConsegna IS NULL THEN materialeordinato.idMateriale END) AS numero_ordini
+            COUNT(CASE WHEN ordine.dataConsegna IS NULL THEN rifornimento.idMateriale END) AS numero_ordini
             FROM materiale
-            LEFT JOIN materialeordinato ON materiale.idMateriale = materialeordinato.idMateriale
-            LEFT JOIN ordine ON materialeordinato.idOrdine = ordine.idOrdine
+            LEFT JOIN rifornimento ON materiale.idMateriale = rifornimento.idMateriale
+            LEFT JOIN ordine ON rifornimento.idOrdine = ordine.idOrdine
             GROUP BY materiale.idMateriale, materiale.nome, materiale.quantita, materiale.prezzo;
         ";
 $result = mysqli_query($con, $query);

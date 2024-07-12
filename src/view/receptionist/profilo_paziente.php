@@ -106,11 +106,6 @@ $farm = get_farmaci($con);
                 </div>
             </div>
             <div class="col-md-6">
-                <!-- Bottone per aggiungere la terapia al paziente -->
-                <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiTerapiaModal">
-                    Aggiungi Terapia
-                </button>
-
                 <!-- Visualizza i dati sulle terapie del paziente--> 
                 <?php if (!empty($terapia)): ?>
                     <?php foreach ($terapia as $t): ?>
@@ -148,8 +143,9 @@ $farm = get_farmaci($con);
         </div>
     </div>
 
-    <!-- Bottone per visualizzare gli appuntamenti di pagare -->
-    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
+    <div class="d-flex justify-content-center mt-4">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
+            </div>
 
     <!-- Modale per pagare prestazioni -->
     <div class="modal fade" id="pagamentoModal" tabindex="-1" aria-labelledby="pagamentoModalLabel" aria-hidden="true">
@@ -275,41 +271,6 @@ $farm = get_farmaci($con);
             </div>
         </div>
     </div>
-    </div>
-
-     <!-- Modale per Aggiungere Terapia -->
-     <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formTerapia" method="POST" action="../../api/receptionist/aggiungi_terapia.php">
-                        <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
-                        <div class="row mb-3">
-                            <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
-                            <div class="col">
-                                <label for="dataScadenza" class="form-label">Data Scadenza:</label>
-                                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
-                            </div>
-                        </div>
-                        <p>Farmaci:</p>
-                        <div id="farmaciContainer"></div>
-                        <datalist id="farmaci">
-                            <?php
-                                foreach($farm as $farmaco) {
-                                    $str = $farmaco['nome'] . ' ' . $farmaco['dose'];
-                                    echo '<option value="' . $str . '">';
-                                };
-                            ?>
-                        </datalist>
-                    </form>
-                    <!-- Bottone "+" per aggiungere righe -->
-                    <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
-            </div>
-        </div>
     </div>
 
 </body>
