@@ -244,15 +244,6 @@ function inserisci_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($insert_fattura_stmt);
 }
 
-function is_pagato($mysqli, $idPrestazione) {
-    $select_fattura_query = "SELECT * FROM `fattura` WHERE idPrestazione = ? AND dataPagamento IS NULL";
-    $select_fattura_stmt = mysqli_prepare($mysqli, $select_fattura_query);
-    mysqli_stmt_bind_param($select_fattura_stmt, 'i', $idPrestazione);
-    mysqli_stmt_execute($select_fattura_stmt);
-    $result = mysqli_stmt_get_result($select_fattura_stmt);
-    return (mysqli_num_rows($result) == 1);
-}
-
 function paga_fattura($mysqli, $idPrestazione) {
     $paga_fattura_query = "UPDATE fattura SET dataPagamento = CURDATE() WHERE idPrestazione = ?";
     $paga_fattura_stmt = mysqli_prepare($mysqli, $paga_fattura_query);
@@ -419,15 +410,17 @@ function assumi_personale($mysqli, $ruolo, $tipologia, $nome, $cognome, $CF, $em
     }
 }
 
-function calcola_fatturato_tra_date($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT SUM(totale) as s
-                      FROM fattura
-                      WHERE dataPagamento BETWEEN ?
-                      AND ?");
-    $stmt->bind_param("ss", $dataInizio, $dataFine);
+//Restituisce "totale, media" del fatturato (pagato) in un intervallo di tempo.
+function calcola_fatturato_totale_e_medio_tra_date($dataInizio, $dataFine, $mysqli){
+    $stmt = $mysqli->prepare("SELECT ROUND(SUM(totale),2) as totale, ROUND(SUM(totale)/(
+                                                                        SELECT DATEDIFF(?,?) +1 
+                                                                        ),2) as media
+                                FROM fattura
+                                WHERE dataPagamento BETWEEN ? AND ?");
+    $stmt->bind_param("ssss", $dataFine, $dataInizio, $dataInizio, $dataFine);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    return $res[0]["s"];
+    return $res[0];
 }
 
 function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysqli){
@@ -442,14 +435,13 @@ function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysq
 }
 
 function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, SUM(f.totale)
-                            FROM fattura AS f 
-                            JOIN prestazione AS a ON f.idPrestazione= a.codicePrestazione
-                            JOIN responsabile AS r on a.idPrestazione = r.idPrestazione
-                            RIGHT OUTER JOIN medico AS m ON m.nBadge = r.nBadge
-                            AND f.dataPagamento >= ?
-                            AND f.dataPagamento <= ?
-                            GROUP BY m.nBadge");
+    $stmt = $mysqli->prepare("SELECT m.nBadge, m.nome, m.cognome, ROUND(SUM(f.totale),2) 
+                                FROM fattura f
+                                JOIN prestazione p ON p.idPrestazione = f.idPrestazione
+                                JOIN responsabile r ON r.idPrestazione = p.idPrestazione
+                                JOIN medico m ON m.nBadge = r.nBadge
+                                WHERE f.dataPagamento BETWEEN ? AND ?
+                                GROUP BY m.nBadge");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -543,18 +535,15 @@ function isCaposala($badgeNum, $mysqli){
 }
 
 function fatturato_medio_e_totale_clienti($mysqli){
-    /*$stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
-                              FROM paziente AS p 
-                              JOIN prestazione AS a ON a.idPaziente = p.idPaziente
-                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
-                              AND f.dataPagamento IS NOT NULL
-                              GROUP BY p.idPaziente");*/
-    $stmt = $mysqli->prepare("SELECT p.nome, p.cognome, SUM(f.totale) AS spesaTot, round(SUM(f.totale)/COUNT(a.idPaziente), 2) AS spesaMedia
-                              FROM paziente AS p 
-                              JOIN prestazione AS a ON a.idPaziente = p.idPaziente
-                              JOIN fattura AS f ON f.idPrestazione = a.idPrestazione
-                              AND prestazione IS NOT IN prestazioni_non_pagate
-                              GROUP BY p.idPaziente");
+    $stmt = $mysqli->prepare("WITH pagamentiEffettuati AS (SELECT p.idPaziente, p.nome, p.cognome, f.totale
+                                FROM paziente p
+                                JOIN prestazione a ON a.idPaziente = p.idPaziente
+                                JOIN fattura f ON f.idPrestazione = a.idPrestazione
+                                WHERE f.dataPagamento IS NOT NULL)
+
+                                SELECT nome, cognome, ROUND(SUM(totale),2) AS spesaTot, ROUND(AVG(totale), 2) AS spesaMedia
+                                FROM pagamentiEffettuati
+                                GROUP BY idPaziente, nome, cognome;");
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
