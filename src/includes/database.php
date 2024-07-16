@@ -490,22 +490,21 @@ function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mys
 }
 
 function medici_receptionist_operatori_in_impiego($mysqli) {
-    $medici_operatori_receptionist = [0,0,0];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as medici
-                            FROM medico
+    $stmt = $mysqli->prepare("SELECT 
+                                SUM(CASE WHEN nBadge LIKE 'M%' THEN 1 ELSE 0 END) AS medici,
+                                SUM(CASE WHEN nBadge LIKE 'O%' THEN 1 ELSE 0 END) AS operatori,
+                                SUM(CASE WHEN nBadge LIKE 'R%' THEN 1 ELSE 0 END) AS receptionist,
+                                COUNT(*) AS totale
+                            FROM (
+                                SELECT nBadge, fineRapporto, tipologia FROM medico
+                                UNION ALL
+                                SELECT nBadge, fineRapporto, tipologia FROM operatore
+                                UNION ALL
+                                SELECT nBadge, fineRapporto, NULL AS tipologia FROM receptionist
+                            ) AS personale
                             WHERE fineRapporto IS NULL");
     $stmt->execute();
-    $medici_operatori_receptionist[0]= $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['medici'];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as operatori
-                            FROM operatore
-                            WHERE fineRapporto IS NULL");
-    $stmt->execute();
-    $medici_operatori_receptionist[1]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['operatori'];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as receptionist
-                            FROM receptionist
-                            WHERE fineRapporto IS NULL");
-    $stmt->execute();
-    $medici_operatori_receptionist[2]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['receptionist'];
+    $medici_operatori_receptionist = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     return $medici_operatori_receptionist;
     
 }
