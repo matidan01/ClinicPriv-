@@ -424,11 +424,26 @@ function calcola_fatturato_totale_e_medio_tra_date($dataInizio, $dataFine, $mysq
 }
 
 function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT COUNT(idPrestazione)
-                      FROM prestazione
-                      WHERE dataInizio >= ?
-                      AND dataFine <= ?");
-    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt = $mysqli->prepare("WITH prestazioniTraDate AS (
+                                            SELECT codicePrestazione
+                                            FROM prestazione
+                                            WHERE dataInizio BETWEEN ? AND ?
+                                            AND (dataFine <= ? OR dataFine IS NULL))
+                            
+                            SELECT
+                                (SELECT COUNT(*) 
+                                    FROM prestazioniTraDate
+                                    WHERE SUBSTRING(codicePrestazione,1,1) = 'I'
+                                ) as interventi,
+                                (SELECT COUNT(*)
+                                    FROM prestazioniTraDate
+                                    WHERE SUBSTRING(codicePrestazione,1,1) = 'V'
+                                ) as visite,
+                                (SELECT COUNT(*)
+                                    FROM prestazioniTraDate
+                                    WHERE SUBSTRING(codicePrestazione,1,1) = 'R'
+                                ) as ricoveri");
+    $stmt->bind_param("sss", $dataInizio, $dataFine, $dataFine);
     $stmt->execute();
     $res = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     return $res;
@@ -449,9 +464,9 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
 
 function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
-                              FROM prestazione AS a
-                              JOIN responsabile AS r ON a.idPrestazione = r.idPrestazione
-                              JOIN medico AS m ON r.nBadge = m.nBadge
+                              FROM prestazione a
+                              JOIN responsabile r ON a.idPrestazione = r.idPrestazione
+                              JOIN medico m ON r.nBadge = m.nBadge
                               WHERE a.dataInizio >= ?
                               AND a.dataFine <= ?
                               AND m.tipologia = 'chirurgo'
@@ -466,8 +481,7 @@ function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mys
                             FROM fattura AS f
                             JOIN prestazione AS a ON f.idPrestazione = a.idPrestazione
                             JOIN listino AS l ON a.codicePrestazione = l.codicePrestazione
-                            AND f.dataPagamento >= ?
-                            AND f.dataPagamento <= ?
+                            AND f.dataPagamento BETWEEN ? AND ?
                             GROUP BY l.nome, MONTH(f.dataPagamento)
                             ORDER BY MONTH(f.dataPagamento)");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
