@@ -463,15 +463,15 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
 }
 
 function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
-                              FROM prestazione a
-                              JOIN responsabile r ON a.idPrestazione = r.idPrestazione
-                              JOIN medico m ON r.nBadge = m.nBadge
-                              WHERE a.dataInizio >= ?
-                              AND a.dataFine <= ?
-                              AND m.tipologia = 'chirurgo'
-                              GROUP BY m.nBadge");
-    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(p.idPrestazione) AS nOperazioni
+                                FROM medico m
+                            LEFT JOIN responsabile r ON r.nBadge = m.nBadge
+                            LEFT JOIN prestazione p ON p.idPrestazione = r.idPrestazione
+                                AND p.dataInizio BETWEEN ? AND ?
+                                AND (p.dataFine <= ? OR p.dataFine IS NULL)
+                            WHERE m.tipologia = 'chirurgo'
+                            GROUP BY m.nome, m.cognome, m.nBadge");
+    $stmt->bind_param("sss", $dataInizio, $dataFine, $dataFine);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }

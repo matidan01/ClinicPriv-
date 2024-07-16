@@ -90,9 +90,9 @@ include_once("../../includes/functions.php");
             xhr.addEventListener("load", function() {
                 if (xhr.status === 200) {
                     const interventiInfo = JSON.parse(xhr.responseText);
-                    document.getElementById("interventi").textContent = interventiInfo[0]["COUNT(idPrestazione)"];
-                    document.getElementById("visite").textContent = interventiInfo[0]["COUNT(idPrestazione)"];
-                    document.getElementById("ricoveri").textContent = interventiInfo[0]["COUNT(idPrestazione)"];
+                    document.getElementById("interventi").textContent = interventiInfo[0]["interventi"];
+                    document.getElementById("visite").textContent = interventiInfo[0]["visite"];
+                    document.getElementById("ricoveri").textContent = interventiInfo[0]["ricoveri"];
                 } else {
                     console.error("Errore durante la richiesta AJAX:", xhr.status);
                 }
