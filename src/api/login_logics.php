@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $type = substr($badgeNumber, 0, 1);
 
     if (check_login($badgeNumber, $password, $type, $con) == true) {
-        go_to_home($type);
+        go_to_home($type, $badgeNumber);
     } else {
         header("Location: ../view/login.php");
     }
