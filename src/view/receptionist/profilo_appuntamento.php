@@ -1,10 +1,6 @@
 <?php
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
-/*if (!isset($_SESSION['Username'])) {
-    header("Location: login.php");
-    exit();
-}*/
 
 // Ottiene l'id dell'appuntamento da visualizzare attraverso metodo get
 $id = isset($_GET['idPrestazione']) ? mysqli_real_escape_string($con, $_GET['idPrestazione']) : '';

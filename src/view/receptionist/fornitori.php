@@ -1,8 +1,6 @@
 <?php
 include_once("../../includes/connection.php");
 
-// Memorizza nel vettore fornitori tutti i fornitori presenti nel database
-//DOMANDA: COME MAI IL FORNITORE HA UN VARCHAR COME ID? LO FACCIAMO INCREMENTALE?
 $fornitori = [];
 $query = "SELECT *
             FROM fornitore

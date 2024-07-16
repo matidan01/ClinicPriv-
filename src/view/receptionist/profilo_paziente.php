@@ -2,12 +2,6 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
-// DA VEDERE PER ACCEDERE SOLO SE HAI LA SESSIONE DA RECEPTIONIST
-/*if (!isset($_SESSION['Username'])) {
-    header("Location: login.php");
-    exit();
-}*/
-
 // Prende l'idPaziente del cliente da visualizzare attraverso un get
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 

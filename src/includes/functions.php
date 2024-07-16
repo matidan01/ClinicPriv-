@@ -6,48 +6,45 @@ include_once("connection.php");
 function check_login($badgeNumber, $password, $type, $mysqli){
     $colonna = "nBadge";
     switch($type){
-        case 0:
+        case 'M':
             $table = "medico";
             break;
-        case 1:
+        case 'O':
             $table = "operatore";
             break;
-        case 2:
+        case 'R':
             $table = "receptionist";
             break;
-        case 3:
+        case 'A':
             $table = "amministratore";
             $colonna = "idAmministratore";
             break;
         default:
             return false; 
     }
-    $stmt = $mysqli->prepare("SELECT password FROM $table WHERE $colonna=?");
-    print("$table");
-    $stmt->bind_param("s", $badgeNumber);
+    $stmt = $mysqli->prepare("SELECT $colonna FROM $table WHERE $colonna = ? AND password = ?");
+    $stmt->bind_param("ss", $badgeNumber, $password);
     $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    /*if(password_verify($password, $row['password']) == true){*/
-    if($row["password"] == $password){
-        $_SESSION['type'] = $type;
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
         return true;
-    }else{
+    } else {
         return false;
     }
 } 
 
-function go_to_home($badgeNumber){
-    switch($_SESSION["type"]){
-        case 0:
-            header("Location: ../view/medico/home_medico.php?badgeN=$badgeNumber");
+function go_to_home($type){
+    switch($type){
+        case 'M':
+            header("Location: ../view/medico/home_medico.php");
             break;
-        case 1:
-            header("Location: ../view/operatore/home_operatore.php?badgeN=$badgeNumber");
+        case 'O':
+            header("Location: ../view/operatore/home_operatore.php");
             break;
-        case 2:
+        case 'R':
             header("Location: ../view/receptionist/home_receptionist.php");
             break;
-        case 3:
+        case 'A':
             header("Location: ../view/amministratore/home_amministratore.php");
             break;
         default:
