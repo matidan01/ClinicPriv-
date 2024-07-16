@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $badgeNumber = $_POST["badge_number"];
     $password = $_POST["password"];
     $type = $_POST["type"];
-    print($type);
+    $_SESSION['type'] = $type;
 
     if (check_login($badgeNumber, $password, $type, $con) == true) {
         go_to_home($badgeNumber);
