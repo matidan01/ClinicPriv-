@@ -17,29 +17,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // Ricerca selezionando una data, verranno visualizzati tutti gli appuntamenti del giorno scelto
         $data = $_POST['data'];
-        $query = "SELECT DISTINCT prestazione.idPrestazione, prestazione.idPaziente, prestazione.dataInizio,
-        prestazione.dataFine, prestazione.ora, listino.nome, paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-        paziente.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, prestazione.sala AS numeroSala
-                FROM prestazione
-                INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
-                LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
-                LEFT JOIN assistente ON prestazione.idPrestazione = assistente.idPrestazione
-                LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
+        $query = "SELECT DISTINCT p.idPrestazione, p.idPaziente, p.dataInizio,
+        p.dataFine, p.ora, l.nome, paz.nome AS nome_paziente, paz.cognome AS cognome_paziente,
+        paz.CF, medici.medici_coinvolti, operatori.operatori_coinvolti, p.sala AS numeroSala
+                FROM prestazione p
+                INNER JOIN paziente paz ON p.idPaziente = paz.idPaziente
+                LEFT JOIN responsabile r ON p.idPrestazione = r.idPrestazione
+                LEFT JOIN assistente a ON p.idPrestazione = a.idPrestazione
+                LEFT JOIN listino l ON p.codicePrestazione = l.codicePrestazione
                 LEFT JOIN 
-                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti
-                    FROM medico
-                    INNER JOIN responsabile ON medico.nBadge = responsabile.nBadge
-                    GROUP BY idPrestazione) AS medici ON prestazione.idPrestazione = medici.idPrestazione
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(m.nome, ' ', m.cognome) SEPARATOR ', ') AS medici_coinvolti
+                    FROM medico m
+                    INNER JOIN responsabile r ON m.nBadge = r.nBadge
+                    GROUP BY idPrestazione) AS medici ON p.idPrestazione = medici.idPrestazione
                 LEFT JOIN 
-                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
-                    FROM operatore
-                    INNER JOIN assistente ON operatore.nBadge = assistente.nBadge
-                    GROUP BY idPrestazione) AS operatori ON prestazione.idPrestazione = operatori.idPrestazione
+                    (SELECT idPrestazione, GROUP_CONCAT(DISTINCT CONCAT(o.nome, ' ', o.cognome) SEPARATOR ', ') AS operatori_coinvolti
+                    FROM operatore o
+                    INNER JOIN assistente a ON o.nBadge = a.nBadge
+                    GROUP BY idPrestazione) AS operatori ON p.idPrestazione = operatori.idPrestazione
                 WHERE 
-                    DATE(prestazione.dataInizio) = ?
+                    DATE(p.dataInizio) = ?
                 ORDER BY 
-                    prestazione.ora ASC;
-            ";
+                    p.ora ASC;    ";
     
         $stmt = mysqli_prepare($con, $query);
         mysqli_stmt_bind_param($stmt, "s", $data);
