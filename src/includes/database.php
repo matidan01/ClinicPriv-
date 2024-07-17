@@ -246,8 +246,8 @@ function inserisci_fattura($mysqli, $idPrestazione) {
 
 function is_pagato($mysqli, $id_prestazione) {
     $query = "SELECT COUNT(*) as count 
-              FROM fattura 
-              WHERE idPrestazione = ? AND dataPagamento IS NULL";
+            FROM fattura 
+            WHERE idPrestazione = ? AND dataPagamento IS NULL";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param("i", $id_prestazione);
     $stmt->execute();

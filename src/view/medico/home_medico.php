@@ -23,13 +23,13 @@ $badgeN = $_GET['badgeN']
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#visualizzazione_appuntamenti">Visualizzazione Appuntamenti</a>
+                        <a class="nav-link" href="#visualizzazione_appuntamenti">Visualizza Appuntamenti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#pazienti">Visualizzazione Pazienti</a>
+                        <a class="nav-link" href="#pazienti">Visualizza Pazienti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#assegnamento-terapie">Visualizzazione Turni</a>
+                        <a class="nav-link" href="#assegnamento-terapie">Visualizza Turni</a>
                     </li>
                     <?php
                 if(isPrimario($badgeN, $con)){
@@ -50,7 +50,7 @@ $badgeN = $_GET['badgeN']
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title" id="visualizzazione_appuntamenti">Visualizzazione Appuntamenti</h2>
+                            <h2 class="card-title" id="visualizzazione_appuntamenti">Visualizza Appuntamenti</h2>
                             <p class="card-text">Visualizza gli appuntamenti dei pazienti..</p>
                             <a href="visualizzazione_appuntamenti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
@@ -59,7 +59,7 @@ $badgeN = $_GET['badgeN']
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title" id="visualizzazione-pazienti">Visualizzazione Pazienti</h2>
+                            <h2 class="card-title" id="visualizzazione-pazienti">Visualizza Pazienti</h2>
                             <p class="card-text">Visualizza i dati dei pazienti.</p>
                             <a href="visualizza_pazienti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
