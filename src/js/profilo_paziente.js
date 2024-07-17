@@ -45,12 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         row.className = 'row mb-3';
         row.innerHTML = `
             <div class="col">
-                <input list="farmaci" class="form-control" id="farmaco" name="farmaco" required>
-                <datalist id="farmaci">
-                    <?php foreach ($farmaci as $f): ?>
-                        <option value="<?php echo htmlspecialchars($f['nome'] . ' - ' . $f['dose'], ENT_QUOTES, 'UTF-8'); ?>"></option>
-                    <?php endforeach; ?>
-                </datalist>
+                <input list="farmaci" class="form-control" name="nomeFarmaco[]" placeholder="Farmaco" required>
             </div>
 
             <div class="col">
