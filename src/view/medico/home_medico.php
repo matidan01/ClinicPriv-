@@ -68,7 +68,7 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizza turni">Visualizza Turni</h2>
                             <p class="card-text">Visualizza i turni assegnati a te.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_turni.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
