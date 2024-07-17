@@ -33,17 +33,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPersonale'])) {
   <body>
     <div class="container">
         <h1 class="my-4">Visualizzazione dati personale</h1>
-        <h4>Attualmente sono in impiego: <?php echo $numeri_personale[0]+$numeri_personale[1]+$numeri_personale[2]?> dipendenti</h4>
+        <h4>Attualmente sono in impiego: <?php echo $numeri_personale[0]['totale']?> dipendenti</h4>
 
         <div class="quantita_personale">
             <div class="medici_qt">
-                <p>Medici: <?php echo $numeri_personale[0]?></p>
+                <p>Medici: <?php echo $numeri_personale[0]['medici']?></p>
             </div>
             <div class="receptionist_qt">
-                <p>Receptionist: <?php echo $numeri_personale[1]?></p>
+                <p>Receptionist: <?php echo $numeri_personale[0]['receptionist']?></p>
             </div>
             <div class="operatori_qt">
-                <p>Operatori: <?php echo $numeri_personale[2]?></p>
+                <p>Operatori: <?php echo $numeri_personale[0]['operatori']?></p>
             </div>
         </div>
 

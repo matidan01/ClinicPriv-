@@ -97,8 +97,8 @@ include_once("../../includes/functions.php");
             xhr.addEventListener("load", function() {
                 if (xhr.status === 200) {
                     const fatturato = JSON.parse(xhr.responseText);
-                    document.getElementById("fatturato").textContent = fatturato[0] + "$";
-                    document.getElementById("fatturato_medio").textContent = fatturato[1] + "$";
+                    document.getElementById("fatturato").textContent = fatturato[0] + "€";
+                    document.getElementById("fatturato_medio").textContent = fatturato[1] + "€";
                 } else {
                     console.error("Errore durante la richiesta AJAX:", xhr.status);
                 }
@@ -108,7 +108,7 @@ include_once("../../includes/functions.php");
             formForGraph.append('dataFine', dataFine);
             const xhrf = new XMLHttpRequest();
             xhrf.open("POST", "../../api/amministratore/visualizzazione_grafico_fatturato.php");
-            xhrf.send(formData);
+            xhrf.send(formData); 
             xhrf.addEventListener("load", function() {
                 if (xhrf.readyState === XMLHttpRequest.DONE) {
                     if (xhrf.status === 200) {

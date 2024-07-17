@@ -41,7 +41,6 @@ include_once("../../includes/functions.php");
         xhr.addEventListener("load", function() {
             if (xhr.status === 200) {
                 const fatturato_mensile = JSON.parse(xhr.responseText);
-                console.log(fatturato_mensile);
                 const yArray = fatturato_mensile;
                 const xArray = ["Gennaio","Febbraio","Marzo","Aprile","Maggio", "Giugno", "Luglio", "Agosto", 
                                 "Settembre", "Ottobre", "Novembre", "Dicembre"];

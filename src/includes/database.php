@@ -514,15 +514,15 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
 }
 
 function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
-                            FROM prestazione a
-                            JOIN responsabile r ON a.idPrestazione = r.idPrestazione
-                            JOIN medico m ON r.nBadge = m.nBadge
-                            WHERE a.dataInizio >= ?
-                            AND a.dataFine <= ?
-                            AND m.tipologia = 'chirurgo'
-                            GROUP BY m.nBadge");
-    $stmt->bind_param("ss", $dataInizio, $dataFine);
+    $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(p.idPrestazione) AS nOperazioni
+                                FROM medico m
+                            LEFT JOIN responsabile r ON r.nBadge = m.nBadge
+                            LEFT JOIN prestazione p ON p.idPrestazione = r.idPrestazione
+                                AND p.dataInizio BETWEEN ? AND ?
+                                AND (p.dataFine <= ? OR p.dataFine IS NULL)
+                            WHERE m.tipologia = 'chirurgo'
+                            GROUP BY m.nome, m.cognome, m.nBadge");
+    $stmt->bind_param("sss", $dataInizio, $dataFine, $dataFine);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
@@ -541,22 +541,21 @@ function divisione_fatturato_per_mese_e_prestazione($dataInizio, $dataFine, $mys
 }
 
 function medici_receptionist_operatori_in_impiego($mysqli) {
-    $medici_operatori_receptionist = [0,0,0];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as medici
-                            FROM medico
+    $stmt = $mysqli->prepare("SELECT 
+                                SUM(CASE WHEN nBadge LIKE 'M%' THEN 1 ELSE 0 END) AS medici,
+                                SUM(CASE WHEN nBadge LIKE 'O%' THEN 1 ELSE 0 END) AS operatori,
+                                SUM(CASE WHEN nBadge LIKE 'R%' THEN 1 ELSE 0 END) AS receptionist,
+                                COUNT(*) AS totale
+                            FROM (
+                                SELECT nBadge, fineRapporto, tipologia FROM medico
+                                UNION ALL
+                                SELECT nBadge, fineRapporto, tipologia FROM operatore
+                                UNION ALL
+                                SELECT nBadge, fineRapporto, NULL AS tipologia FROM receptionist
+                            ) AS personale
                             WHERE fineRapporto IS NULL");
     $stmt->execute();
-    $medici_operatori_receptionist[0]= $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['medici'];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as operatori
-                            FROM operatore
-                            WHERE fineRapporto IS NULL");
-    $stmt->execute();
-    $medici_operatori_receptionist[1]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['operatori'];
-    $stmt = $mysqli->prepare("SELECT COUNT(nBadge) as receptionist
-                            FROM receptionist
-                            WHERE fineRapporto IS NULL");
-    $stmt->execute();
-    $medici_operatori_receptionist[2]=$stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0]['receptionist'];
+    $medici_operatori_receptionist = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     return $medici_operatori_receptionist;
     
 }
