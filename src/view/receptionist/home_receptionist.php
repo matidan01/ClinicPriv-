@@ -10,22 +10,29 @@
 </head>
 <body>
 
-    <!-- NAV DA RIVEDERE SI VUOLE TENERE?? -->
+    <!-- NAVIGATION BAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
         <div class="container">
+            <a class="navbar-brand" href="#">Clinic Privè</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#gestione-appuntamenti">Gestione Appuntamenti</a>
+                        <a class="nav-link" href="#gestione_appuntamenti">Gestione Appuntamenti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#pazienti">Gestione Pazienti</a>
+                        <a class="nav-link" href="#gestione_pazienti">Gestione Pazienti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#fatturazione">Fatturazione</a>
+                        <a class="nav-link" href="#gestione_magazzino">Gestione Magazzino</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#altro">Altro</a>
+                        <a class="nav-link" href="#gestione_rifornimenti">Rifornimenti</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#visualizza_fornitori">Visualizza Fornitori</a>
                     </li>
                 </ul>
             </div>

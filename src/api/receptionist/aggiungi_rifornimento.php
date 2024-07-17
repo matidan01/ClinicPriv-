@@ -38,10 +38,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $insert_materiale_query = "INSERT INTO `rifornimento`(`idOrdine`, `idMateriale`, `quantita`) VALUES (?, ?, ?)";
         $stmt_insert_materiale = mysqli_prepare($con, $insert_materiale_query);
 
+        // Prepara la query per incrementare numero_ordini
+        $update_numero_ordini_query = "UPDATE `materiale` SET `numero_ordini` = `numero_ordini` + 1 WHERE `idMateriale` = ?";
+        $stmt_update_numero_ordini = mysqli_prepare($con, $update_numero_ordini_query);
+
         for($i = 0; $i < count($materiali); $i++) {
+            // Inserisci il materiale nel rifornimento
             mysqli_stmt_bind_param($stmt_insert_materiale, "iis", $idOrdine, $materiali[$i], $quantita[$i]);
             $run_materiale = mysqli_stmt_execute($stmt_insert_materiale);
+
+            // Incrementa numero_ordini per questo materiale
+            mysqli_stmt_bind_param($stmt_update_numero_ordini, "i", $materiali[$i]);
+            $run_update_numero_ordini = mysqli_stmt_execute($stmt_update_numero_ordini);
         }
+
+        // Chiudi gli statement
+        mysqli_stmt_close($stmt_insert_materiale);
+        mysqli_stmt_close($stmt_update_numero_ordini);
     }
 
     header("Location: ../../view/receptionist/rifornimenti.php");

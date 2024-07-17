@@ -8,7 +8,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Pagamento di un singolo appuntamento
     if (isset($_POST['risorsa'])) {   
         $id = intval($_POST['id']);     
-        if(paga_fattura($con, $id)) {
+        if(!is_pagato($con, $id)) {
+            paga_fattura($con, $id);
             echo json_encode('OK');
         } else {
             echo json_encode('PROBLEM');
