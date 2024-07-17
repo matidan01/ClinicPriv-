@@ -3,7 +3,7 @@ include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
 $nBadge = $_GET["nBadge"];
-$medici = get_medici($con); // Assuming get_medici is a function that fetches the list of doctors from the database
+$medici = get_medici($con);
 
 // Handling POST request for viewing shifts
 $turni = [];
@@ -135,12 +135,13 @@ function generate_calendar($mese, $anno, $turni) {
                         </div>
                         <div class="mb-3">
                             <label for="medico" class="form-label">Medico:</label>
-                            <input list="medico" class="form-control" id="medico" name="medico" required>
-                            <datalist id="medico">
+                            <input list="medici" name="medici[]">
+                            <datalist id="medici">
                                 <?php
-                                foreach($medici as $medico) {
-                                    echo '<option value="' . $medico['nBadge'] . ' - ' . $medico['nome'] . ' ' . $medico['cognome'] . '">';
-                                }
+                                    foreach($medici as $medico) {
+                                        $str = $medico['nBadge'] . ' ' . $medico['nome'] . ' ' . $medico['cognome'];
+                                        echo '<option value="' . $str . '">';
+                                    };
                                 ?>
                             </datalist>
                         </div>

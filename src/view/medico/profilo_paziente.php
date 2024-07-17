@@ -259,43 +259,43 @@ mysqli_free_result($result_patologie); // Libera il risultato
 
             <!-- Visualizza i dati sulle terapie del paziente--> 
             <?php if (!empty($terapia)): ?>
-                <?php foreach ($terapia as $t): ?>
-                    <?php 
-                        $id_terapia = $t['idTerapia'];
-                        $get_farmaci = "SELECT * FROM prescrizione WHERE idTerapia = ?";
-                        $stmt = mysqli_prepare($con, $get_farmaci);
-                        mysqli_stmt_bind_param($stmt, "i", $id_terapia);
-                        $run_farmaci = mysqli_stmt_get_result($stmt);
-                        $farmaci = array(); 
-                        if (mysqli_num_rows($run_farmaci) > 0) {
-                            while($row = mysqli_fetch_assoc($run_farmaci)) {
-                                $farmaci[] = $row;
+                    <?php foreach ($terapia as $t): ?>
+                        <?php 
+                            $id_terapia = $t['idTerapia'];
+                            $get_farmaci = "SELECT * FROM prescrizione WHERE idTerapia = '$id_terapia'";
+                            $run_farmaci = mysqli_query($con, $get_farmaci);
+                            $farmaci = array(); 
+                            if (mysqli_num_rows($run_farmaci) > 0) {
+                                while($row = mysqli_fetch_assoc($run_farmaci)) {
+                                    $farmaci[] = $row;
+                                }
                             }
-                        }
-                    ?>
-                    <div class="row mt-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Terapia <?php echo $id_terapia ?></h5>
-                                <p><strong>Data di scadenza:</strong> <?php echo $t['dataScadenza'] ?></p>
-                                <p><strong>Medico:</strong> <?php echo $t['idMedico'] ?></p>
-                                <?php if (!empty($farmaci)): ?>
-                                    <?php foreach ($farmaci as $f): ?>
-                                        <p><strong>Farmaco:</strong> <?php echo $f['nomeFarmaco'] ?></p>
-                                        <p><strong>Descrizione:</strong> <?php echo $f['descrizione'] ?></p>
-                                    <?php endforeach ?>
-                                <?php endif ?>
+                        ?>
+                        <div class="row mt-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Terapia <?php echo $id_terapia?></h5>
+                                    <p><strong>Data di scadenza:</strong><?php echo $t['dataScadenza'] ?></p>
+                                    <p><strong>Medico:</strong> <?php echo $t['idMedico'] ?></p>
+                                    <?php if (!empty($farmaci)): ?>
+                                        <?php foreach ($farmaci as $f): ?>
+                                            <p><strong>Farmaco:</strong><?php echo $f['nomeFarmaco'] ?></p>
+                                            <strong>Descrizione:</strong> <?php echo $f['descrizione'] ?></p>
+                                        <?php endforeach ?>
+                                    <?php endif ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endforeach ?>
-            <?php else: ?>
-                <p>Nessuna terapia trovata per questo paziente.</p>
-            <?php endif ?>
+                    <?php endforeach ?>
+                <?php else: ?>
+                    <p>Nessuna terapia trovata per questo paziente.</p>
+                <?php endif ?>
+        </div>
+    </div>
 
             <!-- Visualizza le diagnosi del paziente -->
             <?php if (!empty($diagnosi)): ?>
-                <div class="row">
+                <div class="row p-3">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Diagnosi del Paziente</h5>
@@ -311,8 +311,6 @@ mysqli_free_result($result_patologie); // Libera il risultato
             <?php else: ?>
                 <p>Nessuna diagnosi trovata per questo paziente.</p>
             <?php endif ?>
-        </div>
-    </div>
 </div>
 </body>
 </html>

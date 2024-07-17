@@ -290,8 +290,35 @@ function get_turni_medici($mysqli, $mese, $anno) {
     return $turni;
 }
 
+function get_turni_operatori($mysqli, $mese, $anno) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnooperatore tm
+        JOIN operatore m ON tm.nBadge = m.nBadge
+        WHERE MONTH(tm.data) = ? AND YEAR(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $mese, $anno);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
+}
+
 function inserisci_turno_medico($mysqli, $nBadge, $data, $tipoTurno) {
     $insert_turno_query = "INSERT INTO `turnomedico`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
+    $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
+    mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
+    return mysqli_stmt_execute($insert_turno_stmt);
+}
+
+function inserisci_turno_operatore($mysqli, $nBadge, $data, $tipoTurno) {
+    $insert_turno_query = "INSERT INTO `turnoperatore`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
     $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
     mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
     return mysqli_stmt_execute($insert_turno_stmt);
@@ -627,6 +654,26 @@ function get_turni_medico($mysqli, $nBadge, $mese) {
         SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
         FROM turnomedico tm
         JOIN medico m ON tm.nBadge = m.nBadge
+        WHERE tm.nBadge = ? AND MONTH(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $nBadge, $mese);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
+}
+
+function get_turni_operatore($mysqli, $nBadge, $mese) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnooperatore tm
+        JOIN operatore m ON tm.nBadge = m.nBadge
         WHERE tm.nBadge = ? AND MONTH(tm.data) = ?
     ";
     $stmt = mysqli_prepare($mysqli, $query);

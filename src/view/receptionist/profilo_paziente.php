@@ -2,6 +2,12 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+// DA VEDERE PER ACCEDERE SOLO SE HAI LA SESSIONE DA RECEPTIONIST
+/*if (!isset($_SESSION['Username'])) {
+    header("Location: login.php");
+    exit();
+}*/
+
 // Prende l'idPaziente del cliente da visualizzare attraverso un get
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 
@@ -37,18 +43,69 @@ $nazione = $row_indirizzo_paziente['nazione'];
 $provincia = $row_indirizzo_paziente['provincia'];
 $cap = $row_indirizzo_paziente['CAP'];
 
-// Memorizza tutti i dati relativi la terapia del paziente
-$get_id_terapia = "select * from terapia where idPaziente = ?";
+// Memorizza tutte le diagnosi del paziente
+$get_diagnosi = "SELECT d.idPaziente, d.descrizione, p.nomePatologia 
+                FROM diagnosi d 
+                JOIN patologia p ON d.idPatologia = p.idPatologia
+                WHERE d.idPaziente = ?";
+$stmt = mysqli_prepare($con, $get_diagnosi);
+if ($stmt === false) {
+    die('Errore nella preparazione della query: ' . mysqli_error($con));
+}
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$diagn = mysqli_stmt_get_result($stmt);
+
+$diagnosi = [];
+if ($diagn === false) {
+    die('Errore nell\'esecuzione della query: ' . mysqli_error($con));
+}
+
+if (mysqli_num_rows($diagn) > 0) {
+    while($row = mysqli_fetch_assoc($diagn)) {
+        $diagnosi[] = $row;
+    }
+}
+mysqli_free_result($diagn); // Libera il risultato
+
+// Memorizza tutte le terapie del paziente
+$get_id_terapia = "SELECT * FROM terapia WHERE idPaziente = ?";
 $stmt = mysqli_prepare($con, $get_id_terapia);
+if ($stmt === false) {
+    die('Errore nella preparazione della query: ' . mysqli_error($con));
+}
+
 mysqli_stmt_bind_param($stmt, "i", $id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
+
+$terapia = [];
+if ($result === false) {
+    die('Errore nell\'esecuzione della query: ' . mysqli_error($con));
+}
 
 if (mysqli_num_rows($result) > 0) {
     while($row = mysqli_fetch_assoc($result)) {
         $terapia[] = $row;
     }
-} 
+}
+mysqli_free_result($result); // Libera il risultato
+
+// Memorizza tutte le patologie disponibili
+$get_patologie = "SELECT idPatologia, nomePatologia FROM patologia";
+$result_patologie = mysqli_query($con, $get_patologie);
+if ($result_patologie === false) {
+    die('Errore nell\'esecuzione della query: ' . mysqli_error($con));
+}
+
+$patologie = [];
+if (mysqli_num_rows($result_patologie) > 0) {
+    while ($row = mysqli_fetch_assoc($result_patologie)) {
+        $patologie[] = $row;
+    }
+}
+mysqli_free_result($result_patologie); // Libera il risultato
 
 // Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
@@ -100,6 +157,11 @@ $farm = get_farmaci($con);
                 </div>
             </div>
             <div class="col-md-6">
+                <!-- Bottone per aggiungere la terapia al paziente -->
+                <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiTerapiaModal">
+                    Aggiungi Terapia
+                </button>
+
                 <!-- Visualizza i dati sulle terapie del paziente--> 
                 <?php if (!empty($terapia)): ?>
                     <?php foreach ($terapia as $t): ?>
@@ -137,10 +199,42 @@ $farm = get_farmaci($con);
         </div>
     </div>
 
-    <div class="d-flex justify-content-center mt-4">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
+    <!-- Bottone per visualizzare gli appuntamenti di pagare -->
+    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#pagamentoModal">Paga prestazione</button>
+
+    <!-- Modale per Aggiungere Terapia -->
+    <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formTerapia" method="POST" action="../../api/medico/aggiungi_terapia.php?nBadge=<?php echo $nBadge ?>">
+                                <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
+                                <div class="row mb-3">
+                                    <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
+                                    <div class="col">
+                                        <label for="dataScadenza" class="form-label">Data Scadenza:</label>
+                                        <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
+                                    </div>
+                                    <div class="col">
+                                        <label for="idMedico" class="form-label">Numero Badge Medico:</label>
+                                        <input type="text" class="form-control" id="idMedico" name="idMedico">
+                                    </div>
+                                </div>
+                                <p>Farmaci:</p>
+                                <div id="farmaciContainer"></div>
+                            </form>
+                            <!-- Bottone "+" per aggiungere righe -->
+                            <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
+            
     <!-- Modale per pagare prestazioni -->
     <div class="modal fade" id="pagamentoModal" tabindex="-1" aria-labelledby="pagamentoModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -265,6 +359,41 @@ $farm = get_farmaci($con);
             </div>
         </div>
     </div>
+    </div>
+
+     <!-- Modale per Aggiungere Terapia -->
+     <div class="modal fade" id="aggiungiTerapiaModal" tabindex="-1" aria-labelledby="aggiungiTerapiaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aggiungiTerapiaModalLabel">Aggiungi Terapia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formTerapia" method="POST" action="../../api/receptionist/aggiungi_terapia.php">
+                        <button type="submit" class="btn btn-primary">Aggiungi Terapia</button>
+                        <div class="row mb-3">
+                            <input type="hidden" name="id" id="id" value="<?php echo $id ?>">
+                            <div class="col">
+                                <label for="dataScadenza" class="form-label">Data Scadenza:</label>
+                                <input type="date" class="form-control" id="dataScadenza" name="dataScadenza" required>
+                            </div>
+                        </div>
+                        <p>Farmaci:</p>
+                        <div id="farmaciContainer"></div>
+                        <datalist id="farmaci">
+                            <?php
+                                foreach($farm as $farmaco) {
+                                    $str = $farmaco['nome'] . ' ' . $farmaco['dose'];
+                                    echo '<option value="' . $str . '">';
+                                };
+                            ?>
+                        </datalist>
+                    </form>
+                    <!-- Bottone "+" per aggiungere righe -->
+                    <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
+            </div>
+        </div>
     </div>
 
 </body>

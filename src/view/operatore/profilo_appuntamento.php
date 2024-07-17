@@ -11,12 +11,11 @@ $sale = get_sale($con);
 $medici = get_medici($con);
 $operatori = get_operatori($con);
 
-$get_appuntamento = "SELECT prestazione.idPrestazione, prestazione.codicePrestazione, 
+$get_appuntamento = "SELECT prestazione.idPrestazione, prestazione.codicePrestazione, prestazione.sala AS numeroSala,
                 prestazione.idPaziente, prestazione.dataInizio, prestazione.dataFine, prestazione.ora, listino.nome,
                 paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente, paziente.CF,
                 GROUP_CONCAT(DISTINCT CONCAT(medico.nome, ' ', medico.cognome) SEPARATOR ', ') AS medici_coinvolti,
-                GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti,
-                ospita.numeroSala
+                GROUP_CONCAT(DISTINCT CONCAT(operatore.nome, ' ', operatore.cognome) SEPARATOR ', ') AS operatori_coinvolti
                 FROM prestazione
                 INNER JOIN paziente ON prestazione.idPaziente = paziente.idPaziente
                 LEFT JOIN responsabile ON prestazione.idPrestazione = responsabile.idPrestazione
@@ -24,7 +23,6 @@ $get_appuntamento = "SELECT prestazione.idPrestazione, prestazione.codicePrestaz
                 LEFT JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
                 LEFT JOIN medico ON responsabile.nBadge = medico.nBadge
                 LEFT JOIN operatore ON assistente.nBadge = operatore.nBadge
-                LEFT JOIN ospita ON prestazione.idPrestazione = ospita.idPrestazione
                 WHERE prestazione.idPrestazione = ?
                 ";
 
@@ -74,6 +72,13 @@ $result = mysqli_stmt_get_result($stmt);
                 <p><strong>Operatori:</strong> <?php echo $appuntamento['operatori_coinvolti']; ?></p>
             </div>
         </div>
-        <?php } ?>
+
+        <?php
+    } else {
+        echo "<p>Nessun appuntamento trovato.</p>";
+    }
+    ?>
+
+</div>
 </body>
 </html>

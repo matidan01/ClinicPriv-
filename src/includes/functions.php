@@ -36,10 +36,10 @@ function check_login($badgeNumber, $password, $type, $mysqli){
 function go_to_home($type, $nBadge){
     switch($type){
         case 'M':
-            header("Location: ../view/medico/home_medico.php?badgeN=", $nBadge);
+            header("Location: ../view/medico/home_medico.php?badgeN=" . urldecode($nBadge));
             break;
         case 'O':
-            header("Location: ../view/operatore/home_operatore.php?badgeN=", $nBadge);
+            header("Location: ../view/operatore/home_operatore.php?badgeN=" . urldecode($nBadge));
             break;
         case 'R':
             header("Location: ../view/receptionist/home_receptionist.php");
