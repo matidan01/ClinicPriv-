@@ -49,5 +49,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     header("Location: ../../view/receptionist/profilo_paziente.php?idPaziente=" . urlencode($idPaziente));
 }
-
-

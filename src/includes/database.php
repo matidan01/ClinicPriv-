@@ -263,11 +263,18 @@ function paga_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($paga_fattura_stmt);
 }
 
-function inserisci_diagnosi($mysqli, $idPaziente, $nomePatologia, $descrizione) {
-    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `idPatologia`, `descrizione`) VALUES (?, ?, ?)";
+function inserisci_diagnosi($mysqli, $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione) {
+    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `nBadgeMedico`, `nomePatologia`, `descrizione`) VALUES (?, ?, ?, ?)";
     $insert_diagnosi_stmt = mysqli_prepare($mysqli, $insert_diagnosi_query);
-    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'iss', $idPaziente, $nomePatologia, $descrizione);
+    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'isss', $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione);
     return mysqli_stmt_execute($insert_diagnosi_stmt);
+}
+
+function inserisci_patologie($mysqli, $idPaziente, $nomePatologia){
+    $insert_patologia_query = "INSERT INTO `patologia`(`idPaziente`, `nomePatologia`) VALUES (?, ?)";
+    $insert_patologia_stmt = mysqli_prepare($mysqli, $insert_patologia_query);
+    mysqli_stmt_bind_param($insert_patologia_stmt, 'is', $idPaziente, $nomePatologia);
+    return mysqli_stmt_execute($insert_patologia_stmt);
 }
 
 function get_turni_medici($mysqli, $mese, $anno) {
@@ -324,7 +331,6 @@ function inserisci_turno_operatore($mysqli, $nBadge, $data, $tipoTurno) {
     return mysqli_stmt_execute($insert_turno_stmt);
 }
 
-
 function inserisci_assistenti($con, $idPrestazione, $operatori) {
     $insert_assistente_query = "INSERT INTO `assistente`(`idPrestazione`, `nBadge`) VALUES (?, ?)";
     $insert_assistente_stmt = mysqli_prepare($con, $insert_assistente_query);
@@ -361,15 +367,13 @@ function get_costo($mysqli, $idPrestazione) {
 
 function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
     $prestazioni = [];
-    /*$query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
+    $query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
                     FROM prestazione
                     INNER JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
                     LEFT JOIN fattura ON prestazione.idPrestazione = fattura.idPrestazione
                     WHERE prestazione.idPaziente = ?
                     AND fattura.dataPagamento IS NULL
-                ";*/
-    $query = "SELECT idPrestazione, dataInizio, costo, nome 
-                FROM prestazioni_non_pagate WHERE idPaziente=?";
+                ";
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_bind_param($stmt, 'i', $idPaziente);
     mysqli_stmt_execute($stmt);
@@ -517,13 +521,13 @@ function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
 
 function interventi_per_chirurgo($dataInizio, $dataFine, $mysqli){
     $stmt = $mysqli->prepare("SELECT m.nome, m.cognome, m.nBadge, COUNT(a.idPrestazione) AS nOperazioni
-                              FROM prestazione a
-                              JOIN responsabile r ON a.idPrestazione = r.idPrestazione
-                              JOIN medico m ON r.nBadge = m.nBadge
-                              WHERE a.dataInizio >= ?
-                              AND a.dataFine <= ?
-                              AND m.tipologia = 'chirurgo'
-                              GROUP BY m.nBadge");
+                            FROM prestazione a
+                            JOIN responsabile r ON a.idPrestazione = r.idPrestazione
+                            JOIN medico m ON r.nBadge = m.nBadge
+                            WHERE a.dataInizio >= ?
+                            AND a.dataFine <= ?
+                            AND m.tipologia = 'chirurgo'
+                            GROUP BY m.nBadge");
     $stmt->bind_param("ss", $dataInizio, $dataFine);
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -688,5 +692,3 @@ function get_turni_operatore($mysqli, $nBadge, $mese) {
     
     return $turni;
 }
-
-
