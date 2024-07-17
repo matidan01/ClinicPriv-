@@ -3,8 +3,8 @@ include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $medico = $_POST['medico'];
-    $nBadge = explode(' - ', $medico)[0];
+    $operatore = $_POST['operatore'];
+    $nBadge = explode(' - ', $operatore)[0];
     $data = $_POST['date'];
     $tipoTurno = $_POST['shift'];
     $tipoTurno = substr($tipoTurno, 0, 1);
@@ -13,9 +13,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (turno_esistente($con, $nBadge, $data, $tipoTurno)) {
         echo "Errore: Il turno esiste già.";
     } else {
-        // Chiama la funzione per inserire il turno del medico
-        if (inserisci_turno_medico($con, $nBadge, $data, $tipoTurno)) {
-            header("Location: ../../view/medico/gestisci_turni.php?nBadge=$nBadge");
+        // Chiama la funzione per inserire il turno del operatore
+        if (inserisci_turno_operatore($con, $nBadge, $data, $tipoTurno)) {
+            header("Location: ../../view/operatore/gestisci_turni.php?nBadge=$nBadge");
         } else {
             echo "Errore nell'inserimento del turno.";
         }
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 function turno_esistente($mysqli, $nBadge, $data, $tipoTurno) {
-    $check_turno_query = "SELECT * FROM `turnomedico` WHERE `nBadge` = ? AND `data` = ? AND `tipoTurno` = ?";
+    $check_turno_query = "SELECT * FROM `turnooperatore` WHERE `nBadge` = ? AND `data` = ? AND `tipoTurno` = ?";
     $check_turno_stmt = mysqli_prepare($mysqli, $check_turno_query);
     mysqli_stmt_bind_param($check_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
     mysqli_stmt_execute($check_turno_stmt);

@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="col">
                 <input list="farmaci" class="form-control" name="nomeFarmaco[]" placeholder="Farmaco" required>
             </div>
+
             <div class="col">
                 <input type="text" class="form-control" name="descrizione[]" placeholder="Descrizione">
             </div>

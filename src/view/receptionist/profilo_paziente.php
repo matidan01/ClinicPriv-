@@ -2,12 +2,6 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
-// DA VEDERE PER ACCEDERE SOLO SE HAI LA SESSIONE DA RECEPTIONIST
-/*if (!isset($_SESSION['Username'])) {
-    header("Location: login.php");
-    exit();
-}*/
-
 // Prende l'idPaziente del cliente da visualizzare attraverso un get
 $id = isset($_GET['idPaziente']) ? mysqli_real_escape_string($con, $_GET['idPaziente']) : '';
 
@@ -60,6 +54,30 @@ if (mysqli_num_rows($result) > 0) {
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
 $farm = get_farmaci($con);
+$get_diagnosi = "SELECT d.idPaziente, d.descrizione, p.nomePatologia 
+                FROM diagnosi d 
+                JOIN patologia p ON d.idPatologia = p.idPatologia
+                WHERE d.idPaziente = ?";
+$stmt = mysqli_prepare($con, $get_diagnosi);
+if ($stmt === false) {
+    die('Errore nella preparazione della query: ' . mysqli_error($con));
+}
+
+mysqli_stmt_bind_param($stmt, "i", $id);
+mysqli_stmt_execute($stmt);
+$diagn = mysqli_stmt_get_result($stmt);
+
+$diagnosi = [];
+if ($diagn === false) {
+    die('Errore nell\'esecuzione della query: ' . mysqli_error($con));
+}
+
+if (mysqli_num_rows($diagn) > 0) {
+    while($row = mysqli_fetch_assoc($diagn)) {
+        $diagnosi[] = $row;
+    }
+}
+mysqli_free_result($diagn); //
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -141,6 +159,24 @@ $farm = get_farmaci($con);
                 <?php endif ?>
             </div>
         </div>
+        <!-- Visualizza le diagnosi del paziente -->
+        <?php if (!empty($diagnosi)): ?>
+                <div class="row p-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Diagnosi del Paziente</h5>
+                            <?php foreach ($diagnosi as $d): ?>
+                                <div class="mb-3 p-1 border">
+                                    <p><strong>Patologia:</strong> <?php echo $d['nomePatologia'] ?></p>
+                                    <p><strong>Dettagli:</strong> <?php echo $d['descrizione'] ?></p>
+                                </div>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <p>Nessuna diagnosi trovata per questo paziente.</p>
+            <?php endif ?>
     </div>
 
     <div class="d-flex justify-content-center mt-4">
@@ -194,6 +230,7 @@ $farm = get_farmaci($con);
                 </form>
             </div>
         </div>
+
     </div>
 
 

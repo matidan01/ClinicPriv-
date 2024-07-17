@@ -244,6 +244,18 @@ function inserisci_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($insert_fattura_stmt);
 }
 
+function is_pagato($mysqli, $id_prestazione) {
+    $query = "SELECT COUNT(*) as count 
+              FROM fattura 
+              WHERE idPrestazione = ? AND dataPagamento IS NULL";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $id_prestazione);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['count'] == 0;
+}
+
 function paga_fattura($mysqli, $idPrestazione) {
     $paga_fattura_query = "UPDATE fattura SET dataPagamento = CURDATE() WHERE idPrestazione = ?";
     $paga_fattura_stmt = mysqli_prepare($mysqli, $paga_fattura_query);
@@ -251,22 +263,63 @@ function paga_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($paga_fattura_stmt);
 }
 
-function inserisci_diagnosi($mysqli, $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione) {
-    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `nBadgeMedico`, `nomePatologia`, `descrizione`) VALUES (?, ?, ?, ?)";
+function inserisci_diagnosi($mysqli, $idPaziente, $idPatologia, $descrizione) {
+    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `idPatologia`, `descrizione`) VALUES (?, ?, ?)";
     $insert_diagnosi_stmt = mysqli_prepare($mysqli, $insert_diagnosi_query);
-    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'isss', $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione);
+    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'iis', $idPaziente, $idPatologia, $descrizione);
     return mysqli_stmt_execute($insert_diagnosi_stmt);
 }
 
-function inserisci_patologie($mysqli, $idPaziente, $nomePatologia){
-    $insert_patologia_query = "INSERT INTO `patologia`(`idPaziente`, `nomePatologia`) VALUES (?, ?)";
-    $insert_patologia_stmt = mysqli_prepare($mysqli, $insert_patologia_query);
-    mysqli_stmt_bind_param($insert_patologia_stmt, 'is', $idPaziente, $nomePatologia);
-    return mysqli_stmt_execute($insert_patologia_stmt);
+
+function get_turni_medici($mysqli, $mese, $anno) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnomedico tm
+        JOIN medico m ON tm.nBadge = m.nBadge
+        WHERE MONTH(tm.data) = ? AND YEAR(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $mese, $anno);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
 }
 
-function inserisci_turno($mysqli, $nBadge, $data, $tipoTurno){
-    $insert_turno_query = "INSERT INTO `patologia`(`nBadge`, `data`, $tipoTurno) VALUES (?, ?, ?)";
+function get_turni_operatori($mysqli, $mese, $anno) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnooperatore tm
+        JOIN operatore m ON tm.nBadge = m.nBadge
+        WHERE MONTH(tm.data) = ? AND YEAR(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $mese, $anno);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
+}
+
+function inserisci_turno_medico($mysqli, $nBadge, $data, $tipoTurno) {
+    $insert_turno_query = "INSERT INTO `turnomedico`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
+    $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
+    mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
+    return mysqli_stmt_execute($insert_turno_stmt);
+}
+
+function inserisci_turno_operatore($mysqli, $nBadge, $data, $tipoTurno) {
+    $insert_turno_query = "INSERT INTO `turnoperatore`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
     $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
     mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
     return mysqli_stmt_execute($insert_turno_stmt);
@@ -308,15 +361,13 @@ function get_costo($mysqli, $idPrestazione) {
 
 function get_appuntamenti_non_pagati($mysqli, $idPaziente) {
     $prestazioni = [];
-    /*$query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
+    $query = "SELECT prestazione.idPrestazione, prestazione.dataInizio, listino.costo as costo, listino.nome as nome
                     FROM prestazione
                     INNER JOIN listino ON prestazione.codicePrestazione = listino.codicePrestazione
                     LEFT JOIN fattura ON prestazione.idPrestazione = fattura.idPrestazione
                     WHERE prestazione.idPaziente = ?
                     AND fattura.dataPagamento IS NULL
-                ";*/
-    $query = "SELECT idPrestazione, dataInizio, costo, nome 
-                FROM prestazioni_non_pagate WHERE idPaziente=?";
+                ";
     $stmt = mysqli_prepare($mysqli, $query);
     mysqli_stmt_bind_param($stmt, 'i', $idPaziente);
     mysqli_stmt_execute($stmt);
@@ -593,4 +644,44 @@ function aggiungi_a_listino($nome, $costo, $tipo, $mysqli){
                             VALUES (?, ?, ?);");
     $stmt->bind_param("ssi", $codice, $nome, $costo);
     $stmt->execute();
+}
+
+function get_turni_medico($mysqli, $nBadge, $mese) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnomedico tm
+        JOIN medico m ON tm.nBadge = m.nBadge
+        WHERE tm.nBadge = ? AND MONTH(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $nBadge, $mese);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
+}
+
+function get_turni_operatore($mysqli, $nBadge, $mese) {
+    $query = "
+        SELECT tm.nBadge, m.nome, m.cognome, tm.data, tm.tipoTurno
+        FROM turnooperatore tm
+        JOIN operatore m ON tm.nBadge = m.nBadge
+        WHERE tm.nBadge = ? AND MONTH(tm.data) = ?
+    ";
+    $stmt = mysqli_prepare($mysqli, $query);
+    mysqli_stmt_bind_param($stmt, 'ss', $nBadge, $mese);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    $turni = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $turni[] = $row;
+    }
+    
+    return $turni;
 }

@@ -23,17 +23,21 @@ $badgeN = $_GET['badgeN']
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#visualizzazione-appuntamenti">Visualizzazione Appuntamenti</a>
+                        <a class="nav-link" href="#visualizza_appuntamenti">Visualizzazione Appuntamenti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#pazienti">Visualizzazione Pazienti</a>
+                        <a class="nav-link" href="#pazienti">Visualizza Pazienti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#assegnamento-terapie">Assegnamento Terapia</a>
+                        <a class="nav-link" href="#assegnamento-terapie">Visualizza Turni</a>
                     </li>
+                    <?php
+                if(isCaposala($badgeN, $con)){
+                ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="#altro">Altro</a>
+                        <a class="nav-link" href="gestisci_turni.php?<?php print_r("nBadge=$badgeN")?>">Gestisci Turni</a>
                     </li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -46,9 +50,9 @@ $badgeN = $_GET['badgeN']
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title" id="visualizzazione-appuntamenti">Visualizzazione Appuntamenti</h2>
+                            <h2 class="card-title" id="visualizzazione_appuntamenti">Visualizzazione Appuntamenti</h2>
                             <p class="card-text">Visualizza gli appuntamenti dei pazienti..</p>
-                            <a href="../operatore/visualizza_appuntamenti.php?badgeN=<?php print_r($badgeN)?>" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_appuntamenti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
@@ -57,47 +61,35 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizzazione-pazienti">Visualizzazione Pazienti</h2>
                             <p class="card-text">Visualizza i dati dei pazienti.</p>
-                            <a href="visualizza_pazienti.php" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_pazienti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title" id="assegnamento-terapia">Assegnamento Nuova Terapia</h2>
-                            <p class="card-text">Assegna nuova terapia.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title" id="visualizza turni">Visualizza Turni</h2>
                             <p class="card-text">Visualizza i turni assegnati a te.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_turni.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
-            </div>
                 <?php
-                
                 if(isCaposala($badgeN, $con)){
                 ?>
-            <div class="row mt-4">
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
                             <h2 class="card-title">Gestione Turni</h2>
                             <p class="card-text">Gestisci i turni degli operatori.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="gestisci_turni.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
+                <?php }?>       
             </div>
-                <?php }?>
         </div>
     </section>
 </body>

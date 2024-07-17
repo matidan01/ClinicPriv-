@@ -8,13 +8,11 @@ include_once("../includes/functions.php");
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $badgeNumber = $_POST["badge_number"];
     $password = $_POST["password"];
-    $type = $_POST["type"];
-    $_SESSION['type'] = $type;
+    $type = substr($badgeNumber, 0, 1);
 
     if (check_login($badgeNumber, $password, $type, $con) == true) {
-        go_to_home($badgeNumber);
+        go_to_home($type, $badgeNumber);
     } else {
-        $_SESSION['login_error'] = 'Numbero badge, password e/o tipo di login selezionato errato/i';
         header("Location: ../view/login.php");
     }
 }

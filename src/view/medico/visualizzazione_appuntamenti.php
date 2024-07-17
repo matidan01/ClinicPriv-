@@ -3,48 +3,42 @@ include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
 $appuntamenti = [];
-$operatore_nBadge = isset($_GET['nBadge']) ? mysqli_real_escape_string($con, $_GET['nBadge']) : '';
+$medico_nBadge = isset($_GET['nBadge']) ? mysqli_real_escape_string($con, $_GET['nBadge']) : '';
 $data_selezionata = isset($_POST['data']) ? mysqli_real_escape_string($con, $_POST['data']) : '';
 
 // Costruisci la query di base
 $query = "SELECT p.idPaziente, p.idPrestazione, p.dataInizio, p.dataFine, p.ora, p.sala,
-                 paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
-                 listino.nome AS nome_prestazione
-          FROM prestazione p
-          JOIN assistente a ON p.idPrestazione = a.idPrestazione
-          JOIN paziente ON p.idPaziente = paziente.idPaziente
-          JOIN listino ON p.codicePrestazione = listino.codicePrestazione
-          WHERE a.nBadge = ?";
+                paziente.nome AS nome_paziente, paziente.cognome AS cognome_paziente,
+                listino.nome AS nome_prestazione
+        FROM prestazione p
+        JOIN responsabile r ON p.idPrestazione = r.idPrestazione
+        JOIN paziente ON p.idPaziente = paziente.idPaziente
+        JOIN listino ON p.codicePrestazione = listino.codicePrestazione
+        WHERE r.nBadge = ?";
+
 
 // Aggiungi filtro per data se è stato fornito
 if (!empty($data_selezionata)) {
     $query .= " AND p.dataInizio = ?";
 }
 
-// Prepara lo statement
 if ($stmt = mysqli_prepare($con, $query)) {
-    // Associa il parametro del badge del operatore
     if (!empty($data_selezionata)) {
-        mysqli_stmt_bind_param($stmt, "ss", $operatore_nBadge, $data_selezionata);
+        mysqli_stmt_bind_param($stmt, "ss", $medico_nBadge, $data_selezionata);
     } else {
-        mysqli_stmt_bind_param($stmt, "s", $operatore_nBadge);
+        mysqli_stmt_bind_param($stmt, "s", $medico_nBadge);
     }
-
-    // Esegui la query
     mysqli_stmt_execute($stmt);
-
-    // Ottieni il risultato
     $result = mysqli_stmt_get_result($stmt);
 
-    // Controlla se ci sono risultati
+
     if (mysqli_num_rows($result) > 0) {
-        // Estrai i dati e memorizzali nell'array $appuntamenti
         while ($row = mysqli_fetch_assoc($result)) {
             $appuntamenti[] = $row;
         }
+    } else {
+        echo "Nessun appuntamento trovato.";
     }
-
-    // Chiudi lo statement
     mysqli_stmt_close($stmt);
 } else {
     echo "Errore nella preparazione della query.";
@@ -54,13 +48,12 @@ if ($stmt = mysqli_prepare($con, $query)) {
 mysqli_close($con);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Appuntamenti</title>
+    <title>Visualizza Appuntamenti</title>
     <!-- CSS -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
     <!-- JS -->

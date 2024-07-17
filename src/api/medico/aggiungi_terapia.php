@@ -2,6 +2,8 @@
 include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
+$nBadge = $_GET['nBadge'];
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Memorizza i dati singoli
@@ -47,5 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    header("Location: ../../view/receptionist/profilo_paziente.php?idPaziente=" . urlencode($idPaziente));
+    header("Location: ../../view/medico/profilo_paziente.php?nBadge=$nBadge&idPaziente=" . urlencode($idPaziente));
 }
+
+

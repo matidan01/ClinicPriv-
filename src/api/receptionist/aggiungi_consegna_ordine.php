@@ -14,13 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $run_data = mysqli_stmt_execute($stmt_insert_data);
 
     // Aggiorna in automatico le quantità dei materiali
-    $modify_quantita_query = "UPDATE materiale m
-                                JOIN (
-                                    SELECT rif.idMateriale, rif.quantita
-                                    FROM rifornimento rif
-                                    WHERE rif.idOrdine = ?
-                                ) AS materiale_ordine ON m.idMateriale = materiale_ordine.idMateriale
-                                SET m.quantita = m.quantita + materiale_ordine.quantita;
+    $modify_quantita_query = "UPDATE materiale
+                            JOIN (
+                                SELECT rifornimento.idMateriale, rifornimento.quantita
+                                FROM rifornimento
+                                WHERE rifornimento.idOrdine = ?
+                            ) AS materiale_ordine ON materiale.idMateriale = materiale_ordine.idMateriale
+                            SET materiale.quantita = materiale.quantita + materiale_ordine.quantita,
+                                materiale.numero_ordini = materiale.numero_ordini - 1;
                             ";
     $stmt_modify_quantita = mysqli_prepare($con, $modify_quantita_query);
     mysqli_stmt_bind_param($stmt_modify_quantita, "i", $idOrdine);

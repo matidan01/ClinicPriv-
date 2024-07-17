@@ -23,17 +23,21 @@ $badgeN = $_GET['badgeN']
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#visualizzazione-appuntamenti">Visualizzazione Appuntamenti</a>
+                        <a class="nav-link" href="#visualizzazione_appuntamenti">Visualizzazione Appuntamenti</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#pazienti">Visualizzazione Pazienti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#assegnamento-terapie">Assegnamento Terapia</a>
+                        <a class="nav-link" href="#assegnamento-terapie">Visualizzazione Turni</a>
                     </li>
+                    <?php
+                if(isPrimario($badgeN, $con)){
+                ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="#altro">Altro</a>
+                        <a class="nav-link" href="gestisci_turni.php?<?php print_r("nBadge=$badgeN")?>">Gestisci Turni</a>
                     </li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -46,9 +50,9 @@ $badgeN = $_GET['badgeN']
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h2 class="card-title" id="visualizzazione-appuntamenti">Visualizzazione Appuntamenti</h2>
+                            <h2 class="card-title" id="visualizzazione_appuntamenti">Visualizzazione Appuntamenti</h2>
                             <p class="card-text">Visualizza gli appuntamenti dei pazienti..</p>
-                            <a href="visualizzazione-appuntamenti.php?<?php print_r("badgeN=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizzazione_appuntamenti.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
@@ -68,7 +72,7 @@ $badgeN = $_GET['badgeN']
                         <div class="card-body">
                             <h2 class="card-title" id="visualizza turni">Visualizza Turni</h2>
                             <p class="card-text">Visualizza i turni assegnati a te.</p>
-                            <a href="#" class="btn btn-primary">Vai alla gestione</a>
+                            <a href="visualizza_turni.php?<?php print_r("nBadge=$badgeN")?>" class="btn btn-primary">Vai alla gestione</a>
                         </div>
                     </div>
                 </div>
