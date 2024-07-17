@@ -133,6 +133,8 @@ if (mysqli_num_rows($result_patologie) > 0) {
     }
 }
 mysqli_free_result($result_patologie); // Libera il risultato
+
+$farmaci = get_farmaci($con);
 ?>
 
 

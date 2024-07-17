@@ -110,7 +110,7 @@ mysqli_free_result($result_patologie); // Libera il risultato
 // Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
 
-$farm = get_farmaci($con);
+$farmaci = get_farmaci($con);
 ?>
 <!DOCTYPE html>
 <html lang="it">
