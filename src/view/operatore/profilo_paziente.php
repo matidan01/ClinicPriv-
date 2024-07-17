@@ -7,7 +7,6 @@ $nBadge = $_GET['nBadge'];
 $id = $_GET['idPaziente'];
 
 
-// Debugging
 if (empty($id) || empty($nBadge)) {
     die("ID Paziente o Numero Badge non forniti.");
 }

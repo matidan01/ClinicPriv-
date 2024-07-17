@@ -263,19 +263,13 @@ function paga_fattura($mysqli, $idPrestazione) {
     return mysqli_stmt_execute($paga_fattura_stmt);
 }
 
-function inserisci_diagnosi($mysqli, $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione) {
-    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `nBadgeMedico`, `nomePatologia`, `descrizione`) VALUES (?, ?, ?, ?)";
+function inserisci_diagnosi($mysqli, $idPaziente, $idPatologia, $descrizione) {
+    $insert_diagnosi_query = "INSERT INTO `diagnosi`(`idPaziente`, `idPatologia`, `descrizione`) VALUES (?, ?, ?)";
     $insert_diagnosi_stmt = mysqli_prepare($mysqli, $insert_diagnosi_query);
-    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'isss', $idPaziente, $nBadgeMedico, $nomePatologia, $descrizione);
+    mysqli_stmt_bind_param($insert_diagnosi_stmt, 'iis', $idPaziente, $idPatologia, $descrizione);
     return mysqli_stmt_execute($insert_diagnosi_stmt);
 }
 
-function inserisci_patologie($mysqli, $idPaziente, $nomePatologia){
-    $insert_patologia_query = "INSERT INTO `patologia`(`idPaziente`, `nomePatologia`) VALUES (?, ?)";
-    $insert_patologia_stmt = mysqli_prepare($mysqli, $insert_patologia_query);
-    mysqli_stmt_bind_param($insert_patologia_stmt, 'is', $idPaziente, $nomePatologia);
-    return mysqli_stmt_execute($insert_patologia_stmt);
-}
 
 function get_turni_medici($mysqli, $mese, $anno) {
     $query = "
