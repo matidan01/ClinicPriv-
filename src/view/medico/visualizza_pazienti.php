@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Pazienti</title>
+    <title>Visualizza Pazienti</title>
     <!-- css -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
     <!-- js -->

@@ -108,7 +108,7 @@ function generate_calendar($mese, $anno, $turni) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizzazione Turni</title>
+    <title>Visualizza Turni</title>
     <!-- css -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
     <!-- js -->

@@ -26,7 +26,7 @@ if ($result === false) {
 }
 
 $row = mysqli_fetch_array($result);
-mysqli_free_result($result); // Libera il risultato
+mysqli_free_result($result); 
 
 if (!$row) {
     die('Nessun paziente trovato con l\'ID fornito.');
@@ -56,7 +56,7 @@ if ($run_indirizzo_paziente === false) {
 }
 
 $row_indirizzo_paziente = mysqli_fetch_array($run_indirizzo_paziente);
-mysqli_free_result($run_indirizzo_paziente); // Libera il risultato
+mysqli_free_result($run_indirizzo_paziente); 
 
 if (!$row_indirizzo_paziente) {
     die('Nessun indirizzo trovato per il paziente.');
@@ -93,7 +93,7 @@ if (mysqli_num_rows($diagn) > 0) {
         $diagnosi[] = $row;
     }
 }
-mysqli_free_result($diagn); // Libera il risultato
+mysqli_free_result($diagn); 
 
 // Memorizza tutte le terapie del paziente
 $get_id_terapia = "SELECT * FROM terapia WHERE idPaziente = ?";
@@ -116,7 +116,7 @@ if (mysqli_num_rows($result) > 0) {
         $terapia[] = $row;
     }
 }
-mysqli_free_result($result); // Libera il risultato
+mysqli_free_result($result); 
 
 
 ?>
