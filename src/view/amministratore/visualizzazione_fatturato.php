@@ -191,11 +191,11 @@ include_once("../../includes/functions.php");
                         const mediciTabella = document.getElementById("medici");
                         mediciTabella.innerHTML=` `; //mi serve per cancellare le eventuali tabelle precedentemente caricate. 
                         mediciArray.forEach(m => {
-                            if (m['SUM(f.totale)'] === null){
-                                tot = "0$";
+                            if (m['tot'] === null){
+                                tot = "0€";
                             }
                             else{
-                                tot = m['SUM(f.totale)']+"$";
+                                tot = m['tot']+"€";
                             }
                             mediciTabella.innerHTML +=`<td>${m['nome']}</td><td>${m['cognome']}</td><td>${m['nBadge']}</td><td>${tot}</td>`;
                         });

@@ -501,7 +501,7 @@ function calcola_interventi_e_prestazioni_tra_date($dataInizio, $dataFine, $mysq
 }
 
 function fatturato_per_medico($dataInizio, $dataFine, $mysqli){
-    $stmt = $mysqli->prepare("SELECT m.nBadge, m.nome, m.cognome, ROUND(SUM(f.totale),2) 
+    $stmt = $mysqli->prepare("SELECT m.nBadge, m.nome, m.cognome, ROUND(SUM(f.totale),2)  as tot
                                 FROM fattura f
                                 JOIN prestazione p ON p.idPrestazione = f.idPrestazione
                                 JOIN responsabile r ON r.idPrestazione = p.idPrestazione
