@@ -7,8 +7,12 @@ include_once("../../includes/database.php");
 
 $pazienti = fatturato_medio_e_totale_clienti($con);
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaPaziente'])) {
-    $search_term = mysqli_real_escape_string($con, $_POST['ricercaPaziente']);
+    $searchTerm = strtolower($_POST['ricercaPaziente']);
+    $pazienti = array_filter($pazienti, function($paziente) use ($searchTerm){
+        return stripos($paziente['nome'], $searchTerm) !== false || stripos($paziente['cognome'], $searchTerm) !== false;
+    });
 }
 ?>
 <html lang="en">
