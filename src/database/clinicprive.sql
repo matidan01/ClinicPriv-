@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Lug 20, 2024 alle 23:53
+-- Creato il: Lug 21, 2024 alle 00:28
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -34,7 +34,7 @@ CREATE TABLE `amministratore` (
   `CF` varchar(16) DEFAULT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `email` varchar(300) NOT NULL,
   `password` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -712,7 +712,7 @@ INSERT INTO `fattura` (`idPrestazione`, `numeroFattura`, `totale`, `dataEmission
 CREATE TABLE `fornitore` (
   `idFornitore` int(6) NOT NULL,
   `nome` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `email` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -803,7 +803,8 @@ INSERT INTO `indirizzo` (`id`, `città`, `via`, `numeroCivico`, `CAP`, `provinci
 (47, 'Como', 'Via Como', 47, 22100, 'CO', 'Italia'),
 (48, 'Lecco', 'Via Lecco', 48, 23900, 'LC', 'Italia'),
 (49, 'Monza', 'Via Monza', 49, 20900, 'MB', 'Italia'),
-(50, 'Bergamo', 'Via Bergamo', 50, 24100, 'BG', 'Italia');
+(50, 'Bergamo', 'Via Bergamo', 50, 24100, 'BG', 'Italia'),
+(51, 'Poggio Torriana', 'Padellina', 264, 47824, 'RN', 'Italia');
 
 -- --------------------------------------------------------
 
@@ -933,7 +934,7 @@ CREATE TABLE `medico` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(255) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
@@ -976,7 +977,7 @@ CREATE TABLE `operatore` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(20) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
@@ -1116,7 +1117,7 @@ CREATE TABLE `paziente` (
   `email` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `note` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1174,7 +1175,8 @@ INSERT INTO `paziente` (`idPaziente`, `nome`, `cognome`, `CF`, `email`, `dataNas
 (47, 'Renato', 'Russo', 'RSSRNT26G01H501Z', 'renato.russo@example.com', '2026-11-01', 'Varese', 2147483647, 'Nessuna nota'),
 (48, 'Alice', 'Gialli', 'GLIACE27H01H501Z', 'alice.gialli@example.com', '2027-12-01', 'Como', 2147483647, 'Nessuna nota'),
 (49, 'Raffaele', 'Marrone', 'MRRRFL28I01H501Z', 'raffaele.marrone@example.com', '2028-01-01', 'Lecco', 2147483647, 'Nessuna nota'),
-(50, 'Caterina', 'Rossi', 'RSSCTR29L01H501Z', 'caterina.rossi@example.com', '2029-02-01', 'Monza', 2147483647, 'Nessuna nota');
+(50, 'Caterina', 'Rossi', 'RSSCTR29L01H501Z', 'caterina.rossi@example.com', '2029-02-01', 'Monza', 2147483647, 'Nessuna nota'),
+(51, 'Matilde', 'D\'Antino', 'DNTMLD01D04H294L', 'matildedantino@gmail.com', '2001-04-27', 'Rimini', 3381662201, '');
 
 -- --------------------------------------------------------
 
@@ -1537,7 +1539,7 @@ CREATE TABLE `receptionist` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(14) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(20) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
@@ -1552,7 +1554,8 @@ INSERT INTO `receptionist` (`nBadge`, `nome`, `cognome`, `CF`, `emailAziendale`,
 ('R001', 'Maria', 'Rossi', 'RSSMRA90A01H501Z', 'maria.rossi@clinica.it', '1990-01-01', 'Roma', 2147483647, 'p@ssw0rd1', '2020-03-15', NULL, 'A001'),
 ('R002', 'Luca', 'Bianchi', NULL, 'luca.bianchi@clinica.it', '1988-07-22', 'Milano', 2147483647, 'securePass2', '2021-09-01', NULL, 'A002'),
 ('R003', 'Giulia', 'Verdi', 'VRDGLI95B02L219X', 'giulia.verdi@clinica.it', '1995-02-02', 'Torino', 2147483647, 'strongPwd3!', '2019-11-30', '2024-06-30', 'A001'),
-('R004', 'Marco', 'Neri', NULL, 'marco.neri@clinica.it', '1992-12-10', 'Napoli', 2147483647, 'safePassword4', '2022-05-01', NULL, 'A003');
+('R004', 'Marco', 'Neri', NULL, 'marco.neri@clinica.it', '1992-12-10', 'Napoli', 2147483647, 'safePassword4', '2022-05-01', NULL, 'A003'),
+('R005', 'Mario', 'Rossi', 'RSSMRA80A01H501Z', 'mario.rossi@clinicprive.com', '1980-01-01', 'Roma', 3912345678, 'securepassword', '2024-07-01', NULL, 'A001');
 
 -- --------------------------------------------------------
 
@@ -2092,6 +2095,7 @@ INSERT INTO `turnomedico` (`nBadge`, `data`, `tipoTurno`) VALUES
 ('M002', '2024-07-20', 'P'),
 ('M002', '2024-07-23', 'M'),
 ('M002', '2024-07-26', 'N'),
+('M002', '2024-07-27', 'M'),
 ('M002', '2024-07-29', 'P'),
 ('M003', '2024-07-01', 'N'),
 ('M003', '2024-07-04', 'P'),

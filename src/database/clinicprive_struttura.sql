@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Lug 20, 2024 alle 23:57
+-- Creato il: Lug 21, 2024 alle 00:28
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -34,7 +34,7 @@ CREATE TABLE `amministratore` (
   `CF` varchar(16) DEFAULT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `email` varchar(300) NOT NULL,
   `password` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -96,7 +96,7 @@ CREATE TABLE `fattura` (
 CREATE TABLE `fornitore` (
   `idFornitore` int(6) NOT NULL,
   `nome` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `email` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -157,7 +157,7 @@ CREATE TABLE `medico` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(255) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
@@ -179,7 +179,7 @@ CREATE TABLE `operatore` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(20) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
@@ -225,7 +225,7 @@ CREATE TABLE `paziente` (
   `email` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(20) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `note` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -272,7 +272,7 @@ CREATE TABLE `receptionist` (
   `emailAziendale` varchar(300) NOT NULL,
   `dataNascita` date NOT NULL,
   `luogoNascita` varchar(20) NOT NULL,
-  `recapitoTelefonico` int(14) NOT NULL,
+  `recapitoTelefonico` bigint(1) NOT NULL,
   `password` varchar(20) NOT NULL,
   `inizioRapporto` date NOT NULL,
   `fineRapporto` date DEFAULT NULL,
