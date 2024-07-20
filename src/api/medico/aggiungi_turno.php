@@ -3,8 +3,8 @@ include_once("../../includes/connection.php");
 include_once("../../includes/database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $medico = $_GET['nBadge'];
-    $nBadge = explode(' - ', $medico)[0];
+    $medico = $_POST['medico'];
+    $nBadge = explode(' ', $medico)[0];
     $data = $_POST['date'];
     $tipoTurno = $_POST['shift'];
     $tipoTurno = substr($tipoTurno, 0, 1);

@@ -135,7 +135,7 @@ function generate_calendar($mese, $anno, $turni) {
                         </div>
                         <div class="mb-3">
                             <label for="medico" class="form-label">Medico:</label>
-                            <input list="medici" name="medici[]">
+                            <input list="medici" name="medico"  id="medico">
                             <datalist id="medici">
                                 <?php
                                     foreach($medici as $medico) {

@@ -4,7 +4,8 @@ include_once("../../includes/database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $operatore = $_POST['operatore'];
-    $nBadge = explode(' - ', $operatore)[0];
+    $nBadge = explode(' ', $operatore)[0];
+    print_r($nBadge);
     $data = $_POST['date'];
     $tipoTurno = $_POST['shift'];
     $tipoTurno = substr($tipoTurno, 0, 1);
