@@ -17,4 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mysqli_stmt_bind_param($stmt_insert_fornitore, "isis", $idFornitore, $nome, $tel, $email);
     $run_data = mysqli_stmt_execute($stmt_insert_fornitore);
 
+    // Torna ai fornitori 
+    header("Location: ../../view/receptionist/fornitori.php");
+
 }
