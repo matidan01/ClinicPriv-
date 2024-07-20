@@ -127,7 +127,7 @@ function generate_calendar($mese, $anno, $turni) {
                     <h5 class="card-title">Aggiungi o Modifica turno</h5>
                 </div>
                 <div class="card-body">
-                    <form id="shift-form" method="post" action="../../api/medico/aggiungi_turno.php">
+                    <form id="shift-form" method="post" action="../../api/medico/aggiungi_turno.php?nBadge=<?php echo $nBadge?>">
                         <input type="hidden" id="shift-index" name="shift-index">
                         <div class="mb-3">
                             <label for="date" class="form-label">Data:</label>
