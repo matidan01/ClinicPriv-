@@ -1,49 +1,41 @@
 <?php
 include_once("../../includes/connection.php");
-include_once("../../includes/database.php");
 
-$appuntamenti = [];
+$clienti = [];
 
-// Prende i valori da poter mostrare nel datalist come suggerimento di input
-$pazienti = get_pazienti($con);
-$medici = get_medici($con);
-$operatori = get_operatori($con);
-$prestazioni = get_nomi_prestazioni($con);
-$sale = get_sale($con);
+//Memorizza i clienti che rispettano i criteri di ricerca
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
+    $search_term = "%" . $_POST['ricercaCliente'] . "%";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(isset($_POST['data'])) {
-        $data = $_POST['data'];
-        $query = "SELECT * FROM vista_appuntamenti WHERE DATE(dataInizio) = ? ORDER BY ora ASC";
-        $stmt = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($stmt, "s", $data);
-    } else {
-        $query = "SELECT * FROM vista_appuntamenti WHERE DATE(dataInizio) >= CURDATE() ORDER BY ora ASC";
-        $stmt = mysqli_prepare($con, $query);
-    }
-
+    $query = "SELECT * FROM paziente WHERE (nome LIKE ? OR cognome LIKE ? OR 
+            CF LIKE ? OR idPaziente LIKE ?)";
+    
+    $stmt = mysqli_prepare($con, $query);
+    mysqli_stmt_bind_param($stmt, "ssss", $search_term, $search_term, $search_term, $search_term);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-
+    
     if (mysqli_num_rows($result) > 0) {
         while($row = mysqli_fetch_assoc($result)) {
-            $appuntamenti[] = $row;
+            $clienti[] = $row;
         }
+    } else {
+        echo "No results found";
     }
+    
 }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Appuntamenti</title>
+    <title>Gestione Clienti</title>
     <!-- css -->
     <link rel="stylesheet" href="../../css/righeTabella.css">
     <!-- js -->
-    <script src="../../js/gestione_appuntamenti.js"></script>
+    <script src="../../js/gestione_clienti.js"></script>
     <!-- Link per Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Link per Bootstrap JS -->
@@ -52,192 +44,123 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <div class="container py-5">
-        <h1 class="mb-5">Gestione Appuntamenti</h1>
+    <div class="container">
+        <!-- Titolo della pagina -->
+        <h1 class="my-4">Gestione Clienti</h1>
 
-        <!-- Form per visualizzare appuntamenti di un determinato giorno -->
-        <form action="" method="post" class="mb-3">
-            <div class="row g-3">
-                <div class="col-auto">
-                    <label for="data" class="col-form-label">Seleziona una data:</label>
-                </div>
-                <div class="col-auto">
-                    <input type="date" id="data" name="data" class="form-control">
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Mostra Appuntamenti</button>
-                </div>
-            </div>
+        <!-- Bottone "Aggiungi Cliente" -->
+        <!-- Bottone per aggiungere i clienti -->
+        <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#aggiungiClienteModal">
+            Aggiungi Cliente
+        </button>
+
+        <!-- Barra di Ricerca -->
+        <!-- Barra di ricerca -->
+        <form method="POST">
+            <input type="text" id="ricercaCliente" name="ricercaCliente" class="form-control mb-4" placeholder="Cerca cliente...">
+            <button type="submit" class="btn btn-primary" id="s_button" name="s_button">Cerca</button>
         </form>
 
-        <!-- Form per visualizzare appuntamenti dal giorno corrente in poi -->
-        <form action="" method="post" class="mb-3">
-            <button type="submit" class="btn btn-secondary">Mostra Tutti gli Appuntamenti</button>
-        </form>
-
-        <!-- Bottone per aggiungere un nuovo appuntamento -->
-        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#aggiungiModal">Aggiungi Appuntamento</button>
-        
-        <!-- Tabella degli appuntamenti -->
-        <table class="table table-striped">
+        <!-- Tabella dei Clienti -->
+        <!-- Tabella dei clienti -->
+        <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Data</th>
-                    <th scope="col">Data Fine</th>
-                    <th scope="col">Ora</th>
+                    <th scope="col">ID</th>
                     <th scope="col">Nome</th>
                     <th scope="col">Cognome</th>
+                    <th scope="col">Data di Nascita</th>
                     <th scope="col">Codice Fiscale</th>
-                    <th scope="col">Nome prestazione</th>
-                    <th scope="col">Medici</th>
-                    <th scope="col">Operatori</th>
-                    <th scope="col">Sala</th>
                 </tr>
             </thead>
             <tbody>
+                <!-- Qui vengono inseriti dinamicamente i dati dei clienti -->
                 <?php
-                foreach ($appuntamenti as $appuntamento) {
-                    echo "<tr class='clickable-row' data-href='profilo_appuntamento.php?";
-                    if (isset($appuntamento['idPrestazione'])) {
-                        echo "idPrestazione=" . urlencode($appuntamento['idPrestazione']);
-                    }
-                    echo "'>";
-                    echo "<td>{$appuntamento['dataInizio']}</td>";
-                    echo "<td>{$appuntamento['dataFine']}</td>";
-                    echo "<td>{$appuntamento['ora']}</td>";
-                    echo "<td>{$appuntamento['nome_paziente']}</td>";
-                    echo "<td>{$appuntamento['cognome_paziente']}</td>";
-                    echo "<td>{$appuntamento['CF']}</td>";
-                    echo "<td>{$appuntamento['nome']}</td>";
-                    echo "<td>{$appuntamento['medici_coinvolti']}</td>";
-                    echo "<td>{$appuntamento['operatori_coinvolti']}</td>";
-                    echo "<td>{$appuntamento['numeroSala']}</td>";
+                foreach ($clienti as $cliente) {
+                    echo "<tr class='clickable-row' data-href='profilo_paziente.php?idPaziente=" . urlencode($cliente['idPaziente']) . "'>";
+                    echo "<td>{$cliente['idPaziente']}</td>";
+                    echo "<td>{$cliente['nome']}</td>";
+                    echo "<td>{$cliente['cognome']}</td>";
+                    echo "<td>{$cliente['dataNascita']}</td>";
+                    echo "<td>{$cliente['CF']}</td>";
                     echo "</tr>";
                 }
                 ?>
             </tbody>
         </table>
     </div>
-
-    <!-- Modal Aggiungi Appuntamento -->
-    <div class="modal fade" id="aggiungiModal" tabindex="-1" aria-labelledby="aggiungiModalLabel" aria-hidden="true">
+    <!-- Modale per Aggiungere Cliente -->
+    <div class="modal fade" id="aggiungiClienteModal" tabindex="-1" aria-labelledby="aggiungiClienteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="aggiungiModalLabel">Aggiungi Appuntamento</h5>
+                    <h5 class="modal-title" id="aggiungiClienteModalLabel">Aggiungi Cliente</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Form per aggiungere un nuovo appuntamento -->
-                    <form action="../../api/receptionist/aggiungi_appuntamento.php" method="POST">
+                    <form method="POST" action="../../api/receptionist/aggiungi_cliente.php">
                         <div class="mb-3">
-                            <label for="pazienti" class="form-label">Cliente:</label>
-                            <input list="pazienti" name="pazienti" required>
-                            <datalist id="pazienti">
-                                <?php
-                                    foreach($pazienti as $paziente) {
-                                        $str = $paziente['idPaziente'] . ' ' . $paziente['nome'] . ' ' . $paziente['cognome'] . ' ' . $paziente['CF'];
-                                        echo '<option value="' . $str . '">';
-                                    };
-                                ?>
-                            </datalist>
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" class="form-control" id="nome" name="nome" maxlength="20" required>
                         </div>
                         <div class="mb-3">
-                            <label for="dataInizio" class="form-label">Data Inizio</label>
-                            <input type="date" class="form-control" id="dataInizio" name="dataInizio" required>
+                            <label for="cognome" class="form-label">Cognome:</label>
+                            <input type="text" class="form-control" id="cognome" name="cognome" maxlength="20" required>
                         </div>
                         <div class="mb-3">
-                            <label for="dataFine" class="form-label">Data Fine</label>
-                            <input type="date" class="form-control" id="dataFine" name="dataFine">
+                            <label for="cf" class="form-label">Codice Fiscale:</label>
+                            <input type="text" class="form-control" id="cf" name="cf">
                         </div>
                         <div class="mb-3">
-                            <label for="ora" class="form-label">Ora</label>
-                            <input type="time" class="form-control" id="ora" name="ora" required>
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label for="sala" class="form-label">Sala:</label>
-                            <input list="sala" name="sala" required>
-                            <datalist id="sala">
-                                <?php
-                                    foreach($sale as $sala) {
-                                        $str = $sala['numero'] . ' ' . $sala['tipo'];
-                                        echo '<option value="' . $str . '">';
-                                    };
-                                ?>
-                            </datalist>
+                            <label for="data_nascita" class="form-label">Data di Nascita:</label>
+                            <input type="date" class="form-control" id="data_nascita" name="data_nascita" required>
                         </div>
                         <div class="mb-3">
-                            <label for="tipo" class="form-label">Tipo prestazione:</label>
-                            <input list="tipo" name="tipo" required>
-                            <datalist id="tipo">
-                                <?php
-                                    foreach($prestazioni as $prestazione) {
-                                        $str = $prestazione['codicePrestazione'] . ' ' . $prestazione['nome'];
-                                        echo '<option value="' . $str . '">';
-                                    };
-                                ?>
-                            </datalist>
+                            <label for="luogo_nascita" class="form-label">Luogo di Nascita:</label>
+                            <input type="text" class="form-control" id="luogo_nascita" name="luogo_nascita" required>
                         </div>
-                        <div id="mediciContainer" class="mb-3">
-                            <label for="medici" class="form-label">Medici responsabili:</label>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Recapito Telefonico:</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Note:</label>
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                        <p>Indirizzo:</p>
+                        <div class="mb-3">
+                            <label for="via" class="form-label">Via:</label>
+                            <input type="text" class="form-control" id="via" name="via" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numeroCivico" class="form-label">Numero Civico:</label>
+                            <input type="number" class="form-control" id="numeroCivico" name="numeroCivico" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="citta" class="form-label">Città:</label>
+                            <input type="text" class="form-control" id="citta" name="citta" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cap" class="form-label">CAP:</label>
+                            <input type="number" class="form-control" id="cap" name="cap" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="provincia" class="form-label">Provincia:</label>
+                            <input type="text" class="form-control" id="provincia" name="provincia" maxlength="2" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nazione" class="form-label">Nazione:</label>
+                            <input type="text" class="form-control" id="nazione" name="nazione" required>
+                        </div>
 
-                            <!-- Bottone per aggiungere medici coinvolti nella prestazione -->
-                            <button type="button" class="btn btn-primary" id="aggiungiRigheMedici">+</button>
-                        </div>
-                        
-                        <div id="operatoriContainer" class="mb-3">
-                             <label for="operatori" class="form-label">Operatori assistenti:</label>
-
-                             <!-- Bottone per aggiungere operatori sanitari coinvolti nella prestazione -->
-                             <button type="button" class="btn btn-primary" id="aggiungiRigheOperatori">+</button>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Salva</button>
+                        <button type="submit" class="btn btn-primary">Aggiungi Cliente</button>
                     </form>
-                </div>
             </div>
         </div>
     </div>
-
 </body>
-<script>
-    // Aggiunge righe per responsabili nel form di inserimento di un nuovo appuntamento  
-    document.getElementById('aggiungiRigheMedici').addEventListener('click', function() {
-        var container = document.getElementById('mediciContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="medici" name="medici[]">
-                <datalist id="medici">
-                    <?php
-                        foreach($medici as $medico) {
-                            $str = $medico['nBadge'] . ' ' . $medico['nome'] . ' ' . $medico['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-
-    // Aggiunge righe per assistenti nel form di inserimento di un nuovo appuntamento 
-    document.getElementById('aggiungiRigheOperatori').addEventListener('click', function() {
-        var container = document.getElementById('operatoriContainer');
-        var row = document.createElement('div');
-        row.className = 'mb-3';
-        row.innerHTML = `
-                <input list="operatori" name="operatori[]">
-                <datalist id="operatori">
-                    <?php
-                        foreach($operatori as $operatore) {
-                            $str = $operatore['nBadge'] . ' ' . $operatore['nome'] . ' ' . $operatore['cognome'];
-                            echo '<option value="' . $str . '">';
-                        };
-                    ?>
-                </datalist>
-        `;
-        container.appendChild(row);
-    });
-
-</script>
 </html>
