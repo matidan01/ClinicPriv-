@@ -222,7 +222,7 @@ $farmaci = get_farmaci($con);
                             <button type="button" class="btn btn-primary" id="aggiungiRighe">+</button>
                             <datalist id="farmaci">
                                         <?php foreach ($farmaci as $f): ?>
-                                            <option value="<?php echo $f['nome'] . ' - ' . $f['dose']; ?>">
+                                            <option value="<?php echo $f['nome'] . ' ' . $f['dose']; ?>">
                                             </option>
                                         <?php endforeach; ?>
                                     </datalist>
