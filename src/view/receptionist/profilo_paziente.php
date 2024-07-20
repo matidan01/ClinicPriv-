@@ -52,8 +52,6 @@ if (mysqli_num_rows($result) > 0) {
 
 // Memorizza tutti i dati relativi gli appuntamenti del paziente da pagare
 $prestazioni_da_pagare = get_appuntamenti_non_pagati($con, $id);
-
-$farm = get_farmaci($con);
 $get_diagnosi = "SELECT d.idPaziente, d.descrizione, p.nomePatologia 
                 FROM diagnosi d 
                 JOIN patologia p ON d.idPatologia = p.idPatologia
