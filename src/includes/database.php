@@ -319,7 +319,7 @@ function inserisci_turno_medico($mysqli, $nBadge, $data, $tipoTurno) {
 }
 
 function inserisci_turno_operatore($mysqli, $nBadge, $data, $tipoTurno) {
-    $insert_turno_query = "INSERT INTO `turnoperatore`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
+    $insert_turno_query = "INSERT INTO `turnooperatore`(`nBadge`, `data`, `tipoTurno`) VALUES (?, ?, ?)";
     $insert_turno_stmt = mysqli_prepare($mysqli, $insert_turno_query);
     mysqli_stmt_bind_param($insert_turno_stmt, 'sss', $nBadge, $data, $tipoTurno);
     return mysqli_stmt_execute($insert_turno_stmt);
@@ -566,35 +566,52 @@ function isPrimario($badgeNum, $mysqli){
         FROM medico
         WHERE nBadge = ?
         AND tipologia = 'primario'
-        ";
+    ";
 
     $stmt = $mysqli->prepare($query);
+    if ($stmt === false) {
+        // Gestione dell'errore di preparazione della query
+        return false;
+    }
+
     $stmt->bind_param('s', $badgeNum);
     $stmt->execute();
     $result = $stmt->get_result();
-    if(empty($result)){
-        return false;
-    }else{
-        return true;
-    }
+    
+    // Controllo se ci sono righe nel risultato
+    $isPrimario = $result->num_rows > 0;
+
+    // Libera il risultato e chiude lo statement
+    $result->free();
+    $stmt->close();
+
+    return $isPrimario;
 }
+
 
 function isCaposala($badgeNum, $mysqli){
     $query = "
         SELECT *
-        FROM medico
+        FROM operatore
         WHERE nBadge = ?
         AND tipologia = 'caposala'
-        ";
+    ";
 
     $stmt = $mysqli->prepare($query);
+    if ($stmt === false) {
+        // Gestione dell'errore di preparazione della query
+        return false;
+    }
+
     $stmt->bind_param('s', $badgeNum);
     $stmt->execute();
     $result = $stmt->get_result();
-    if(empty($result)){
-        return false;
-    }else{
+    
+    // Controllo se ci sono righe nel risultato
+    if ($result->num_rows > 0) {
         return true;
+    } else {
+        return false;
     }
 }
 
