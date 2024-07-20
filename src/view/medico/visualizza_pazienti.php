@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ricercaCliente'])) {
             <tbody>
                 <?php
                 foreach ($clienti as $cliente) {
-                    echo "<tr class='clickable-row' data-href='profilo_paziente.php?nBadge=$nBadge&idPaziente=" . urlencode($cliente['idPaziente']) . "'>";
+                    echo "<tr class='clickable-row' data-href='profilo_paziente.php?nBadge=".  urlencode($nBadge) ."&idPaziente=" . urlencode($cliente['idPaziente']) . "'>";
                     echo "<td>{$cliente['idPaziente']}</td>";
                     echo "<td>{$cliente['nome']}</td>";
                     echo "<td>{$cliente['cognome']}</td>";
